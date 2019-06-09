@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+    <mapper namespace="com.hjh.Mapper.PartyinfoMapper">
+
+    <resultMap type="Partyinfo" id="partyinfoResult">
+     <id property="jobId" column="job_id"/>
+     <result property="partyOccupation" column="party_occupation"/>
+     <result property="partyIdentity" column="party_identity"/>
+   </resultMap>
+ 	
+ 	<select id="selectPartyinfoById" parameterType="int" resultMap="partyinfoResult">
+ 	    select * from t_partyinfo WHERE job_id= #{jobId} 
+ 	</select>
+
+</mapper>

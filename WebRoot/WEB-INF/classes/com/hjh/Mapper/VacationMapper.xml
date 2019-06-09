@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+    <mapper namespace="com.hjh.Mapper.VacationMapper">
+
+    <resultMap type="Vacation" id="vacationResult">
+       <id property="jobId" column="job_id"/>
+       <result property="type" column="type"/>
+       <result property="remain" column="remain"/>
+       <result property="virtualUse" column="virtual_use"/>
+       <result property="alreadyUse" column="already_use"/>
+    </resultMap>
+ 	
+ 	<select id="selectAllRemainById" resultMap="vacationResult" >
+ 		select * from t_vacation where job_id =#{jobId} 
+ 		   <if test="type != null and type != ''">
+ 		     and type like '${type}%'
+ 		  </if>
+ 		LIMIT #{before},#{after}
+ 	</select>
+ 	
+ 	<select id="count" resultType="int" >
+ 	    select count(*) from t_vacation where job_id =#{jobId}
+ 	      <if test="type != null and type != ''">
+ 		     and type like '${type}%'
+ 		  </if>
+ 	</select>
+ 	
+ 	<select id="selectRemainByVacate" parameterType="Vacate" resultMap="vacationResult">
+ 	    select * from t_vacation WHERE job_id= #{jobId} and type= #{type}
+ 	</select>
+ 	
+ 	<select id="selectRemainByVacation" parameterType="Vacation" resultMap="vacationResult">
+ 	    select * from t_vacation WHERE job_id= #{jobId} and type= #{type}
+ 	</select>
+ 	
+ 	<update id="updateVirtualUse" parameterType="Vacation">
+ 	    update t_vacation set virtual_use = #{virtualUse} where job_id= #{jobId} and type= #{type}
+ 	</update>
+ 	
+ 	<update id="updateVirtualAll" parameterType="Vacation">
+ 	    update t_vacation set virtual_use = #{virtualUse},remain=#{remain},already_use=#{alreadyUse}
+ 	          where job_id= #{jobId} and type= #{type}
+ 	</update>
+ 	
+</mapper>

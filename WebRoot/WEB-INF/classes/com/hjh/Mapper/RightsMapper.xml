@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.hjh.Mapper.RightsMapper">
+ 	
+ 	
+ 	<select id="showRights" resultType="Map">
+		SELECT a.mid,a.menu_name,a.mark,b.menu_name as pare_name
+		FROM t_menu as a
+		INNER JOIN t_menu as b ON a.pare_menu_id=b.mid
+		WHERE 1=1
+		<if test="menuName != null and menuName != ''">
+		    AND a.pare_menu_id=(SELECT mid FROM t_menu WHERE menu_name=#{menuName})
+		</if>
+		ORDER BY mid
+		LIMIT #{before},#{after}
+		
+ 	</select>
+ 	
+ 	<select id="count" resultType="int">
+ 		SELECT COUNT(*) FROM t_menu WHERE pare_menu_id&lt;&gt;0
+		<if test="menuName != null and menuName != ''">
+		    AND pare_menu_id=(SELECT mid FROM t_menu WHERE menu_name=#{menuName})
+		</if>
+ 	</select>
+
+	<!-- 查询不在该权限组的员工 -->
+	<select id="showRightsPeople" resultType="map">
+		SELECT t_personalinfo.job_id as jobId,t_personalinfo.name,department_name as dename,occupation_name as ocname
+		FROM t_personalinfo
+		INNER JOIN t_user ON t_personalinfo.job_id=t_user.job_id AND state='在职'
+		INNER JOIN t_department ON t_personalinfo.department_id=t_department.department_id
+		INNER JOIN t_occupation ON t_personalinfo.occupation_id=t_occupation.occupation_id
+		WHERE t_personalinfo.job_id NOT IN (SELECT job_id FROM t_userrole WHERE role_id=#{id})
+		<if test="jobId != null and jobId != ''">
+		    AND t_personalinfo.job_id like '%${jobId}%'
+		</if>
+		<if test="name != null and name != ''">
+		    AND t_personalinfo.name like '%${name}%'
+		</if>
+		<if test="deName != null and deName != ''">
+		    AND t_personalinfo.department_id=(select department_id FROM t_department WHERE department_name=#{deName})
+		</if>
+		ORDER BY department_name
+		LIMIT #{before},#{after}
+	</select>
+	
+	<!-- 获取不在该权限组的员工的条数 -->
+	<select id="countRightsPeople" resultType="int">
+		SELECT count(*)
+		FROM t_personalinfo
+		INNER JOIN t_user ON t_personalinfo.job_id=t_user.job_id AND state='在职'
+		WHERE t_personalinfo.job_id NOT IN (SELECT job_id FROM t_userrole WHERE role_id=#{id}) AND department_id is not null and occupation_id is not null
+		<if test="jobId != null and jobId != ''">
+		    AND t_personalinfo.job_id like '%${jobId}%'
+		</if>
+		<if test="name != null and name != ''">
+		    AND t_personalinfo.name like '%${name}%'
+		</if>
+		<if test="deName != null and deName != ''">
+		    AND t_personalinfo.department_id=(select department_id FROM t_department WHERE department_name=#{deName})
+		</if>
+	</select>
+	
+	<!-- 向权限组内添加员工 -->
+	<insert id="addRightsPeople">
+		INSERT INTO t_userrole (job_id,role_id) VALUES (#{jobId},#{id})
+	</insert>
+	
+	<!-- 查询该权限组的权限 -->
+	<select id="showGroupsRights" resultType="map">
+		SELECT a.id as menuId,a.menu_name,a.mark,b.menu_name as pare_name
+		FROM t_menu as a
+		INNER JOIN t_menu as b ON a.pare_menu_id=b.mid
+		INNER JOIN t_rolemenu ON a.id=t_rolemenu.menu_id AND t_rolemenu.role_id=#{id}
+		WHERE a.pare_menu_id&lt;&gt;0
+		ORDER BY b.menu_name
+		LIMIT #{before},#{after}
+	</select>
+	
+	<!-- 查询该权限组的权限的条数 -->
+	<select id="countGroupsRights" resultType="int">
+		SELECT COUNT(*) FROM t_menu,t_rolemenu WHERE t_menu.id=t_rolemenu.menu_id AND t_rolemenu.role_id=#{id} AND pare_menu_id&lt;&gt;0
+	</select>
+	
+	<!-- 查询该权限组中没有的权限 -->
+	<select id="showGroupsLackRights" resultType="map">
+		SELECT a.id as menuId,a.mid,a.menu_name,a.mark,b.menu_name as pare_name 
+		FROM t_menu as a
+		INNER JOIN t_menu as b ON a.pare_menu_id=b.mid
+		WHERE a.id NOT IN (SELECT menu_id FROM t_rolemenu WHERE role_id=#{id})
+		<if test="menuName != null and menuName != ''">
+		    AND a.pare_menu_id=(SELECT mid FROM t_menu WHERE menu_name=#{menuName})
+		</if>
+		
+		LIMIT #{before},#{after}
+	</select>
+	
+	<!-- 查询该权限组中没有的权限的条数 -->
+	<select id="countGroupsLackRights" resultType="int">
+		SELECT COUNT(*)
+		FROM t_menu as a
+		WHERE a.id NOT IN (SELECT menu_id FROM t_rolemenu WHERE role_id=#{id}) AND pare_menu_id&lt;&gt;0
+		<if test="menuName != null and menuName != ''">
+		    AND a.pare_menu_id=(SELECT mid FROM t_menu WHERE menu_name=#{menuName})
+		</if>
+	</select>
+	
+	<!-- 向权限组中添加权限 -->
+	<insert id="addGroupsLackRights">
+		INSERT INTO t_rolemenu (role_id,menu_id) VALUES (#{id},#{menuId})
+	</insert>
+	
+	<!-- 删除权限组中的权限 -->
+	<delete id="deleteGroupsRights">
+		DELETE FROM t_rolemenu WHERE role_id=#{id} AND menu_id=#{menuId}
+	</delete>
+	
+	<!-- 查询权限组是否已有该权限 -->
+	<select id="selectGroupsRights" resultType="Rights">
+		select * FROM t_rolemenu WHERE role_id=#{roleId} AND menu_id=#{menuId}
+	</select>
+</mapper>
+ 

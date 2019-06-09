@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+ <mapper namespace="com.hjh.Mapper.SalaryAdjustMapper">
+  
+    <resultMap type="SalaryAdjust" id="salaryAdjustResult">
+       <id property="applyId" column="apply_id"/>
+       <result property="salaryadjustType" column="salaryadjust_type"/>
+       <result property="salaryadjustMoneny" column="salaryadjust_money"/>
+       <association property="apply" javaType="Apply" >
+          <id property="id" column="id"/>
+          <result property="writeId" column="write_id"/>
+          <result property="passiveId" column="passive_id"/>
+          <result property="reason" column="reason"/>
+          <result property="submitDate" column="submit_date"/>
+          <result property="approvalDate" column="approval_date"/>
+          <result property="state" column="state"/>
+          <association property="applytype" javaType="Applytype" >
+            <id property="applytypeId" column="applytype_id"/> 
+            <result property="applytypeName" column="applytype_name"/>
+          </association>
+       </association>
+    </resultMap>
+    
+    
+    <insert id="insertSalaryAdjust" parameterType="SalaryAdjust">       
+       insert into t_salaryadjust (apply_id,salaryadjust_type,salaryadjust_money) 
+             values(#{applyId},#{salaryadjustType},#{salaryadjustMoneny});
+    </insert>
+    
+    <select id="selectAllSalaryAdjustByWriteId"  resultType="Map">
+      select a.*,s.*,t.applytype_name,p1.name as passiveName,d.department_name
+           from t_salaryadjust as s, t_apply as a, t_applytype as t, t_department as d,
+                t_personalinfo as p1
+               where s.apply_id=a.id
+                     and a.apply_typeid=t.applytype_id 
+                     and a.passive_id=p1.job_id 
+                     and p1.department_id=d.department_id
+                     and a.write_id=#{jobId}
+                    <if test="salaryadjust_type != null and salaryadjust_type != ''">
+ 		                 and salaryadjust_type like '${salaryadjust_type}%'
+ 		            </if>
+ 		            <if test="state != null and state != ''">
+ 		                and state like '${state}%'
+ 		            </if>
+ 		            <if test="department_id != null and department_id != ''">
+ 		                and p1.department_id like '${department_id}%'
+ 		            </if>
+                 LIMIT #{before},#{after}
+    </select>
+ 	
+ 	<select id="countByWriteId" resultType="int">
+ 	    select count(*) 
+ 	        from t_salaryadjust as s, t_apply as a, t_applytype as t, t_department as d,
+                t_personalinfo as p1
+               where s.apply_id=a.id 
+                     and a.apply_typeid=t.applytype_id 
+                     and a.passive_id=p1.job_id 
+                     and p1.department_id=d.department_id
+                     and a.write_id=#{jobId}
+                     <if test="salaryadjust_type != null and salaryadjust_type != ''">
+ 		                 and salaryadjust_type like '${salaryadjust_type}%'
+ 		            </if>
+ 		            <if test="state != null and state != ''">
+ 		                and state like '${state}%'
+ 		            </if>
+ 		            <if test="department_id != null and department_id != ''">
+ 		                and p1.department_id like '${department_id}%'
+ 		            </if>
+ 	</select>
+ 	
+ 	<select id="selectSalaryAdjustByApplyId" parameterType="int" resultMap="salaryAdjustResult">
+ 	    select * from t_salaryadjust as s,t_apply as a 
+ 	             where s.apply_id =#{applyId} and s.apply_id=a.id
+ 	</select>
+ 	
+ 	<select id="selectIfRepeat" resultType="int" parameterType="SalaryAdjust">
+ 	    select count(*) from t_salaryadjust as s,t_apply as a 
+ 	        where s.apply_id=a.id 
+ 	              and s.salaryadjust_money=#{salaryadjustMoneny}
+ 	              and s.salaryadjust_type=#{salaryadjustType}
+ 	              and a.write_id=#{apply.writeId} and a.passive_id=#{apply.passiveId}
+ 	              and a.submit_date=#{apply.submitDate} and a.reason=#{apply.reason}
+ 	</select>
+ 	
+ 	<select id="selectSalaryAdjustToLeader"  resultType="Map">
+      select a.*,s.*,t.applytype_name,p1.name as passiveName, p2.name as writeName ,d.department_name
+           from  t_salaryadjust as s, t_apply as a, t_applytype as t, t_department as d,t_occupation as o,
+                 t_personalinfo as p1,t_personalinfo as p2
+                 where s.apply_id=a.id
+                     and a.apply_typeid=t.applytype_id 
+                     and a.passive_id=p1.job_id 
+                     and a.write_id=p2.job_id 
+                     and p1.department_id=d.department_id 
+                     and p1.occupation_id=o.occupation_id
+                     and p2.occupation_id=#{writeOccupationId}
+                     <if test="salaryadjust_type != null and salaryadjust_type != ''">
+ 		                 and salaryadjust_type like '${salaryadjust_type}%'
+ 		             </if>
+ 		             <if test="state != null and state != ''">
+ 		                 and state like '${state}%'
+ 		             </if>
+ 		             <if test="department_id != null and department_id != ''">
+ 		                 and p1.department_id like '${department_id}%'
+ 		             </if>
+                 LIMIT #{before},#{after}
+    </select>
+ 	
+ 	<select id="countToLeader" resultType="int">
+ 	    select count(*)
+           from  t_salaryadjust as s, t_apply as a, t_applytype as t, t_department as d,t_occupation as o,
+                 t_personalinfo as p1,t_personalinfo as p2
+                 where s.apply_id=a.id
+                     and a.apply_typeid=t.applytype_id 
+                     and a.passive_id=p1.job_id 
+                     and a.write_id=p2.job_id 
+                     and p1.department_id=d.department_id 
+                     and p1.occupation_id=o.occupation_id
+                     and p2.occupation_id=#{writeOccupationId}
+                     <if test="salaryadjust_type != null and salaryadjust_type != ''">
+ 		                 and salaryadjust_type like '${salaryadjust_type}%'
+ 		             </if>
+ 		             <if test="state != null and state != ''">
+ 		                 and state like '${state}%'
+ 		             </if>
+ 		             <if test="department_id != null and department_id != ''">
+ 		                 and p1.department_id like '${department_id}%'
+ 		             </if>
+ 	</select>
+ 	
+ 	<select id="selectAllSalaryAdjustByJobId"  resultType="Map">
+      select a.*,s.*,t.applytype_name,p2.name as writeName
+           from t_salaryadjust as s, t_apply as a, t_applytype as t,t_personalinfo as p2
+               where s.apply_id=a.id
+                     and a.apply_typeid=t.applytype_id 
+                     and a.write_id=p2.job_id 
+                     and a.passive_id=#{jobId}
+ 		            <if test="state != null and state != ''">
+ 		                and state like '${state}%'
+ 		            </if>
+                    LIMIT #{before},#{after}
+    </select>
+ 	
+ 	<select id="countByJobId" resultType="int">
+ 	    select count(*) 
+ 	        from t_salaryadjust as s, t_apply as a, t_applytype as t,t_personalinfo as p2
+               where s.apply_id=a.id
+                     and a.apply_typeid=t.applytype_id 
+                     and a.write_id=p2.job_id 
+                     and a.passive_id=#{jobId}
+ 		            <if test="state != null and state != ''">
+ 		                and state like '${state}%'
+ 		            </if>
+ 	</select>
+    
+</mapper>

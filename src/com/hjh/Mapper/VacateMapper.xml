@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+  <mapper namespace="com.hjh.Mapper.VacateMapper">
+  
+    <resultMap type="Vacate" id="vacateResult">
+         <id property="id" column="id"/>
+         <result property="jobId" column="job_id"/>
+         <result property="startDate" column="start_date"/>
+         <result property="finishDate" column="finish_date"/>
+         <result property="type" column="type"/>
+         <result property="daySum" column="day_sum"/>
+         <result property="submitDate" column="submit_date"/>
+         <result property="cancelDate" column="cancel_date"/>
+         <result property="reason" column="reason"/>
+         <result property="state" column="state"/>
+         <result property="approvalDate" column="approval_date"/>
+         <result property="discountDay" column="discount_day"/>
+    </resultMap>
+    
+    <insert id="insertVacate" parameterType="Vacate">
+       insert into t_vacate(job_id,start_date,finish_date,type,day_sum,submit_date,reason,state,discount_day) 
+             values(#{jobId},#{startDate},#{finishDate},#{type},#{daySum},#{submitDate},#{reason},#{state},#{discountDay})
+    </insert>
+ 	
+ 	<select id="selectAllVacateApplyByJobId" resultMap="vacateResult">
+ 		select * from t_vacate where job_id =#{jobId} 
+ 		<if test="state != null and state != ''">
+ 		     and state like '${state}%'
+ 		</if>
+ 		<if test="type != null and type != ''">
+ 		     and type like '${type}%'
+ 		</if>
+ 		LIMIT #{before},#{after}
+ 	</select>
+ 	
+ 	<select id="count" resultType="int">
+ 	    select count(*) from t_vacate where job_id =#{jobId}
+ 	    <if test="state != null and state != ''">
+ 		     and state like '${state}%'
+ 		</if>
+ 		<if test="type != null and type != ''">
+ 		     and type like '${type}%'
+ 		</if>
+ 	</select>
+ 	
+ 	<select id="selectIfRepeat" resultType="int" parameterType="Vacate">
+ 	    select count(*) from t_vacate
+ 	        where job_id =#{jobId} and start_date=#{startDate}
+ 	          and finish_date=#{finishDate} and type=#{type}
+ 	</select>
+ 	
+ 	<select id="selectVacateToManager" resultType="Map">
+      select v.*, p.name, d.department_name ,o.occupation_name
+           from t_vacate as v, t_department as d, t_personalinfo as p ,t_occupation as o
+               where v.job_id=p.job_id and p.department_id=d.department_id 
+                     and d.manager_id= #{jobId} and p.occupation_id=o.occupation_id
+                     and p.occupation_id=1
+                     <if test="department_id != null and department_id != ''">
+ 		                 and p.department_id like '${department_id}%'
+ 		             </if>
+                     <if test="state != null and state != ''">
+ 		                 and state like '${state}%'
+ 		             </if>
+ 		             <if test="type != null and type != ''">
+ 		                 and type like '${type}%'
+ 		             </if>
+                 LIMIT #{before},#{after}
+    </select>
+ 	
+ 	<select id="countToManager" resultType="int">
+ 	    select count(*)
+           from t_vacate as v, t_department as d,t_personalinfo as p ,t_occupation as o
+               where v.job_id=p.job_id and p.department_id=d.department_id
+                     and d.manager_id= #{jobId} and p.occupation_id=o.occupation_id
+                     and p.occupation_id=1
+                     <if test="department_id != null and department_id != ''">
+ 		                 and p.department_id like '${department_id}%'
+ 		             </if>
+                     <if test="state != null and state != ''">
+ 		                 and state like '${state}%'
+ 		             </if>
+ 		             <if test="type != null and type != ''">
+ 		                 and type like '${type}%'
+ 		             </if>
+ 	</select>
+ 	
+ 	<select id="selectVacateToTotalManager"  resultType="Map">
+      select v.*, p.name, d.department_name,o.occupation_name
+           from t_vacate as v, t_department as d,t_personalinfo as p,t_occupation as o
+               where v.job_id=p.job_id and p.department_id=d.department_id 
+                    and p.occupation_id=2 and p.occupation_id=o.occupation_id
+                     <if test="department_id != null and department_id != ''">
+ 		                 and p.department_id like '${department_id}%'
+ 		             </if>
+                     <if test="state != null and state != ''">
+ 		                 and state like '${state}%'
+ 		             </if>
+ 		             <if test="type != null and type != ''">
+ 		                 and type like '${type}%'
+ 		             </if>
+                 LIMIT #{before},#{after}
+    </select>
+ 	
+ 	<select id="countToTotalManager" resultType="int">
+ 	    select count(*)
+           from t_vacate as v, t_department as d,t_personalinfo as p ,t_occupation as o
+               where v.job_id=p.job_id and p.department_id=d.department_id 
+                    and p.occupation_id=2 and p.occupation_id=o.occupation_id
+                     <if test="department_id != null and department_id != ''">
+ 		                 and p.department_id like '${department_id}%'
+ 		             </if>
+                     <if test="state != null and state != ''">
+ 		                 and state like '${state}%'
+ 		             </if>
+ 		             <if test="type != null and type != ''">
+ 		                 and type like '${type}%'
+ 		             </if>
+ 	</select>
+ 	
+ 	<select id="selectVacateToBoard" resultType="Map">
+ 	  select v.*, p.name, d.department_name,o.occupation_name,o.occupation_name
+           from t_vacate as v, t_department as d,t_personalinfo as p ,t_occupation as o
+               where v.job_id=p.job_id and p.department_id=d.department_id 
+                   and p.occupation_id=3 and p.occupation_id=o.occupation_id
+                     <if test="department_id != null and department_id != ''">
+ 		                 and p.department_id like '${department_id}%'
+ 		             </if>
+                     <if test="state != null and state != ''">
+ 		                 and state like '${state}%'
+ 		             </if>
+ 		             <if test="type != null and type != ''">
+ 		                 and type like '${type}%'
+ 		             </if>
+                 LIMIT #{before},#{after}
+ 	</select>
+ 	
+ 	<select id="countToBoard" resultType="int">
+ 	    select count(*) 
+ 	        from t_vacate as v, t_department as d,t_personalinfo as p ,t_occupation as o
+               where v.job_id=p.job_id and p.department_id=d.department_id 
+                   and p.occupation_id=3 and p.occupation_id=o.occupation_id
+                     <if test="department_id != null and department_id != ''">
+ 		                 and p.department_id like '${department_id}%'
+ 		             </if>
+                     <if test="state != null and state != ''">
+ 		                 and state like '${state}%'
+ 		             </if>
+ 		             <if test="type != null and type != ''">
+ 		                 and type like '${type}%'
+ 		             </if>
+ 	</select>
+ 	
+    <update id="updateVacate" parameterType="Vacate">
+ 	    update t_vacate set approval_date=#{approvalDate},state=#{state} where id =#{id}
+ 	</update>
+ 	
+ 	<select id="selectVacateById" parameterType="int" resultMap="vacateResult">
+ 	    select * from t_vacate where id =#{id}
+ 	</select>
+ 	
+ 	<select id="selectPassVacateByJobId" resultMap="vacateResult" parameterType="int">
+ 		select * from t_vacate where job_id =#{jobId} and state='同意'
+ 		   LIMIT #{before},#{after}
+ 	</select>
+ 	
+ 	<select id="countPassVacateByJobId" resultType="int">
+ 	    select count(*) 
+ 	        from t_vacate where job_id =#{jobId} and state='同意'
+ 	</select>
+ 	
+ 	 <update id="cancelVacateApply" parameterType="Vacate">
+ 	    update t_vacate set cancel_date=#{cancelDate} where id =#{id}
+ 	</update>
+ 	
+ 	<select id="countVacateSumBySameDate" resultMap="vacateResult">
+ 	  select job_id,sum(discount_day)as day_sum from t_vacate 
+           where start_date like '${year}-${month}%' and finish_date like '${year}-${month}%' 
+                 and state='同意'
+                     group by job_id; 
+ 	</select>
+ 	
+ 	<select id="countVacateSumByStartIsMonth" resultMap="vacateResult">
+ 	  select job_id,sum(day_sum)as day_sum,start_date from t_vacate 
+           where start_date like '${year}-${month}%' and finish_date not like '${year}-${month}%' 
+                 and state='同意'
+                     group by job_id; 
+ 	</select>
+ 	
+ 	<select id="countVacateSumByFinishIsMonth" resultMap="vacateResult">
+ 	  select job_id,sum(day_sum)as day_sum,finish_date from t_vacate 
+           where start_date not like '${year}-${month}%' and finish_date like '${year}-${month}%' 
+                 and state='同意'
+                     group by job_id; 
+ 	</select>
+ 	
+ 	<select id="selectVacateStartAndFinishByJobId" resultMap="vacateResult">
+ 	  select start_date,finish_date from t_vacate 
+ 	       where job_id =#{jobId} and state !='不同意'
+ 	</select>
+ 	
+  </mapper>
