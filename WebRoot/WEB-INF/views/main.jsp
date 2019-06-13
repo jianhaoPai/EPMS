@@ -102,7 +102,7 @@ $(function(){
                             menu+=            "<a href='"+data[j].menuPath+"' target='right'>"+data[j].menuName+"</a>"
                             menu+=        "</dd>"
                             menu+=    "</dl>"
-                            console.log(data[j].menuPath);
+                           
                         }
                     }
                 }

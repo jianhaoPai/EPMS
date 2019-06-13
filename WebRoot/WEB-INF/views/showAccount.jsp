@@ -34,8 +34,10 @@
       <div class="layui-inline">
         <select name="departmentName" id="departmentNameReload">
           <option value="">请选择部门</option>
-          <option value="开发部">开发部</option>
-          <option value="产品部">产品部</option>
+          <option value="人事部">人事部</option>
+          <option value="财务部">财务部</option>
+          <option value="行政部">行政部</option>
+          <option value="技术部">技术部</option>
           <option value="管理层">管理层</option>
         </select>
       </div>
@@ -50,12 +52,7 @@
 <div class="layui-row" id="addAccount" style="display:none;">
 	<div class="layui-col-md10">
 		<form  class="layui-form" id="addAccountForm" method="post">
-			<div class="layui-form-item"><br>
-				<label class="layui-form-label">工号：</label>
-				<div class="layui-input-block">
-					<input type="text" lay-verify="jobId" id="jobId" name="jobId" class="layui-input"/>
-				</div>
-			</div>
+			
 			<div class="layui-form-item">
 				<label class="layui-form-label">姓名：</label>
 				<div class="layui-input-block">
@@ -66,8 +63,24 @@
 		        <label class="layui-form-label">部门：</label>
 		        <div class="layui-input-block">
 		          <select id="denameId" lay-verify="required" lay-filter="denameType">
-		            <option value="1">开发部</option>
-		            <option value="2">产品部</option>
+		            <option value="11">人事部</option>
+		            <option value="22">财务部</option>
+		            <option value="33">行政部</option>
+		            <option value="44">技术部</option>
+		            <option value="66">管理层</option>
+		          </select>
+		        </div>
+		    </div>
+		    <div class="layui-form-item">
+		        <label class="layui-form-label">职位：</label>
+		        <div class="layui-input-block">
+		          <select id="ocnameId" lay-verify="required" lay-filter="denameType">
+		            <option value="0">实习生</option>
+		            <option value="1">员工</option>
+		            <option value="2">部门经理</option>
+		            <option value="3">总经理</option>
+		            <option value="4">董事</option>
+		            <option value="5">管理员</option>
 		          </select>
 		        </div>
 		    </div>
@@ -160,8 +173,8 @@ layui.use(['jquery','table','layer','form'],function(){
           
           form.verify({
           	jobId:[
-          		/^[\S]{3}$/
-          		,'工号必须为3位'
+          		/^[\S]{6}$/
+          		,'工号必须为6位'
           	]
           	,password:[
           		/^[\S]{6,12}$/
@@ -170,18 +183,18 @@ layui.use(['jquery','table','layer','form'],function(){
           });
           
           $(document).on('click','#submitAccount',function(){
-			    var jobId=document.getElementById("jobId").value;
 			    var name=document.getElementById("name").value;
 			    var denameId=document.getElementById("denameId").value;
+			    var ocnameId=document.getElementById("ocnameId").value;
 				var password=document.getElementById("password").value;
 				
 				$.ajax({
 					url:'addAccount',
 					data:{
-						jobId:jobId,
 						name:name,
 						denameId:denameId,
-						password:password
+						password:password,
+						ocnameId:ocnameId
 					},
 					async:true,//是否为异步请求
 					cache:false,//是否缓存结果
@@ -189,11 +202,6 @@ layui.use(['jquery','table','layer','form'],function(){
 					dataType:'json',
 					success:function(result){
 						if(result.status){
-							layer.alert(result.msg,function(){
-								window.location.reload();//刷新父页面
-								parent.layer.close();//关闭当前弹窗
-							});	
-						}else{
 							layer.alert(result.msg,function(){
 								window.location.reload();//刷新父页面
 								parent.layer.close();//关闭当前弹窗
@@ -217,14 +225,17 @@ layui.use(['jquery','table','layer','form'],function(){
 		            type:2,
 		            title:"修改账号",
 		            skin:"myclass",
-		            area:["38%","55%"],
-		            content:["requestPage?page=editAccount","no"],
+		            area:["38%","70%"],
+		            content:["requestPage?page=editAccount"],
 		            success:function(layero,index){
 		                var body = layer.getChildFrame('body', index);  
                         var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();  
                         var inputList = body.find("input");//获取到子窗口的所有的input标签
+                        var selectList = body.find("select");
                         $(inputList[0]).val(data.jobId); //遍历子窗口的input标签，将之前数组中的值一次放入显示
                         $(inputList[1]).val(data.password);
+                        $(selectList[0]).val(data.dename);
+                        $(selectList[1]).val(data.ocname);
 		            },
 		        });
 		        /*渲染表单*/

@@ -12,7 +12,7 @@
 	<!-- 使用注解驱动 -->
 	<mvc:annotation-driven />
 	<!-- 定义扫描装载的包 -->
-	<context:component-scan base-package="com.hjh.Controller" >
+	<context:component-scan base-package="com.epms.Controller" >
 		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
 		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service" />
 	</context:component-scan>
@@ -31,14 +31,14 @@
 			<mvc:exclude-mapping path="/login"/>
 			<mvc:exclude-mapping path="/resetPassword.jsp"/>
 			<mvc:exclude-mapping path="/resetPassword"/>
-			<bean class="com.hjh.Interceptor.LoginInterceptor"></bean>
+			<bean class="com.epms.Interceptor.LoginInterceptor"></bean>
 		</mvc:interceptor>
 	</mvc:interceptors>
 	
 	<bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">    
         <property name="converters">    
             <list>    
-                <bean class="com.hjh.Conventer.DateConverter" />    
+                <bean class="com.epms.Conventer.DateConverter" />    
             </list>    
         </property>    
     </bean> 

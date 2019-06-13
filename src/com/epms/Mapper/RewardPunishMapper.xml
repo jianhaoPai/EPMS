@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.epms.Mapper.RewardPunishMapper">
+ 	
+ 	<select id="showRewardPunish" resultType="map">
+ 		SELECT r.job_id,i.name as name1,type,content,reason,set_date as setDate,j.name as name2,k.name as name3,approve_date as approveDate,state
+		FROM t_rewardpunish as r
+		INNER JOIN t_personalinfo as i ON r.job_id=i.job_id
+		INNER JOIN t_personalinfo as j ON r.apply_id=j.job_id
+		INNER JOIN t_personalinfo as k ON r.approve_id=k.job_id
+		WHERE  r.job_id=#{jobId} AND r.state='已通过' LIMIT #{before},#{after}
+ 	</select>
+ 	
+ 	<select id="countshowRewardPunish" resultType="int">
+ 		SELECT COUNT(*)
+		FROM t_rewardpunish as r,t_personalinfo as i
+		WHERE i.job_id=r.job_id and r.job_id=#{jobId}
+ 	</select>
+ 	
+ 	<!-- 查询工号、姓名是否正确且在该申请人部门内 -->
+ 	<select id="selectUserById" resultType="PersonalInfo">
+ 		SELECT * FROM t_personalinfo WHERE job_id=#{jobId} and job_id&lt;&gt;#{applyId} and name=#{name} AND department_id=(SELECT department_id FROM t_department WHERE manager_id=#{applyId})
+ 	</select>
+ 	
+ 	<!-- 添加员工的奖惩 -->
+ 	<insert id="addStaffRewardPunish">
+ 		INSERT INTO t_rewardpunish (job_id,type,content,reason,set_date,apply_id,state) VALUES (#{jobId},#{type},#{content},#{reason},#{setDate},#{applyId},'待审核');
+ 	</insert>
+ 	
+ 	<!-- 查询需要审核的申请员工奖惩 -->
+ 	<select id="showVerifyRewardPunish" resultType="map">
+ 		SELECT r.job_id as jobId,p.name,type,content,reason,set_date as setDate,i.name as applyName,state
+		FROM t_rewardpunish as r
+		INNER JOIN t_personalinfo as p ON  r.job_id=p.job_id
+		INNER JOIN t_personalinfo as i ON i.job_id=r.apply_id
+		WHERE r.state='待审核' LIMIT #{before},#{after}
+ 	</select>
+ 	
+ 	<!-- 获取需要审核的申请员工奖惩的条数 -->
+ 	<select id="countVerifyRewardPunish" resultType="int">
+ 		SELECT COUNT(*)
+ 		FROM t_rewardpunish
+ 		WHERE state='待审核'
+ 	</select>
+ 	
+ 	<!-- 审核申请员工奖惩通过 -->
+ 	<update id="verifyRewardPunishYes">
+ 		UPDATE t_rewardpunish SET approve_id=#{approveId},approve_date=#{approveDate},state='已通过' WHERE job_id=#{jobId} AND reason=#{reason} AND set_date=#{setDate};
+ 	</update>
+ 	
+ 	<!-- 审核申请员工奖惩未通过 -->
+ 	<update id="verifyRewardPunishNo">
+ 		UPDATE t_rewardpunish SET approve_id=#{approveId},approve_date=#{approveDate},state='未通过' WHERE job_id=#{jobId} AND reason=#{reason} AND set_date=#{setDate};
+ 	</update>
+ 	
+ 	<!-- 查询申请员工奖惩的记录 -->
+ 	<select id="showApplyRewardPunishRecord" resultType="map">
+ 		SELECT r.job_id,i.name as name1,type,content,reason,set_date as setDate,j.name as name2,state
+		FROM t_rewardpunish as r
+		INNER JOIN t_personalinfo as i ON r.job_id=i.job_id
+		INNER JOIN t_personalinfo as j ON r.apply_id=j.job_id
+		WHERE  r.apply_id=#{jobId}  LIMIT #{before},#{after}
+ 	</select>
+ 	
+ 	<!-- 查询申请员工奖惩的记录条数 -->
+ 	<select id="countApplyRewardPunishRecord" resultType="int">
+ 		SELECT COUNT(*)
+		FROM t_rewardpunish as r
+		WHERE r.apply_id=#{jobId} 
+ 	</select>
+ 	
+ 	<!-- 查询审核员工奖惩的记录 -->
+ 	<select id="showVerifyRewardPunishRecord" resultType="map">
+ 		SELECT r.job_id,i.name as name1,type,content,reason,set_date as setDate,j.name as name2,k.name as name3,approve_date as approveDate,state
+		FROM t_rewardpunish as r
+		INNER JOIN t_personalinfo as i ON r.job_id=i.job_id
+		INNER JOIN t_personalinfo as j ON r.apply_id=j.job_id
+		INNER JOIN t_personalinfo as k ON r.approve_id=k.job_id
+		WHERE  r.approve_id=#{jobId} LIMIT #{before},#{after}
+ 	</select>
+ 	
+ 	<!-- 查询审核员工奖惩的记录条数 -->
+ 	<select id="countVerifyRewardPunishRecord" resultType="int">
+ 		SELECT COUNT(*)
+		FROM t_rewardpunish as r
+		WHERE r.approve_id=#{jobId}
+ 	</select>
+</mapper>
+ 

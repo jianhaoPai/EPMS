@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.epms.Mapper.UserMapper">
+ 	
+ 	
+ 	<select id="findAllUser" resultType="Map">
+ 		SELECT t_personalinfo.job_id as jobId,t_personalinfo.name,t_department.department_name as dename,t_occupation.occupation_name as ocname,t_user.password,t_user.state 
+ 		FROM t_user,t_personalinfo 
+ 		LEFT JOIN t_department ON t_personalinfo.department_id=t_department.department_id 
+ 		LEFT JOIN t_occupation ON t_occupation.occupation_id=t_personalinfo.occupation_id 
+ 		WHERE t_personalinfo.job_id=t_user.job_id 
+ 		<if test="jobId != null and jobId != ''">
+		    AND t_personalinfo.job_id like '%${jobId}%'
+		</if>
+		<if test="name != null and name != ''">
+		    AND t_personalinfo.name like '%${name}%'
+		</if>
+		<if test="deName != null and deName != ''">
+		    AND t_personalinfo.department_id=(select department_id FROM t_department WHERE department_name=#{deName})
+		</if>
+		order by  jobId, dename
+ 		LIMIT #{before},#{after}
+ 	</select>
+ 	
+ 	<select id="count" resultType="int">
+ 	    select count(*) 
+ 	    from t_user,t_personalinfo,t_department 
+ 	    WHERE t_user.job_id=t_personalinfo.job_id and t_department.department_id=t_personalinfo.department_id
+ 	    <if test="jobId != null and jobId != ''">
+		    AND t_personalinfo.job_id like '%${jobId}%'
+		</if>
+		<if test="name != null and name != ''">
+		    AND t_personalinfo.name like '%${name}%'
+		</if>
+		<if test="deName != null and deName != ''">
+		    AND t_personalinfo.department_id=(select department_id FROM t_department WHERE department_name=#{deName})
+		</if>
+ 	</select>
+ 
+	<select id="findByJobId" resultType="User">
+	    SELECT job_id as jobId,password,state FROM t_user WHERE job_id=#{jobId}
+	</select>
+	
+	<select id="findAccountByJobId" resultType="User">
+		SELECT * FROM t_user WHERE job_id=#{jobId}
+	</select>
+	
+	<select id="findNameByJobId" resultType="String">
+		SELECT name FROM t_personalinfo WHERE job_id=#{jobId}
+	</select>
+	
+	<update id="editAccount">
+		UPDATE t_user SET password=#{password},state=#{state} WHERE job_id=#{jobId}
+	</update>
+	
+	<update id="updatePersonalinfo">
+		UPDATE t_personalinfo SET department_id=#{denameId},occupation_id=#{ocnameId} WHERE job_id=#{jobId}
+	</update>
+	
+	<insert id="addUser" >
+	    INSERT INTO t_user (job_id,password) VALUES (#{jobId},#{password})
+	</insert>
+	
+	<insert id="addPersonalInfo">
+		INSERT INTO t_personalinfo (job_id,name,department_id,occupation_id) VALUES (#{jobId},#{name},#{denameId},#{ocnameId})
+	</insert>
+	
+	<select id="findGeneralManager" resultType="User">
+		SELECT job_id as jobId FROM t_personalinfo WHERE occupation_id=(SELECT occupation_id FROM t_occupation WHERE occupation_name='总经理')
+	</select>
+	
+	<select id="findManager" resultType="User">
+		SELECT manager_id as jobId FROM t_department WHERE department_name&lt;&gt;'管理层'
+	</select>
+	
+	<select id="findStaff" resultType="User">
+		SELECT job_id as jobId FROM t_personalinfo WHERE department_id=(SELECT department_id FROM t_department WHERE manager_id=#{MjobId}) AND job_id&lt;&gt;#{MjobId}
+	</select>
+	
+	<!-- 取出该员工的所有同事的工号 -->
+	<select id="findColleague" resultType="User">
+		SELECT job_id as jobId FROM t_personalinfo 
+		WHERE department_id=(SELECT department_id FROM t_personalinfo WHERE job_id=#{SjobId}) 
+		AND job_id&lt;&gt;#{SjobId} 
+		AND job_id NOT IN (SELECT manager_id FROM t_department)
+	</select>
+	
+	<!-- 通过邮箱获取密码 -->
+	<select id="getUserByEmail" resultType="User">
+		SELECT password FROM t_user,t_personalinfo WHERE t_user.job_id=t_personalinfo.job_id AND email=#{email}
+	</select>
+	
+	<update id="updateState">
+		UPDATE t_user SET state=#{state} WHERE job_id=#{jobId}
+	</update>
+	
+	<select id="selectLastJobId" resultType="Integer">
+		SELECT job_id as jobId FROM t_personalinfo WHERE job_id=(SELECT MAX(job_id) FROM t_personalinfo WHERE department_id=#{denameId});
+	</select>
+</mapper>
+ 

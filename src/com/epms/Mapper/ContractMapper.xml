@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+    <mapper namespace="com.epms.Mapper.ContractMapper">
+
+    <resultMap type="Contract" id="contractResult">
+     <id property="jobId" column="job_id"/>
+     <result property="startDate" column="start_date"/>
+     <result property="finishDate" column="finish_date"/>
+     <result property="contractType" column="contract_type"/>
+   </resultMap>
+ 	
+ 	<select id="selectContractByDate" parameterType="Contract" resultMap="contractResult">
+ 	    select * from t_contract WHERE start_date like '${startDate}%' and job_id= #{jobId} 
+ 	</select>
+ 	
+ 	<select id="selectContractById" resultMap="contractResult"  parameterType="int">
+ 		select * from t_contract WHERE job_id= #{jobId} 
+ 		  <if test="contractType != null and contractType != ''">
+ 		     and contract_type like '${contractType}%'
+ 		  </if>
+ 		  <if test="startDate != null and startDate != ''">
+ 		     and start_date like '${startDate}%'
+ 		  </if>
+ 		  LIMIT #{before},#{after}
+ 	</select>
+ 	
+ 	<select id="count" resultType="int" >
+ 	    select count(*) from t_contract where job_id =#{jobId}
+ 	      <if test="contractType != null and contractType != ''">
+ 		     and contract_type like '${contractType}%'
+ 		  </if>
+ 		  <if test="startDate != null and startDate != ''">
+ 		     and start_date like '${startDate}%'
+ 		  </if>
+ 	</select>
+ 	
+</mapper>

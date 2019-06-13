@@ -50,8 +50,24 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		        <label class="layui-form-label">部门：</label>
 		        <div class="layui-input-block">
 		          <select id="denameId" lay-verify="required" lay-filter="denameType">
-		            <option value="1">开发部</option>
-		            <option value="2">产品部</option>
+		            <option value="11">人事部</option>
+		            <option value="22">财务部</option>
+		            <option value="33">行政部</option>
+		            <option value="44">技术部</option>
+		            <option value="66">管理层</option>
+		          </select>
+		        </div>
+		    </div>
+		    <div class="layui-form-item">
+		        <label class="layui-form-label">职位：</label>
+		        <div class="layui-input-block">
+		          <select id="ocnameId" lay-verify="required" >
+		            <option value="0">实习生</option>
+		            <option value="1">员工</option>
+		            <option value="2">部门经理</option>
+		            <option value="3">总经理</option>
+		            <option value="4">董事</option>
+		            <option value="5">管理员</option>         
 		          </select>
 		        </div>
 		    </div>
@@ -94,13 +110,15 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	    var password=document.getElementById("password").value;
 	    var state=document.getElementById("state").value;
 	    var denameId=document.getElementById("denameId").value;
+	    var ocnameId=document.getElementById("ocnameId").value;
         $.ajax({
 		    url:'editAccount',
 			data:{
 				jobId:jobId,
 				password:password,
 				state:state,
-				denameId:denameId
+				denameId:denameId,
+				ocnameId:ocnameId
 			},
 			async:true,//是否为异步请求
 			cache:false,//是否缓存结果

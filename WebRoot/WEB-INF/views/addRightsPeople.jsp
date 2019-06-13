@@ -38,8 +38,10 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
       <div class="layui-inline">
         <select name="dename" id="denameReload">
           <option value="">请选择部门</option>
-          <option value="开发部">开发部</option>
-          <option value="产品部">产品部</option>
+          <option value="人事部">人事部</option>
+          <option value="财务部">财务部</option>
+          <option value="行政部">行政部</option>
+          <option value="技术部">技术部</option>
           <option value="管理层">管理层</option>
         </select>
       </div>

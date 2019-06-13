@@ -3,4 +3,5 @@ encoding//WebRoot/WEB-INF/views/addRightsPeople.jsp=UTF-8
 encoding//WebRoot/WEB-INF/views/homePage.jsp=UTF-8
 encoding//WebRoot/WEB-INF/views/showPerform.jsp=UTF-8
 encoding//WebRoot/index.jsp=UTF-8
-encoding//src/com/hjh/Controller/PerformScoreController.java=UTF-8
+encoding//src/com/epms/Controller/PerformScoreController.java=UTF-8
+encoding//src/com/epms/Controller/WageController.java=UTF-8
