@@ -6,7 +6,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>所有反馈信息记录</title>
+<title>员工全部反馈信息记录</title>
 <link rel="stylesheet" type="text/css" href="layui/css/layui.css">
 </head>
 <body>
@@ -187,7 +187,7 @@
 								type : 2,
 								title : "反馈事项详情",
 								skin : "myclass",
-								area : [ "40%", "45%" ],
+								area : [ "40%", "55%" ],
 								content : [ "requestPage?page=detailFeedBack",
 										"no" ],
 								success : function(layero, index) {
