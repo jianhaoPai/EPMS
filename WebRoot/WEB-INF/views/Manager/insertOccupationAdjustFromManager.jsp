@@ -54,13 +54,11 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		<div class="layui-form-item">
 			<label class="layui-form-label">调往的部门:</label>
 			<div class="layui-input-block">
-				<select name="toOccupationId" lay-filter="leaveType" lay-verify="toOccupationId">
-					    <option value="">请选择部门</option> 
-						<option value="11">人事部</option>
-						<option value="22">财务部</option>
-						<option value="33">行政部</option>
-						<option value="44">技术部</option>
-					</select>
+				<select name="toDepartmentId" lay-filter="leaveType">
+					<option value="11">财务部</option>
+					<option value="22">人事部</option>
+					<option value="33">行政部</option>
+				</select>
 			</div>
 		</div>
 
@@ -68,7 +66,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			<label class="layui-form-label">调往的职务:</label>
 			<div class="layui-input-block">
 				<select name="toOccupationId" lay-filter="leaveType">
-				    <option value="">请选择职务</option>
 					<option value="1">员工</option>
 					<option value="2">部门经理</option>
 				</select>
@@ -102,18 +99,6 @@ layui.use(['form', 'layedit', 'laydate'], function(){
   ,layedit = layui.layedit
   ,laydate = layui.laydate;
   var $=layui.$;
-  form.verify({
-			toDepartmentId : function(value) {
-				if (value=="") {
-					return '还未选择调往部门';
-				}
-			},
-			toOccupationId : function(value) {
-				if (value=="") {
-					return '还未选择调往职务';
-				}
-			}
-		});
   
   //日期
   laydate.render({

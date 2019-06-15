@@ -124,7 +124,7 @@ layui.use(['jquery','table','layer','form'],function(){
 		            type:2,
 		            title:"申请事项详情表",
 		            skin:"myclass",
-		            area:["40%","55%"],
+		            area:["40%","40%"],
 		            content:["requestPage?page=Manager/detailApplyByWritedId","no"],
 		            success:function(layero,index){
 		                var body = layer.getChildFrame('body', index);  

@@ -27,11 +27,11 @@ public class TotalDataImpl implements TotalDataService
 	@Autowired
 	private CultivateRecordService cultivateRecordService;
 	
-	//根据查询所有员工当月的迟到，早退，请假，加班，缺勤，培训数据
+	//鏍规嵁鏌ヨ鎵�鏈夊憳宸ュ綋鏈堢殑杩熷埌锛屾棭閫�锛岃鍋囷紝鍔犵彮锛岀己鍕わ紝鍩硅鏁版嵁
 	@Override
 	public List<TotalData> selectMonthTotalData(String year,String month) 
 	{
-		if(Integer.parseInt(month)<=9)
+		if(Integer.parseInt(month)<9)
 		{
 			String str="0";
 			month=str+(month);

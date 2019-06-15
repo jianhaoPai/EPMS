@@ -8,7 +8,6 @@ public class CultivateApply {
 	private int id;
 	private int writeId;
 	private int typeId;
-	private int teacherId;
 	private String startDate;
 	private String finishDate;
 	private String site;
@@ -48,12 +47,6 @@ public class CultivateApply {
 	}
 	public void setTypeId(int typeId) {
 		this.typeId = typeId;
-	}
-	public int getTeacherId() {
-		return teacherId;
-	}
-	public void setTeacherId(int teacherId) {
-		this.teacherId = teacherId;
 	}
 	public String getStartDate() {
 		return startDate;
@@ -142,15 +135,14 @@ public class CultivateApply {
 	@Override
 	public String toString() {
 		return "CultivateApply [id=" + id + ", writeId=" + writeId
-				+ ", typeId=" + typeId + ", teacherId=" + teacherId
-				+ ", startDate=" + startDate + ", finishDate=" + finishDate
-				+ ", site=" + site + ", cost=" + cost + ", submitDate="
-				+ submitDate + ", approvalDate=" + approvalDate + ", status="
-				+ status + ", sum=" + sum + ", introduce=" + introduce
-				+ ", trainName=" + trainName + ", facePeople=" + facePeople
-				+ ", alreadyPerson=" + alreadyPerson + ", teacher=" + teacher
-				+ ", cultivateType=" + cultivateType + ", department="
-				+ department + "]";
+				+ ", typeId=" + typeId + ", startDate=" + startDate
+				+ ", finishDate=" + finishDate + ", site=" + site + ", cost="
+				+ cost + ", submitDate=" + submitDate + ", approvalDate="
+				+ approvalDate + ", status=" + status + ", sum=" + sum
+				+ ", introduce=" + introduce + ", trainName=" + trainName
+				+ ", facePeople=" + facePeople + ", alreadyPerson="
+				+ alreadyPerson + ", teacher=" + teacher + ", cultivateType="
+				+ cultivateType + ", department=" + department + "]";
 	}
 	public CultivateApply() {
 		super();

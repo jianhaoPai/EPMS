@@ -2,62 +2,197 @@ package com.epms.ServiceImpl;
 
 import java.util.List;
 
+import net.sf.json.JSONObject;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.epms.Bean.CultivateApply;
+import com.epms.Bean.CultivateRecord;
+import com.epms.Bean.Personalinfo;
 import com.epms.Bean.TotalData;
 import com.epms.Mapper.CultivateApplyMapper;
 import com.epms.Mapper.CultivateRecordMapper;
+import com.epms.Mapper.PersonalinfoMapper;
 import com.epms.Mapper.TotalDataMapper;
 import com.epms.Mapper.WorkingCalendarMapper;
 import com.epms.Service.CultivateRecordService;
 import com.epms.Utils.CalculateDaySum;
 
+
+
 @Service(value = "cultivateRecordService")
 public class CultivateRecordServiceImpl implements CultivateRecordService 
 {
 	@Autowired
-	private CultivateApplyMapper cultivateApplyMapper;
+	private CultivateApply cultivateApply;
 	
 	@Autowired
-	private WorkingCalendarMapper workingCalendarMapper;
+	private CultivateApplyMapper cultivateApplyMapper;
 	
 	@Autowired
 	private CultivateRecordMapper cultivateRecordMapper;
 	
 	@Autowired
+	private PersonalinfoMapper peronalinfoMapper;
+	
+	@Autowired
 	private TotalDataMapper totalDataMapper;
 	
-	//²éÑ¯Ä³¸öÔÂÃ¿¸öÔ±¹¤µÄÅàÑµÌìÊı
-	@Override
+	@Autowired
+	private WorkingCalendarMapper workingCalendarMapper;
+	
+	//æŠ¥ååŸ¹è®­
+	public String insertCultivateRecord(int cultivateId,int participatorId) 
+	{
+		JSONObject result = new JSONObject();
+		cultivateApply=cultivateApplyMapper.selectCultivateApplyById(cultivateId);
+		if(cultivateApply.getAlreadyPerson()==cultivateApply.getSum())
+		{
+			result.put("status", false);
+			result.put("message", "æŠ¥åå¤±è´¥ï¼Œäººæ•°å·²æ»¡ï¼");
+		}
+		else if (cultivateRecordMapper.checkIfRepeat(cultivateId, participatorId)>0)
+		{
+			result.put("status", false);
+			result.put("message", "æŠ¥åå¤±è´¥ï¼Œè¯·å‹¿é‡å¤æŠ¥åï¼");
+		}
+		else if(checkJoinSum(participatorId,cultivateId)>0)
+		{
+			result.put("status", false);
+			result.put("message", "æŠ¥åå¤±è´¥ï¼Œæ­¤æœˆä»½å·²æŠ¥åè¿‡åŸ¹è®­é¡¹ç›®ï¼");
+		}
+		else if(cultivateApply.getTypeId()==1)//å†…éƒ¨åŸ¹è®­
+		{
+			return detailInsertCultivateRecord1(cultivateId,participatorId,"é€šè¿‡");
+		}
+		else //å¤–å‡ºåŸ¹è®­
+		{
+			return detailInsertCultivateRecord1(cultivateId,participatorId,"å¾…å®¡æ ¸");
+		}
+		return result.toString();
+	}
+	
+	public String detailInsertCultivateRecord1(int cultivateId,int participatorId,String status)
+	{
+		JSONObject result = new JSONObject();
+		if(cultivateApply.getFacePeople().equals("å…¨å…¬å¸äººå‘˜"))
+		{
+			return detailInsertCultivateRecord(cultivateId,participatorId,status);
+		}
+		else if(cultivateApply.getFacePeople().equals("é’ˆå¯¹æœ¬éƒ¨é—¨å®ä¹ å‘˜å·¥"))
+		{
+			Personalinfo writer=peronalinfoMapper.selectPersonalByIdNotEducation(cultivateApply.getWriteId());
+			Personalinfo participator=peronalinfoMapper.selectPersonalByIdNotEducation(participatorId);
+			if(writer.getDepartment().getDepartmentId()==participator.getDepartment().getDepartmentId() 
+					&& participator.getOccupation().getOccupationName().equals("å®ä¹ ç”Ÿ"))
+			{
+				return detailInsertCultivateRecord(cultivateId,participatorId,status);
+			}
+			else
+			{
+				result.put("status", false);
+				result.put("message", "æŠ¥åå¤±è´¥ï¼Œæ­¤åŸ¹è®­ä»…é’ˆå¯¹å®ä¹ ç”Ÿï¼");
+			}
+		}
+		else if(cultivateApply.getFacePeople().equals("é’ˆå¯¹å…¨å…¬å¸å®ä¹ å‘˜å·¥"))
+		{
+			Personalinfo participator=peronalinfoMapper.selectPersonalByIdNotEducation(participatorId);
+			if(participator.getOccupation().getOccupationName().equals("å®ä¹ ç”Ÿ"))
+			{
+				return detailInsertCultivateRecord(cultivateId,participatorId,status);
+			}
+			else
+			{
+				result.put("status", false);
+				result.put("message", "æŠ¥åå¤±è´¥ï¼Œæ­¤åŸ¹è®­ä»…é’ˆå¯¹å®ä¹ ç”Ÿï¼");
+			}
+		}
+		else if(cultivateApply.getFacePeople().equals("æœ¬éƒ¨é—¨äººå‘˜"))
+		{
+			Personalinfo writer=peronalinfoMapper.selectPersonalByIdNotEducation(cultivateApply.getWriteId());
+			Personalinfo participator=peronalinfoMapper.selectPersonalByIdNotEducation(participatorId);
+			if(writer.getDepartment().getDepartmentId()==participator.getDepartment().getDepartmentId())
+			{
+				return detailInsertCultivateRecord(cultivateId,participatorId,status);
+			}
+			else
+			{
+				result.put("status", false);
+				result.put("message", "æŠ¥åå¤±è´¥ï¼Œä½ ä¸å±äºæ­¤åŸ¹è®­é’ˆå¯¹çš„éƒ¨é—¨ï¼");
+			}
+		}
+		return result.toString();
+	}
+	
+	public String detailInsertCultivateRecord(int cultivateId,int participatorId,String status)
+	{
+		JSONObject result = new JSONObject();
+		cultivateRecordMapper.insertCultivateRecord(cultivateId,participatorId,status);
+		if(cultivateApplyMapper.updatealreadyPerson(cultivateApply.getAlreadyPerson()+1,cultivateId)<=0)
+		{
+			cultivateRecordMapper.deleteMaxId();
+			result.put("status", false);
+			result.put("message", "æŠ¥åå¤±è´¥ï¼");
+		}
+		else
+		{
+			result.put("status", true);
+			result.put("message", "æŠ¥åæˆåŠŸï¼");
+		}
+		return result.toString();
+	}
+	
+	public int checkJoinSum(int participatorId,int cultivateId)
+	{
+		//å…ˆæŸ¥è¯¢å‡ºæ­¤å‘˜å·¥å°†è¦æŠ¥åçš„åŸ¹è®­å¼€å§‹æ—¶é—´
+		cultivateApply=cultivateApplyMapper.selectById(cultivateId);
+		System.out.println(cultivateApply);
+		
+		//æ ¹æ®æŸ¥å‡ºçš„å¼€å§‹æ—¶é—´å’Œå·¥å·æŸ¥è¯¢æ˜¯å¦å¼€å§‹æ—¶é—´æœˆä»½å·²æœ‰æŠ¥å
+	    String[] arr = cultivateApply.getStartDate().split("-"); 
+	    int count=cultivateRecordMapper.countSumByDate(participatorId, arr[0], arr[1]);
+	    return count;
+	}
+	
+	//å‘˜å·¥æŸ¥è¯¢è‡ªå·±æŠ¥åçš„åŸ¹è®­è¯¾ç¨‹
+	public List<CultivateRecord> selectCultivateRecordByJobId(int before,int after,int jobId) 
+	{
+		return cultivateRecordMapper.selectCultivateRecordByJobId(before, after,jobId);
+	}
+	public int countSelectCultivateRecordByJobId(int jobId) 
+	{
+		return cultivateRecordMapper.countSelectCultivateRecordByJobId(jobId);
+	}
+
+
 	public List<TotalData> CountCultivate(String year, String month)
 	{
 		CalculateDaySum ads=new CalculateDaySum();
 		int day,startId,finishId,workDay=0;
 		
-		//Ê×ÏÈ°ÑtotalData±íÖĞËùÓĞÔ±¹¤¶Á³öÀ´
+		//é¦–å…ˆæŠŠtotalDataè¡¨ä¸­æ‰€æœ‰å‘˜å·¥è¯»å‡ºæ¥
 		List<TotalData> totalDataList=totalDataMapper.selectAllDataSum();
 		
-		//Ñ­»·²éÑ¯Ô±¹¤ÊÇ·ñ²Î¼ÓÁËÅàÑµ£¬¸ù¾İÅàÑµid²é³ö¶ÔÓ¦µÄ¿ªÊ¼Ê±¼äºÍ½áÊøÊ±¼ä£¬À´¼ÆËã¶ÔÓ¦µÄÌìÊı
+		//å¾ªç¯æŸ¥è¯¢å‘˜å·¥æ˜¯å¦å‚åŠ äº†åŸ¹è®­ï¼Œæ ¹æ®åŸ¹è®­idæŸ¥å‡ºå¯¹åº”çš„å¼€å§‹æ—¶é—´å’Œç»“æŸæ—¶é—´ï¼Œæ¥è®¡ç®—å¯¹åº”çš„å¤©æ•°
 		for(int i=0;i<totalDataList.size();i++)
 		{
-			//¼ÆËã³öÔ±¹¤Ëù²Î¼ÓµÄÅàÑµid
+			//è®¡ç®—å‡ºå‘˜å·¥æ‰€å‚åŠ çš„åŸ¹è®­id
 			Integer[] ids=cultivateRecordMapper.selectIdByJobId(totalDataList.get(i).getJobId());
 			
 			if(ids.length>0)
 			{
-				//¸ù¾İid²éÑ¯³ö¶ÔÓ¦µÄËùÓĞÅàÑµÊ±¼ä(¿ªÊ¼ºÍ½áÊø),(1)¿ªÊ¼Ê±¼äºÍ½áÊøÊ±¼ä¶¼ÔÚÏàÍ¬Ä³ÔÂ·İ
+				//æ ¹æ®idæŸ¥è¯¢å‡ºå¯¹åº”çš„æ‰€æœ‰åŸ¹è®­æ—¶é—´(å¼€å§‹å’Œç»“æŸ),(1)å¼€å§‹æ—¶é—´å’Œç»“æŸæ—¶é—´éƒ½åœ¨ç›¸åŒæŸæœˆä»½
 				List<CultivateApply> sameList=cultivateApplyMapper.selectTheSameDateInId(ids, year, month);
 				if(sameList!=null)
 				{
 					for(int j=0;j<sameList.size();j++)
 					{
-						//¼ÆËã³öÅàÑµÌìÊı,²¢´æÈëÊı¾İ¿â
+						//è®¡ç®—å‡ºåŸ¹è®­å¤©æ•°,å¹¶å­˜å…¥æ•°æ®åº“
 						day=ads.calculate(sameList.get(j).getStartDate(),sameList.get(j).getFinishDate());
 						totalDataMapper.updateTotalDataByCaltivateday(totalDataList.get(i).getJobId(),
 								totalDataList.get(i).getTotalCaltivateDay()+day);
-						//ÓÃÒÑËã³öµÄÈ±ÇÚÌìÊı¼õÈ¥£¬¼ÆËã³öµÄ´ËÅàÑµÆÚ¼ä¹¤×÷ÈÕµÄÌìÊı
+						//ç”¨å·²ç®—å‡ºçš„ç¼ºå‹¤å¤©æ•°å‡å»ï¼Œè®¡ç®—å‡ºçš„æ­¤åŸ¹è®­æœŸé—´å·¥ä½œæ—¥çš„å¤©æ•°
 						startId=workingCalendarMapper.selectIdByDate(sameList.get(j).getStartDate());
 						finishId=workingCalendarMapper.selectIdByDate(sameList.get(j).getFinishDate());
 						workDay=workingCalendarMapper.selectWorkBetweenDate(startId, finishId);
@@ -66,10 +201,10 @@ public class CultivateRecordServiceImpl implements CultivateRecordService
 						
 					}
 				}
-				//»ñÈ¡µ½×îĞÂÊı¾İ
+				//è·å–åˆ°æœ€æ–°æ•°æ®
 				totalDataList=totalDataMapper.selectAllDataSum();
 				
-				//(2)¿ªÊ¼Ê±¼äÔÚÄ³ÔÂ·İ¶øºÍ½áÊøÊ±¼ä²»ÔÚÄ³ÔÂ·İ
+				//(2)å¼€å§‹æ—¶é—´åœ¨æŸæœˆä»½è€Œå’Œç»“æŸæ—¶é—´ä¸åœ¨æŸæœˆä»½
 				List<CultivateApply> sameStartList=cultivateApplyMapper.selectSameStartDateInId(ids, year, month);
 				if(sameStartList!=null)
 				{
@@ -77,11 +212,11 @@ public class CultivateRecordServiceImpl implements CultivateRecordService
 					int lastId=workingCalendarMapper.selectIdByDate(lastDay);
 					for(int j=0;j<sameStartList.size();j++)
 					{
-						//¼ÆËã³öÅàÑµÌìÊı,²¢´æÈëÊı¾İ¿â
+						//è®¡ç®—å‡ºåŸ¹è®­å¤©æ•°,å¹¶å­˜å…¥æ•°æ®åº“
 						day=ads.calculate(sameStartList.get(j).getStartDate(),lastDay);
 						totalDataMapper.updateTotalDataByCaltivateday(totalDataList.get(j).getJobId(),
 								totalDataList.get(i).getTotalCaltivateDay()+day);
-						//ÓÃÒÑËã³öµÄÈ±ÇÚÌìÊı¼õÈ¥£¬¼ÆËã³öµÄ´ËÅàÑµÆÚ¼ä¹¤×÷ÈÕµÄÌìÊı
+						//ç”¨å·²ç®—å‡ºçš„ç¼ºå‹¤å¤©æ•°å‡å»ï¼Œè®¡ç®—å‡ºçš„æ­¤åŸ¹è®­æœŸé—´å·¥ä½œæ—¥çš„å¤©æ•°
 						startId=workingCalendarMapper.selectIdByDate(sameStartList.get(j).getStartDate());
 						workDay=workingCalendarMapper.selectWorkBetweenDate(startId, lastId);
 						totalDataMapper.updateTotalDataByAbsence(totalDataList.get(i).getJobId(),
@@ -90,7 +225,7 @@ public class CultivateRecordServiceImpl implements CultivateRecordService
 				}
 				totalDataList=totalDataMapper.selectAllDataSum();
 				
-				//(3)¿ªÊ¼Ê±¼ä²»ÔÚÄ³ÔÂ·İ¶øºÍ½áÊøÊ±¼äÔÚÄ³ÔÂ·İ
+				//(3)å¼€å§‹æ—¶é—´ä¸åœ¨æŸæœˆä»½è€Œå’Œç»“æŸæ—¶é—´åœ¨æŸæœˆä»½
 				List<CultivateApply> sameFinishList=cultivateApplyMapper.selectSameFinishDateInId(ids, year, month);
 				if(sameFinishList!=null)
 				{
@@ -98,11 +233,11 @@ public class CultivateRecordServiceImpl implements CultivateRecordService
 					int firstId=workingCalendarMapper.selectIdByDate(firstDay);
 					for(int j=0;j<sameFinishList.size();j++)
 					{
-						//¼ÆËã³öÅàÑµÌìÊı,²¢´æÈëÊı¾İ¿â
+						//è®¡ç®—å‡ºåŸ¹è®­å¤©æ•°,å¹¶å­˜å…¥æ•°æ®åº“
 						day=ads.calculate(firstDay,sameFinishList.get(j).getFinishDate());
 						totalDataMapper.updateTotalDataByCaltivateday(totalDataList.get(i).getJobId(),
 								totalDataList.get(i).getTotalCaltivateDay()+day);
-						//ÓÃÒÑËã³öµÄÈ±ÇÚÌìÊı¼õÈ¥£¬¼ÆËã³öµÄ´ËÅàÑµÆÚ¼ä¹¤×÷ÈÕµÄÌìÊı
+						//ç”¨å·²ç®—å‡ºçš„ç¼ºå‹¤å¤©æ•°å‡å»ï¼Œè®¡ç®—å‡ºçš„æ­¤åŸ¹è®­æœŸé—´å·¥ä½œæ—¥çš„å¤©æ•°
 						finishId=workingCalendarMapper.selectIdByDate(sameFinishList.get(j).getFinishDate());
 						workDay=workingCalendarMapper.selectWorkBetweenDate(firstId, finishId);
 						totalDataMapper.updateTotalDataByAbsence(totalDataList.get(i).getJobId(),
@@ -113,6 +248,5 @@ public class CultivateRecordServiceImpl implements CultivateRecordService
 		}
 		return totalDataMapper.selectAllDataSum();
 	}
-	
 
 }

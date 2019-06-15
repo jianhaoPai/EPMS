@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.epms.Mapper.DepartmentMapper">
+
+   <!-- 根据名字查询id-->
+ 	<select id="selectIdByName" resultType="int">
+	       select department_id
+               from t_department as d
+                  where d.department_name=#{departmentName}
+ 	</select>
+ 
+ 	
+</mapper>
+
+	
+	
+	

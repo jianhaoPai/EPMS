@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.epms.Mapper.RecruitMapper">
+
+     <resultMap type="Recruit" id="recruitResult">
+ 	  <id property="id" column="id"></id>
+ 	  <result property="writeId" column="write_id"></result>
+ 	  <result property="functionIntrduce" column="function_intrduce"/>
+ 	  <result property="sum" column="sum"/>
+ 	  <result property="approvalDate" column="approval_date"/>
+ 	  <result property="demand" column="demand"/>
+ 	  <result property="status" column="status"/>
+ 	  <association property="department" javaType="Department">
+ 	  <id property="departmentId" column="department_id"/>
+ 	  <result property="departmentName" column="department_name"></result>
+ 	  <result property="managerId" column="manager_id"></result>
+ 	  </association>
+ 	  <association property="occupation" javaType="Occupation">
+ 	  <id property="occupationId" column="occupation_id"/>
+ 	  <result property="occupationName" column="occupation_name"></result>
+ 	  </association>
+ 	</resultMap>
+ 	
+ 	<!-- 部门经理查询招聘发布 -->
+ 	<select id="selectRecruitByjobId" resultType="Map">
+ 	   select u.job_id,p.name,r.sum,r.demand,r.status,r.function_introduce,o.occupation_name
+ 	       from t_user as u,t_recruit as r,t_personalinfo as p,t_occupation as o
+            where u.job_id=r.write_id and u.job_id=#{jobId} 
+              and r.write_id=p.job_id and o.occupation_id=r.occupation_id 
+                LIMIT #{before},#{after}
+ 	</select>
+ 	
+ 	<select id="count" resultType="int">
+ 	    select count(*) from t_user as u,t_recruit as r,t_personalinfo as p,t_occupation as o
+            where u.job_id=r.write_id and u.job_id=#{jobId} 
+              and r.write_id=p.job_id and o.occupation_id=r.occupation_id
+ 	</select>
+ 	
+ 	<!-- 总经理查询招聘发布计划 -->
+ 	<select id="gerenalManagerSelectRecruit" resultType="Map">
+ 	   select p.name,r.*,o.occupation_name
+ 	       from t_recruit as r,t_personalinfo as p,t_occupation as o
+              where r.write_id=p.job_id and o.occupation_id=r.occupation_id
+                LIMIT #{before},#{after}
+ 	</select>
+ 	<select id="countGerenalManagerSelectRecruit" resultType="int">
+ 	    select count(*) from t_user as u,t_recruit as r,t_personalinfo as p,t_occupation as o
+            where u.job_id=r.write_id and r.write_id=p.job_id and o.occupation_id=r.occupation_id
+ 	</select>
+ 	
+ 	
+ 	<select id="selectRecruitById" parameterType="int" resultMap="recruitResult">
+ 	   select * from t_recruit where id=#{id};
+ 	</select>
+ 
+    <!-- lxy -->
+	<insert id="insertRecruit" parameterType="Recruit">
+		insert into t_recruit
+		   (write_id,occupation_id,department_id,function_introduce,sum,demand,submit_date,status)
+             values(#{writeId},#{occupation.occupationId},#{department.departmentId},#{functionIntrduce},#{sum},#{demand},#{submitDate},#{status})
+	</insert>
+	
+	<select id="checkIfRepect" resultType="int" parameterType="Recruit">
+ 	    select count(*)
+           from t_recruit 
+            where write_id=#{writeId} and sum=#{sum}
+                  and occupation_id=#{occupation.occupationId}
+                  and department_id=#{department.departmentId}
+                  and submit_date=#{submitDate} and demand=#{demand}
+                  and function_introduce=#{functionIntrduce}
+ 	</select>
+ 	
+ 	<!-- 上级查询直接下级的招聘计划 -->
+ 	<select id="selectRecruitToTotalManager"  resultType="Map">
+      select r.*,p.name ,d.department_name,o.occupation_name
+           from t_recruit as r,t_department as d,
+                t_personalinfo as p,t_occupation as o
+               where r.write_id=p.job_id and p.occupation_id=2
+                     and r.occupation_id=o.occupation_id
+                     and r.department_id=d.department_id
+                     <if test="departmentId != null and departmentId != ''">
+                        and r.department_id like '${departmentId}%'
+                    </if>
+                    <if test="occupationId != null and occupationId != ''">
+                        and r.occupation_id like '${occupationId}%'
+                    </if>
+                    <if test="status != null and status != ''">
+                        and r.status like '${status}%'
+                    </if>
+                 LIMIT #{before},#{after}
+    </select>
+ 	
+ 	<select id="countToTotalManager" resultType="int">
+ 	    select count(*) 
+ 	       from t_recruit as r,t_department as d,
+                t_personalinfo as p,t_occupation as o
+               where r.write_id=p.job_id and p.occupation_id=2
+                     and r.occupation_id=o.occupation_id
+                     and r.department_id=d.department_id
+                     <if test="departmentId != null and departmentId != ''">
+                        and r.department_id like '${departmentId}%'
+                    </if>
+                    <if test="occupationId != null and occupationId != ''">
+                        and r.occupation_id like '${occupationId}%'
+                    </if>
+                    <if test="status != null and status != ''">
+                        and r.status like '${status}%'
+                    </if>
+ 	</select>
+ 	
+ 	<select id="selectRecruitToBoard" resultType="Map">
+ 	   select r.*,p.name ,d.department_name,o.occupation_name
+           from t_recruit as r,t_department as d,
+                t_personalinfo as p,t_occupation as o
+                where r.write_id=p.job_id and p.occupation_id=3
+                     and r.occupation_id=o.occupation_id
+                     and r.department_id=d.department_id
+                     <if test="departmentId != null and departmentId != ''">
+                        and r.department_id like '${departmentId}%'
+                    </if>
+                    <if test="occupationId != null and occupationId != ''">
+                        and r.occupation_id like '${occupationId}%'
+                    </if>
+                    <if test="status != null and status != ''">
+                        and r.status like '${status}%'
+                    </if>
+                     LIMIT #{before},#{after}
+ 	</select>
+ 	
+ 	<select id="countToBoard" resultType="int">
+ 	    select count(*) 
+ 	        from t_recruit as r,t_department as d,
+                 t_personalinfo as p,t_occupation as o
+                   where r.write_id=p.job_id and p.occupation_id=3
+                        and r.occupation_id=o.occupation_id
+                        and r.department_id=d.department_id
+                        <if test="departmentId != null and departmentId != ''">
+                        and r.department_id like '${departmentId}%'
+                    </if>
+                    <if test="occupationId != null and occupationId != ''">
+                        and r.occupation_id like '${occupationId}%'
+                    </if>
+                    <if test="status != null and status != ''">
+                        and r.status like '${status}%'
+                    </if>
+ 	</select>
+ 	
+ 	
+ 	<update id="updateRecruitStatus" parameterType="Recruit">
+ 	   update t_recruit 
+ 	       set status=#{status},approval_date=#{approvalDate} where id=#{id};  	
+ 	</update>
+ 	
+ 	<select id="selectAllRecruitByWriteId" resultType="Map">
+ 	  select r.*,p.name,d.department_name,o.occupation_name
+           from t_recruit as r,t_department as d,
+                t_personalinfo as p,t_occupation as o
+                where r.write_id=p.job_id and r.write_id=#{writeId}
+                     and r.occupation_id=o.occupation_id
+                     and r.department_id=d.department_id
+                LIMIT #{before},#{after}
+ 	</select>
+ 	
+ 	<select id="countSelectAllRecruitByWriteId" resultType="int">
+ 	    select count(*) 
+ 	      from t_recruit as r,t_department as d,
+                t_personalinfo as p,t_occupation as o
+                where r.write_id=p.job_id and r.write_id=#{writeId}
+                     and r.occupation_id=o.occupation_id
+                     and r.department_id=d.department_id
+ 	</select>
+ 	
+ 	<select id="selectAllRecruitToEmployee" resultType="Map">
+ 	  select r.*,d.department_name,o.occupation_name,p.name
+           from t_recruit as r,t_department as d,t_occupation as o,t_personalinfo as p
+                where r.occupation_id=o.occupation_id
+                     and r.write_id=p.job_id
+                     and r.department_id=d.department_id
+                     and r.status='通过' 
+                    <if test="departmentId != null and departmentId != ''">
+                        and r.department_id like '${departmentId}%'
+                    </if>
+                    <if test="occupationId != null and occupationId != ''">
+                        and r.occupation_id like '${occupationId}%'
+                    </if>
+                    LIMIT #{before},#{after}
+ 	</select>
+ 	
+ 	<select id="countSelectAllRecruitToEmployee" resultType="int">
+ 	    select count(*)
+            from t_recruit as r,t_department as d,t_occupation as o
+                where r.occupation_id=o.occupation_id
+                     and r.department_id=d.department_id
+                     and r.status='通过' 
+                     <if test="departmentId != null and departmentId != ''">
+                        and r.department_id like '${departmentId}%'
+                    </if>
+                    <if test="occupationId != null and occupationId != ''">
+                        and r.occupation_id like '${occupationId}%'
+                    </if>
+ 	</select>
+ 	
+
+</mapper>
+
+	
+	
+	

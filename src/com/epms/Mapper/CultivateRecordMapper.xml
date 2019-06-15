@@ -4,20 +4,107 @@
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.epms.Mapper.CultivateRecordMapper">
 
-    <resultMap type="CultivateRecord" id="cultivateRecordResult">
- 	  <id property="cultivateId" column="cultivate_id"></id>
- 	  <result property="participatorId" column="participator_id"></result>
- 	  <result property="harvest" column="harvest"/>
- 	  <result property="grade" column="grade"/>
- 	  <result property="courseEvaluation" column="course_evaluation"/>
- 	  <result property="teacherEvaluation" column="teacher_evaluation"/>
- 	</resultMap> 
+	<resultMap type="CultivateRecord" id="cultivateRecordResult">
+		<id property="cultivateId" column="cultivate_id"></id>
+		<result property="participatorId" column="participator_id"></result>
+		<result property="harvest" column="harvest" />
+		<result property="grade" column="grade" />
+		<result property="courseEvaluation" column="course_evaluation" />
+		<result property="teacherEvaluation" column="teacher_evaluation" />
+	</resultMap>
+
+	<insert id="insertCultivateRecord">
+		insert into t_cultivaterecord(cultivate_id,participator_id,status)
+		    values(#{cultivateId},#{participatorId},#{status})
+	</insert>
+
+	<select id="checkIfRepeat" resultType="int">
+		select count(*) from t_cultivaterecord
+		where cultivate_id=#{cultivateId} and participator_id=#{participatorId}
+	</select>
+
+	<delete id="deleteMaxId">
+		delete from t_cultivaterecord
+		where id =
+		( select n.max_id from (select max(id) as max_id from
+		t_cultivaterecord) as n);
+	</delete>
+
+	<!-- 员工查询自己报名的培训课程 -->
+	<select id="selectCultivateRecordByJobId" resultType="Map">
+		select a.*,t.*,r.*,type.*,r.status as recordStatus
+		from t_cultivateapply as a,t_cultivaterecord as r,t_teacher as t,t_cultivatetype as type
+		where r.cultivate_id=a.id
+		and a.teacher_id=t.id
+		and r.participator_id=#{jobId}
+		and a.type_id=type.cultivate_id
+		LIMIT #{before},#{after}
+	</select>
+
+	<select id="countSelectCultivateRecordByJobId" resultType="int">
+		select count(*)
+		from t_cultivateapply as a,t_cultivaterecord as r,t_teacher as t,t_cultivatetype as type
+		where r.cultivate_id=a.id
+		and a.teacher_id=t.id
+		and r.participator_id=#{jobId}
+		and a.type_id=type.cultivate_id
+	</select>
+
+	<select id="countSumByDate" resultType="int">
+		select count(*) from t_cultivateapply
+		where id in(select cultivate_id from t_cultivaterecord where
+		participator_id=#{jobId})
+		and start_date like '${year}-${month}%'
+	</select>
+	
+	<!-- 上级查询直接下级的培训计划 -->
+	<select id="selectCultivateApplyToManager"  resultType="Map">
+	select distinct a.*,t.cultivate_name,employee.name as employeeName,d.department_name
+               from t_cultivateapply as a,t_cultivatetype as t,t_personalinfo as employee,
+                    t_department as d,t_occupation as o,t_cultivaterecord as record
+                  where a.type_id=t.cultivate_id 
+                  and a.id=record.cultivate_id
+                  and employee.department_id=d.department_id
+                  and d.manager_id=#{jobId}
+                  and employee.occupation_id=1
+                  and record.participator_id=employee.job_id
+                 LIMIT #{before},#{after}
+    </select>
  	
- 	<select id="selectIdByJobId" resultType="java.lang.Integer">
- 	   select cultivate_id from t_cultivaterecord 
- 	          where participator_id=#{jobId}      
+ 	<select id="countToManager" resultType="int">
+ 	    select count(distinct a.*,t.cultivate_name,employee.name as employeeName,d.department_name)
+               from t_cultivateapply as a,t_cultivatetype as t,t_personalinfo as employee,
+                    t_department as d,t_occupation as o,t_cultivaterecord as record
+                  where a.type_id=t.cultivate_id 
+                  and a.id=record.cultivate_id
+                  and employee.department_id=d.department_id
+                  and d.manager_id=#{jobId}
+                  and employee.occupation_id=1
+                  and record.participator_id=employee.job_id
  	</select>
- 
+ 	
+ 	<select id="selectCultivateApplyToTotalManager"  resultType="Map">
+      select a.*,t.cultivate_name,h.teacher_name,employee.name as employeeName,d.department_name
+               from t_cultivateapply as a,t_cultivatetype as t,t_teacher as h,t_personalinfo as employee,
+                    t_department as d,t_occupation as o,t_cultivaterecord as record
+                  where a.type_id=t.cultivate_id 
+                  and a.teacher_id=h.id 
+                  and employee.department_id=d.department_id
+                  and employee.occupation_id=2
+                 LIMIT #{before},#{after}
+    </select>
+ 	
+ 	<select id="countToTotalManager" resultType="int">
+ 	    select count(*)
+               from t_cultivateapply as a,t_cultivatetype as t,t_teacher as h,t_personalinfo as p,t_department as d,t_occupation as o
+                  where a.type_id=t.cultivate_id 
+                  and a.teacher_id=h.id 
+                  and p.department_id=d.department_id
+                  and a.write_id=p.job_id
+                  and o.occupation_id=2
+                  and o.occupation_id=p.occupation_id
+ 	</select>
+
 </mapper>
 
 	

@@ -41,4 +41,15 @@ public class MenuController {
 		return mv;
 		
 	}
+	
+	/*
+	 * ∑µªÿjsp“≥√Ê
+	 */
+	@RequestMapping(value="requestPageNoLogin")
+	public ModelAndView requestPageNoLogin(ModelAndView mv,String page){
+		mv.setViewName(page);
+		return mv;
+		
+	}
+	
 }

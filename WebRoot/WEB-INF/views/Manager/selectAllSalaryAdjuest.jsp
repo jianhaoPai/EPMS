@@ -33,12 +33,11 @@
       </div>
       <div class="layui-inline">
         <select name="department_id" id="department_idReload">
-           <option value="">请选择部门</option> 
-		   <option value="11">人事部</option>
-		   <option value="22">财务部</option>
-		   <option value="33">行政部</option>
-		   <option value="44">技术部</option>
-		   <option value="66">管理层</option>
+            <option value="">请选择部门</option>
+            <option value="11">财务部</option>
+            <option value="22">人事部</option>
+            <option value="33">行政部</option>
+            <option value="66">管理层</option>
         </select>
       </div>
 	  <button type="button" class="layui-btn" data-type="reload">搜索</button>
@@ -122,7 +121,7 @@ layui.use(['jquery','table','layer','form'],function(){
 		            type:2,
 		            title:"薪资调动详情表",
 		            skin:"myclass",
-		            area:["50%","90%"],
+		            area:["40%","80%"],
 		            content:["requestPage?page=Manager/detailSalaryAdjust","no"],
 		            success:function(layero,index){
 		                var body = layer.getChildFrame('body', index);  

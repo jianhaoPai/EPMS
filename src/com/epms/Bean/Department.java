@@ -29,4 +29,13 @@ public class Department
 				+ departmentName + ", managerId=" + managerId + "]";
 	}
 	
+	public Department() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	public Department(int departmentId) {
+		super();
+		this.departmentId = departmentId;
+	}
+	
 }

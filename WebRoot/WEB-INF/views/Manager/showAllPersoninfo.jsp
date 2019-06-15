@@ -24,18 +24,16 @@
 	  </div>
       <div class="layui-inline">
         <select name="department_id" id="department_idReload">
-            <option value="">请选择部门</option> 
-			<option value="11">人事部</option>
-			<option value="22">财务部</option>
-			<option value="33">行政部</option>
-			<option value="44">技术部</option>
-			<option value="66">管理层</option>
+            <option value="">请选择部门</option>
+            <option value="11">财务部</option>
+            <option value="22">人事部</option>
+            <option value="33">行政部</option>
+            <option value="66">管理层</option>
         </select>
       </div>
       <div class="layui-inline">
         <select name="occupation_id" id="occupation_idReload">
             <option value="">请选择职务</option>
-            <option value="0">实习生</option>
             <option value="1">员工</option>
             <option value="2">部门经理</option>
             <option value="3">总经理</option>
@@ -99,7 +97,7 @@ layui.use(['jquery','table','layer','form'],function(){
 		            type:2,
 		            title:"查看个人信息详情",
 		            skin:"myclass",
-		            area:["60%","65%"],
+		            area:["40%","90%"],
 		            content:["requestPage?page=Manager/selectDetailPersonalinfo","no"],
 		            success:function(layero,index){
 		                var body = layer.getChildFrame('body', index);  

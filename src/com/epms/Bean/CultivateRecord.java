@@ -10,6 +10,7 @@ public class CultivateRecord {
 	private double grade;
 	private String courseEvaluation;
 	private String teacherEvaluation;
+	private String status;
 	private CultivateApply cultivateApply;
 	public int getParticipatorId() {
 		return participatorId;
@@ -41,6 +42,12 @@ public class CultivateRecord {
 	public void setTeacherEvaluation(String teacherEvaluation) {
 		this.teacherEvaluation = teacherEvaluation;
 	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
 	public CultivateApply getCultivateApply() {
 		return cultivateApply;
 	}
@@ -52,8 +59,8 @@ public class CultivateRecord {
 		return "CultivateRecord [participatorId=" + participatorId
 				+ ", harvest=" + harvest + ", grade=" + grade
 				+ ", courseEvaluation=" + courseEvaluation
-				+ ", teacherEvaluation=" + teacherEvaluation
-				+ ", cultivateApply=" + cultivateApply + "]";
+				+ ", teacherEvaluation=" + teacherEvaluation + ", status="
+				+ status + ", cultivateApply=" + cultivateApply + "]";
 	}
 	public CultivateRecord() {
 		super();

@@ -31,6 +31,15 @@
 			<mvc:exclude-mapping path="/login"/>
 			<mvc:exclude-mapping path="/resetPassword.jsp"/>
 			<mvc:exclude-mapping path="/resetPassword"/>
+			<mvc:exclude-mapping path="/index.jsp"/>
+			
+			<mvc:exclude-mapping path="/requestPageNoLogin"/>
+			<mvc:exclude-mapping path="/selectAllRecruitToExteral.jsp"/>
+			<mvc:exclude-mapping path="/introduce.jsp"/>
+			<mvc:exclude-mapping path="/Iframe.jsp"/>
+			<mvc:exclude-mapping path="/introduce.jsp"/>
+			
+
 			<bean class="com.epms.Interceptor.LoginInterceptor"></bean>
 		</mvc:interceptor>
 	</mvc:interceptors>

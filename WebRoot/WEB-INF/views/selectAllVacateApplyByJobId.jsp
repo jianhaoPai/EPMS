@@ -193,7 +193,7 @@
 								type : 2,
 								title : "请假详情",
 								skin : "myclass",
-								area : [ "45%", "70%" ],
+								area : [ "45%", "55%" ],
 								content : [
 										"requestPage?page=detailVacateApply",
 										"no" ],
