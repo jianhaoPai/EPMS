@@ -42,7 +42,7 @@ public interface UserService {
 	//测试事务
 	public void test(int jobId,String password) ;
 	//通过邮箱获取密码
-	public User getUserByEmail(String email);
+	public User getUserByEmail(String jobId, String email);
 	//通过部门号获取最后的工号
 	public int selectLastJobId(String denameId);
 

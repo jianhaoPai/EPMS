@@ -39,6 +39,14 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
   <div id="loginbox">
   <h2 style=" margin-left:100px;" >——验证邮箱——</h2><br>
     <form class="layui-form" style="border:5px">
+    
+    <div  class="layui-form-item">
+      <label class="layui-form-label"><i class="layui-icon layui-icon-username" style="font-size: 25px; color: #1E9FFF;"></i></label>
+        <div class="layui-input-block">
+          <input  type="text" name="jobId" lay-verify="required|number" autocomplete="off" class="layui-input" placeholder="请输入工号" />
+      </div>
+    </div>
+    
     <div  class="layui-form-item">
       <label class="layui-form-label"><i class="layui-icon layui-icon-username" style="font-size: 25px; color: #1E9FFF;"></i></label>
         <div class="layui-input-block">
@@ -78,7 +86,7 @@ layui.use(['form','layer','jquery'], function(){
 			success:function(result){
 				if(result.status){
 					layer.alert(result.msg,function(){
-						window.location.href="resetPassword.jsp";
+						window.location.href="index.jsp";
 					});
 				}else{
 					layer.alert(result.msg);

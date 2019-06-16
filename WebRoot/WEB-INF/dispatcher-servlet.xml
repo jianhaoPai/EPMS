@@ -38,8 +38,9 @@
 			<mvc:exclude-mapping path="/introduce.jsp"/>
 			<mvc:exclude-mapping path="/Iframe.jsp"/>
 			<mvc:exclude-mapping path="/introduce.jsp"/>
+			<mvc:exclude-mapping path="/resetPassword.jsp"/>
+			<mvc:exclude-mapping path="/resetPassword"/>
 			
-
 			<bean class="com.epms.Interceptor.LoginInterceptor"></bean>
 		</mvc:interceptor>
 	</mvc:interceptors>

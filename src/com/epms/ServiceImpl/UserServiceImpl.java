@@ -112,8 +112,8 @@ public class UserServiceImpl implements UserService{
 	}
 
 	//通过邮箱获取密码
-	public User getUserByEmail(String email) {
-		return userMapper.getUserByEmail(email);
+	public User getUserByEmail(String jobId,String email) {
+		return userMapper.getUserByEmail(jobId,email);
 	}
 	
 	//通过部门号获取最后的工号

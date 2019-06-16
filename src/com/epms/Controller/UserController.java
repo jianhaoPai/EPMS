@@ -138,13 +138,13 @@ public class UserController {
 	
 	@RequestMapping(value="/resetPassword",produces="application/json;charset=utf-8")
 	@ResponseBody
-	public String resetPassword(String email){
+	public String resetPassword(String jobId,String email){
 		JSONObject result = new JSONObject();
 		//实例化一个发送邮件的对象
 		SendMail mySendMail=new SendMail();
 		//根据邮箱找到该用户信息
 
-		User user= userService.getUserByEmail(email);
+		User user= userService.getUserByEmail(jobId,email);
 		
 		if(user!=null) {
 			mySendMail.sendMail(email, "企业人事管理系统提醒，您的密码为："+user.getPassword());

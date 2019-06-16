@@ -39,7 +39,7 @@ public interface UserMapper {
 	//取出该员工的所有同事的工号
 	public List<User> findColleague(@Param("SjobId")String SjobId);
 	//通过邮箱获取密码
-	public User getUserByEmail(@Param("email")String email);
+	public User getUserByEmail(@Param("jobId")String jobId,@Param("email")String email);
 	//通过工号修改部门
 	public int updatePersonalinfo(@Param("jobId")int jobId,@Param("denameId") String denameId,@Param("ocnameId")String ocnameId);
 	//更新职员状态

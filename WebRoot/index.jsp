@@ -64,7 +64,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     </div>
     
     <div style="margin:0px 0px 0px 100px;">
-      <a href="resetPassword.jsp" >忘记密码？</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="requestPageNoLogin?page=Iframe" >加入我们？</a>
+      <a href="requestPageNoLogin?page=resetPassword" >忘记密码？</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="requestPageNoLogin?page=Iframe" >加入我们？</a>
     </div>
     
   </form>

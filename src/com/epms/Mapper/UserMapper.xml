@@ -90,7 +90,7 @@
 	
 	<!-- 通过邮箱获取密码 -->
 	<select id="getUserByEmail" resultType="User">
-		SELECT password FROM t_user,t_personalinfo WHERE t_user.job_id=t_personalinfo.job_id AND email=#{email}
+		SELECT password FROM t_user,t_personalinfo WHERE t_user.job_id=t_personalinfo.job_id AND email=#{email} AND t_personalinfo.job_id=#{jobId}
 	</select>
 	
 	<update id="updateState">
