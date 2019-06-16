@@ -142,19 +142,26 @@ public class UserController {
 		JSONObject result = new JSONObject();
 		//实例化一个发送邮件的对象
 		SendMail mySendMail=new SendMail();
-		//根据邮箱找到该用户信息
-
-		User user= userService.getUserByEmail(jobId,email);
-		
-		if(user!=null) {
-			mySendMail.sendMail(email, "企业人事管理系统提醒，您的密码为："+user.getPassword());
-			result.put("status",true);
-			result.put("msg","恭喜，找回密码成功");
+		if(jobId.equals("")||email.equals("")){
+			return null;
+		}else if(email.matches("^[a-z0-9A-Z]+[- | a-z0-9A-Z . _]+@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-z]{2,}$")){
+			//根据邮箱找到该用户信息
+			User user= userService.getUserByEmail(jobId,email);
+			if(user!=null) {
+				mySendMail.sendMail(email, "企业人事管理系统提醒，您的密码为："+user.getPassword());
+				result.put("status",true);
+				result.put("msg","恭喜，找回密码成功");
+				return result.toString();
+			}else{
+				result.put("status",false);
+				result.put("msg","该邮箱不存在");
+				System.out.println("why");
+				return result.toString();
+			}
 		}else{
-			result.put("status",false);
-			result.put("msg","该邮箱不存在");
+			return null;
 		}
-		return result.toString();
+		
 	}
 	
 }

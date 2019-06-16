@@ -84,11 +84,11 @@ layui.use(['form','layer','jquery'], function(){
 			type:'post',//请求方式为POST
 			dataType:'json',
 			success:function(result){
-				if(result.status){
+				if(result.status==true){
 					layer.alert(result.msg,function(){
 						window.location.href="index.jsp";
 					});
-				}else{
+				}else if(result.status==false){
 					layer.alert(result.msg);
 				}
 			}
