@@ -11,7 +11,7 @@
 </head>
 <body>
   <blockquote class="layui-elem-quote layui-text">
-    <h3>- 提交给直接上级的职位调动申请信息 -</h3>
+    <h3>- 提交给上级的职位调动申请信息 -</h3>
   </blockquote>
   
 <form class="layui-form layui-form-pane" action="">
@@ -34,11 +34,12 @@
       </div>
       <div class="layui-inline">
         <select name="pre_departmentid" id="pre_departmentidReload">
-            <option value="">请选择部门</option>
-            <option value="11">财务部</option>
-            <option value="22">人事部</option>
-            <option value="33">行政部</option>
-            <option value="66">管理层</option>
+                <option value="">请选择部门</option> 
+				<option value="11">人事部</option>
+				<option value="22">财务部</option>
+				<option value="33">行政部</option>
+				<option value="44">技术部</option>
+				<option value="66">管理层</option>
         </select>
       </div>
 	  <button type="button" class="layui-btn" data-type="reload">搜索</button>
@@ -79,7 +80,7 @@ layui.use(['jquery','table','layer','form'],function(){
             ,limits:[10,20,30,50]  //数据分页条
             ,id: 'test'  
             ,text:{
-			none:'暂时无提交给上级的职位调动申请记录'
+			none:'暂时无所查的职位调动申请记录'
 			}
           });
           

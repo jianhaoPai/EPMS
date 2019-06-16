@@ -99,8 +99,7 @@ public class PersonalinfoServiceImpl implements PersonalinfoService
 		CalculateAgeByBirthday calculate=new CalculateAgeByBirthday();
 		try 
 		{
-			int age=calculate.getAge(personal.getBirthday());
-			personal.setAge(age);
+			personal.setAge(calculate.getAge(personal.getBirthday()));
 			if(personal.getAddress()==""||personal.getCensus()==""
 					||personal.getBirthday()=="" ||personal.getEducation().getEducation()==""
 					||personal.getEducation().getInDate()==""||personal.getEducation().getInDate()==""
@@ -110,20 +109,20 @@ public class PersonalinfoServiceImpl implements PersonalinfoService
 			{
 				return null;
 			}
+			else if(personal.getAge()<=0)
+			{
+				result.put("status", false);
+				result.put("message", "修改失败，生日必须是一个过去的日期！");
+				return result.toString();
+			}
 			else
 			{
 				if(personal.getSex().equals("男")||personal.getSex().equals("女"))
 				{
-					if(personalinfoMapper.updatePersonal(personal)>0)
-					{
-						result.put("status", true);
-						result.put("message", "修改成功！");
-					}
-					else 
-					{
-						result.put("status", false);
-						result.put("message", "修改失败！");
-					}
+					personalinfoMapper.updatePersonal(personal);
+					result.put("status", true);
+					result.put("message", "修改成功！");
+					return result.toString();
 				}
 				else
 				{
@@ -135,7 +134,5 @@ public class PersonalinfoServiceImpl implements PersonalinfoService
 			e.printStackTrace();
 			return null;
 		}
-		return result.toString();
 	}
-
 }

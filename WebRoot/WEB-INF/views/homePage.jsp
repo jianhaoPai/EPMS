@@ -22,13 +22,21 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	-->
 <link rel="stylesheet" type="text/css" href="layui/css/layui.css">
   </head>
+<style>
   
+  body{
+      height: 100%;width: 100%;
+      background: url('layui/images/jizhu.png');
+      background-size:cover;
+  }
+</style> 
   <body onload="showtime()">
   <blockquote class="layui-elem-quote layui-text">
     <h3>${username}&nbsp;&nbsp;<i id="time"/></h3>
+    <h1><div><iframe style="float:right;" allowtransparency="true" frameborder="0" width="731" height="28" scrolling="no" src="//tianqi.2345.com/plugin/widget/index.htm?s=3&z=1&t=0&v=0&d=3&bd=0&k=&f=&ltf=009944&htf=cc0000&q=1&e=1&a=1&c=54511&w=731&h=28&align=center"></iframe></div></h1>
   </blockquote>
     
-  <iframe allowtransparency="true" style="float:right;" frameborder="0" width="140" height="428" scrolling="no" src="//tianqi.2345.com/plugin/widget/index.htm?s=2&z=3&t=0&v=1&d=5&bd=0&k=000000&f=&ltf=009944&htf=cc0000&q=1&e=1&a=1&c=71256&w=140&h=428&align=center"></iframe>
+  
 <script src="jquery/jquery-3.4.0.min.js" charset="utf-8"></script>
 <script>
 	function showtime () {

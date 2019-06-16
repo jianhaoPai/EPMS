@@ -54,7 +54,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		<div class="layui-form-item">
 			<label class="layui-form-label">申请事项类型:</label>
 			<div class="layui-input-block">
-				<select name="applytype.applytypeId" lay-filter="leaveType">
+				<select name="applytype.applytypeId" lay-filter="leaveType" lay-verify="applytypeId">
+				    <option value="">请选择申请事项</option>
 					<option value="1">开除员工</option>
 					<option value="2">实习生转正</option>
 					<option value="3">合同续签</option>
@@ -81,11 +82,35 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	
 	<script src="layui/layui.all.js"></script>
 <script>
-layui.use(['jquery','table','layer','form'],function(){
-			var table=layui.table;
-			var layer=layui.layer;
-			var form=layui.form;
-			var $=layui.$;
+layui.use(['form', 'layedit', 'laydate'], function(){
+  var form = layui.form
+  ,layer = layui.layer
+  ,layedit = layui.layedit
+  ,laydate = layui.laydate;
+  var $=layui.$;
+	  form.verify({
+			applytypeId : function(value) {
+				if (value=="") {
+					return '还未选择申请事项类型';
+				}
+			}
+		});
+  
+  //日期
+  laydate.render({
+    elem: '#startDate'
+  });
+  laydate.render({
+    elem: '#finishDate'
+  });
+  
+  //日期时间范围
+  laydate.render({
+    elem: '#test1'
+    ,type: 'datetime'
+    ,range: true
+  });
+  
           
           $(document).on('click','#submitAccount',function(){			
 				$.ajax({

@@ -41,7 +41,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		<div class="layui-form-item">
 			<label class="layui-form-label">请假结束时间:</label>
 			<div class="layui-input-block">
-				<input type="text" class="layui-input" name="finishDate" id="date"
+				<input type="text" class="layui-input" name="finishDate" id="date1"
 					   placeholder="yyyy-MM-dd" autocomplete="off" lay-verify="date">
 			</div>
 		</div>

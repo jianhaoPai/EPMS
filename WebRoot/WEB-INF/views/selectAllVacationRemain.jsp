@@ -6,12 +6,12 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>员工假期剩余天数</title>
+<title>个人假期剩余天数</title>
 <link rel="stylesheet" type="text/css" href="layui/css/layui.css">
 </head>
 <body>
   <blockquote class="layui-elem-quote layui-text">
-    <h3>- 员工假期剩余天数 -</h3>
+    <h3>- 个人假期剩余天数 -</h3>
   </blockquote>
 
 	<div class="layui-row" style="margin-top: 20px;">
@@ -30,6 +30,7 @@
 					<option value="年假">年假</option>
 					<option value="产假">产假</option>
 					<option value="事假">事假</option>
+					<option value="病假">病假</option>
 				</select>
 			</div>
 			<button type="button" class="layui-btn" data-type="reload">搜索</button>
@@ -103,8 +104,13 @@
 				align : 'center',
 				sort : 'true'
 			}, {
+				field : 'virtualUse',
+				title : '已申请天数',
+				align : 'center',
+				sort : 'true'
+			}, {
 				field : 'alreadyUse',
-				title : '已使用天数',
+				title : '实际已使用天数',
 				align : 'center',
 				sort : 'true'
 			}

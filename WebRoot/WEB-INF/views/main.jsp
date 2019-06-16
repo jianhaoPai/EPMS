@@ -23,7 +23,13 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
   .layui-layout-admin .layui-body{
      bottom:0;
   }
+  body {
+            height: 100%;width: 100%;
+            background: url('layui/images/jizhu.jpg');
+            background-size:cover;
+        }
 </style> 
+
 <body class="layui-layout-body">
 
 <div class="layui-layout layui-layout-admin">
@@ -74,7 +80,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
   <div  class="layui-body" >
     <!-- 内容主体区域 -->
     <div style="padding: 10px;">
-    
 		<iframe  class="layadmin-iframe"  src="requestPage?page=homePage"  name="right" frameborder="0" scrolling="auto" width="100%" height="96%"></iframe>
 	</div>
   </div>

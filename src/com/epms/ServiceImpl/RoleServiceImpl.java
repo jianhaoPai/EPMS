@@ -2,8 +2,10 @@ package com.epms.ServiceImpl;
 
 import java.util.List;
 
+import org.apache.ibatis.jdbc.RuntimeSqlException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.epms.Bean.Role;
 import com.epms.Mapper.RoleMapper;
@@ -53,5 +55,28 @@ public class RoleServiceImpl implements RoleService{
 	//删除权限组中的人员
 	public int deleteRightsGroupsPeople(int jobId,String rName) {
 		return roleMapper.deleteRightsGroupsPeople(jobId,rName);
+	}
+
+	//删除权限组
+	@Transactional
+	public int deleteRightsGroups(String rName) {
+		try{
+			//删除权限组-权限中权限组
+			int j=roleMapper.deleteRoleMenu(rName);
+			//删除权限组-用户中权限组
+			int k=roleMapper.deleteUserRole(rName);
+			//删除权限组表中权限组
+			int i=roleMapper.deleteRole(rName);
+			System.out.println("i:"+i+" j"+j+" k"+k);
+			if(i!=0||j!=0||k!=0){
+				return 1;
+			}else{
+				return 0;
+			}
+			
+		}catch(Exception e){
+			throw new RuntimeSqlException();
+		}
+		
 	}
 }

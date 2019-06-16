@@ -32,8 +32,6 @@ public class CommunicationServiceImpl implements CommunicationService
 		return communicationMapper.count(departmentId, jobId, name);
 	}
 	
-	
-	
 	//修改个人通讯信息
 	@Override
 	public String updateCommunication(Communication communication) 
@@ -53,10 +51,9 @@ public class CommunicationServiceImpl implements CommunicationService
 			else
 			{
 				result.put("status", false);
-				result.put("message", "修改失败！");
+				result.put("message", "修改失败，未进行信息修改！");
 			}
 		}
-		System.out.println(result);
 		return result.toString();
 	}
 	

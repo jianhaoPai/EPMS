@@ -6,12 +6,12 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>所有请假申请记录</title>
+<title>个人所有请假申请记录</title>
 <link rel="stylesheet" type="text/css" href="layui/css/layui.css">
 </head>
 <body>
 	<blockquote class="layui-elem-quote layui-text">
-		<h3>- 员工请假申请记录 -</h3>
+		<h3>- 个人请假申请记录 -</h3>
 	</blockquote>
 
 	<div class="layui-row" style="margin-top: 20px;">
@@ -152,7 +152,7 @@
 				,
 				id : 'test',
 				text : {
-					none : '暂时无请假申请记录'
+					none : '暂时无所查请假申请记录'
 				}
 			});
 

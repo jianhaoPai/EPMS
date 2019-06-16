@@ -79,7 +79,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			<div class="layui-inline">
 				<label class="layui-form-label">生日:</label>
 				<div class="layui-input-inline">
-					<input name="birthday" class="layui-input" id="date" type="text"
+					<input name="birthday" class="layui-input" id="date"
 						   placeholder="yyyy-MM-dd" autocomplete="off" lay-verify="date"
 						   value="${requestScope.personalinfo.birthday}">
 				</div>
@@ -210,14 +210,22 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 
 <script src="layui/layui.js" charset="utf-8"></script>
 
-
 <script>
-layui.use(['jquery','table','layer','form'],function(){
-			var table=layui.table;
-			var layer=layui.layer;
-			var form=layui.form;
-			var $=layui.$;
-			
+layui.use(['form', 'layedit', 'laydate'], function(){
+  var form = layui.form
+  ,layer = layui.layer
+  ,layedit = layui.layedit
+  ,laydate = layui.laydate;
+  var $=layui.$;
+  
+   //日期
+  laydate.render({
+    elem: '#date'
+  });
+  laydate.render({
+    elem: '#date1'
+  });
+  	
 	form.verify({
 			sex : [ /^['男'|'女']$/, '性别必须为男或女' ]
 		});

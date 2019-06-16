@@ -40,6 +40,11 @@
  	    update t_vacation set virtual_use = #{virtualUse} where job_id= #{jobId} and type= #{type}
  	</update>
  	
+ 	<update id="updateVirtualExceptRemain" parameterType="Vacation">
+ 	    update t_vacation set virtual_use = #{virtualUse},already_use=#{alreadyUse}
+ 	          where job_id= #{jobId} and type= #{type}
+ 	</update>
+ 	
  	<update id="updateVirtualAll" parameterType="Vacation">
  	    update t_vacation set virtual_use = #{virtualUse},remain=#{remain},already_use=#{alreadyUse}
  	          where job_id= #{jobId} and type= #{type}

@@ -57,5 +57,20 @@
 	<insert id="addUserToRole">
 		INSERT INTO t_userrole (job_id,role_id) VALUES (#{jobId},2);
 	</insert>
+	
+	<!-- 删除权限组表中权限组 -->
+	<delete id="deleteRole">
+		DELETE FROM t_role WHERE name=#{rName};
+	</delete>
+	
+	<!-- 删除权限组-权限中权限组 -->
+	<delete id="deleteRoleMenu">
+		DELETE FROM t_rolemenu WHERE role_id=(SELECT id FROM t_role WHERE name=#{rName});
+	</delete>
+	
+	<!-- 删除权限组-用户中权限组 -->
+	<delete id="deleteUserRole">
+		DELETE FROM t_userrole WHERE role_id=(SELECT id FROM t_role WHERE name=#{rName});
+	</delete>
 </mapper>
  

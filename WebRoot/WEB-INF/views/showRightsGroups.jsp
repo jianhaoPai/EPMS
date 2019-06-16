@@ -61,9 +61,6 @@
   <button class="layui-btn layui-btn-sm" lay-event="update">编辑</button>
   <button class="layui-btn layui-btn-sm" lay-event="look">查看人员</button>
   <button class="layui-btn layui-btn-sm" lay-event="lookRights">查看权限</button>
-</script>
-
-<script type="text/html" id="peoplebarDemo">
   <button class="layui-btn layui-btn-sm" lay-event="delete">删除</button>
 </script>
 
@@ -82,11 +79,11 @@ layui.use(['jquery','table','layer','form'],function(){
             ,cellMinWidth: 80
             ,cols: [[
             	   {type:'numbers',title:'序号',fixed:'left',align: 'center'}
-                  ,{field:'name',title:'名称',align:'center'}
-                  ,{field:'content',title:'人员',align:'center'}
-                  ,{field:'createName', title:'创建人',align: 'center'}
-                  ,{field:'createDate', title:'创建时间',align: 'center'}
-                  ,{fixed:'right',title:'操作',toolbar:'#barDemo'}
+                  ,{field:'name',title:'名称',align:'center',width:'200'}
+                  ,{field:'content',title:'人员',align:'center',width:'300'}
+                  ,{field:'createName', title:'创建人',align: 'center',width:'200'}
+                  ,{field:'createDate', title:'创建时间',align: 'center',width:'200'}
+                  ,{fixed:'right',title:'操作',toolbar:'#barDemo',width:'300'}
                   //一个工具栏  具体请查看layui官网
             ]]
             
@@ -198,6 +195,34 @@ layui.use(['jquery','table','layer','form'],function(){
 		        });
 
 			    }
+			    
+			    if(layEvent==='delete'){
+					layer.confirm('确定要删除吗？',{
+					  btn:['确定','取消'],
+					  title:"系统提示"
+					  },function(index){
+						$.ajax({
+							url:'deleteRightsGroups',
+							data:{
+								rName:data.name
+							},
+							async:true,//是否为异步请求
+							cache:false,//是否缓存结果
+							type:'post',//请求方式为POST
+							dataType:'json',
+							success:function(result){
+								if(result){
+									location.reload()
+								}else{
+										layer.msg("删除失败")
+								}
+							}
+							
+						});
+						
+						});
+				}
+			    
 			});
 			
 			

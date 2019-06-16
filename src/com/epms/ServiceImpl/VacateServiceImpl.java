@@ -65,7 +65,7 @@ public class VacateServiceImpl implements VacateService
 			vacateMapper.insertVacate(vacate);
 
 			// 根据提交的申请表，修改相应类型的假期剩余信息
-			if (vacate.getType().equals("年假") || vacate.getType().equals("年假")) 
+			/*if (vacate.getType().equals("年假") || vacate.getType().equals("产假")) 
 			{
 				Vacation vacation = vacationMapper.selectRemainByVacate(vacate);
 				int virtualUse = vacation.getVirtualUse();// 获得此时对应类型的假期虚拟使用天数
@@ -73,7 +73,13 @@ public class VacateServiceImpl implements VacateService
 				vacation.setType(vacate.getType());
 				vacation.setVirtualUse(vacate.getDaySum() + virtualUse);
 				vacationMapper.updateVirtualUse(vacation);
-			}
+			}*/
+			Vacation vacation = vacationMapper.selectRemainByVacate(vacate);
+			int virtualUse = vacation.getVirtualUse();// 获得此时对应类型的假期虚拟使用天数
+			vacation.setJobId(vacate.getJobId());
+			vacation.setType(vacate.getType());
+			vacation.setVirtualUse(vacate.getDaySum() + virtualUse);
+			vacationMapper.updateVirtualUse(vacation);
 			result.put("status", true);
 			result.put("message", "提交成功！");
 		} else {
@@ -299,6 +305,27 @@ public class VacateServiceImpl implements VacateService
 					vacation.setRemain(vacation.getRemain()-vacate.getDaySum());
 					vacation.setAlreadyUse(vacation.getAlreadyUse()+vacate.getDaySum());
 					vacationMapper.updateVirtualAll(vacation);
+				}
+			}
+			else
+			{
+				//根据审批状态，修改相应类型的假期剩余信息
+				vacate=vacateMapper.selectVacateById(vacate.getId());
+				Vacation vacation=vacationMapper.selectRemainByVacate(vacate);
+				int virtualUse=vacation.getVirtualUse();//获得此时对应类型的假期虚拟使用天数
+				vacation.setJobId(vacate.getJobId());
+				vacation.setType(vacate.getType());
+				
+				if(vacate.getState().equals("不同意"))
+				{	
+					vacation.setVirtualUse(virtualUse-vacate.getDaySum());
+					vacationMapper.updateVirtualUse(vacation);
+				}
+				else
+				{
+					vacation.setVirtualUse(virtualUse-vacate.getDaySum());
+					vacation.setAlreadyUse(vacation.getAlreadyUse()+vacate.getDaySum());
+					vacationMapper.updateVirtualExceptRemain(vacation);
 				}
 			}
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");

@@ -22,5 +22,7 @@ public interface RoleService {
 	public int countPeople(String id);
 	//删除权限组中的人员
 	public int deleteRightsGroupsPeople(int jobId,String rName);
+	//删除权限组
+	public int deleteRightsGroups(String rName);
 	
 }

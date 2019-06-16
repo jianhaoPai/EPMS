@@ -6,12 +6,12 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>所有反馈信息记录</title>
+<title>自己提交的反馈信息记录</title>
 <link rel="stylesheet" type="text/css" href="layui/css/layui.css">
 </head>
 <body>
 	<blockquote class="layui-elem-quote layui-text">
-		<h3>- 员工反馈信息记录 -</h3>
+		<h3>- 自己提交的全部反馈信息记录 -</h3>
 	</blockquote>
 
 	<div class="layui-row" style="margin-top: 20px;">

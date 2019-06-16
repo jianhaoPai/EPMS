@@ -35,4 +35,10 @@ public interface RoleMapper {
 	public int deleteRightsGroupsPeople(@Param("jobId")int jobId,@Param("rName")String rName);
 	//为新建用户添加默认权限组
 	public int addUserToRole(@Param("jobId")int jobId);
+	//删除权限组表中权限组
+	public int deleteRole(String rName);
+	//删除权限组-权限中权限组
+	public int deleteRoleMenu(String rName);
+	//删除权限组-用户中权限组
+	public int deleteUserRole(String rName);
 }

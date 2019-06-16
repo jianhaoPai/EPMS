@@ -30,15 +30,24 @@ public class AttendanceRuleServiceImpl implements AttendanceRuleService
 	public String updatetAttendanceRuleAll(AttendanceRule attendanceRule) 
 	{
 		JSONObject result = new JSONObject();
-		if (attendanceRuleMapper.updatetAttendanceRuleAll(attendanceRule) > 0) 
+		if(Integer.parseInt(attendanceRule.getSetFinish())>24||Integer.parseInt(attendanceRule.getSetFinish())<12
+				||Integer.parseInt(attendanceRule.getSetStart())<0||Integer.parseInt(attendanceRule.getSetStart())>12)
 		{
-			result.put("status", true);
-			result.put("message", "修改成功！");
-		} 
-		else 
+			return null;
+		}
+		else
 		{
-			result.put("status", false);
-			result.put("message", "修改失败！");
+			attendanceRule.setId(1);
+			if (attendanceRuleMapper.updatetAttendanceRuleAll(attendanceRule)>0) 
+			{
+				result.put("status", true);
+				result.put("message", "修改成功！");
+			} 
+			else 
+			{
+				result.put("status", false);
+				result.put("message", "修改失败，没进行修改！");
+			}
 		}
 		return result.toString();
 	}

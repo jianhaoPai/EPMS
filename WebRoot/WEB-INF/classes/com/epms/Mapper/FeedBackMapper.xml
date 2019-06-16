@@ -55,7 +55,8 @@
  	</select>
     
     <select id="selectFeedbackByDepartmentId"  resultType="Map">
-      select f.*,p.name,d.department_name,o.occupation_name from t_feedback as f,t_personalinfo as p,t_department as d,t_occupation as o
+      select f.*,p.name,d.department_name,o.occupation_name 
+        from t_feedback as f,t_personalinfo as p,t_department as d,t_occupation as o
                where f.job_id=p.job_id and p.department_id=#{departmentId}
                      and p.department_id=d.department_id and p.occupation_id=o.occupation_id
                      and p.job_id !=#{jobId}
@@ -73,8 +74,10 @@
  	
  	<select id="countByDepartmentId" resultType="int">
  	    select count(*) 
- 	      from t_feedback as f,t_personalinfo as p 
+ 	      from t_feedback as f,t_personalinfo as p,t_department as d,t_occupation as o
                where f.job_id=p.job_id and p.department_id=#{departmentId}
+                     and p.department_id=d.department_id and p.occupation_id=o.occupation_id
+                     and o.occupation_id=1
                <if test="department_id != null and department_id != ''">
  		           and p.department_id like '${department_id}%'
  		       </if>

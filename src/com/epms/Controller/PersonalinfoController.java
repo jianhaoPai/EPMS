@@ -10,6 +10,8 @@ import net.sf.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -49,9 +51,7 @@ public class PersonalinfoController
 	public ModelAndView SelectPersonal(ModelAndView mv,HttpSession session)
 	{
 		int jobId=Integer.parseInt(session.getAttribute("jobId").toString());
-		System.out.println(jobId);
 		personal=personalinfoService.selectPersonalById(jobId);
-		System.out.println(personal);
 		mv.addObject("personalinfo", personal);
 		mv.setViewName("selectPersonalinfo");
 		return mv;
@@ -60,11 +60,15 @@ public class PersonalinfoController
 	//修改个人信息
 	@RequestMapping(value="/updatePersonal",method=RequestMethod.POST,produces="application/json;charset=utf-8")
 	public @ResponseBody String updatePersonal(@Valid Personalinfo personalinfo,
-			             BindingResult error,HttpSession session)
+			             BindingResult error,Errors errors,HttpSession session)
 	{
-		if(error.hasErrors())
-		{
-			return null;
+		if(errors.hasErrors()){
+			//获取错误信息
+			List<FieldError>errorList=errors.getFieldErrors();
+			for(FieldError error1:errorList){
+				//打印字段错误信息
+				System.err.println("field:"+error1.getField()+"\t"+"msg:"+error1.getDefaultMessage());
+			}
 		}
 		int jobId=Integer.parseInt(session.getAttribute("jobId").toString());
 		personalinfo.setJobId(jobId);

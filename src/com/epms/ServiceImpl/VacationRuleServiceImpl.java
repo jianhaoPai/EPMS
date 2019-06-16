@@ -39,7 +39,7 @@ public class VacationRuleServiceImpl implements VacationRuleService
 			else
 			{
 				result.put("status", false);
-				result.put("message", "修改失败！");
+				result.put("message", "修改失败，未进行修改！");
 			}
 			return result.toString();
 		}

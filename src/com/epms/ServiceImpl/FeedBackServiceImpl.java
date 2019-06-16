@@ -92,7 +92,7 @@ public class FeedBackServiceImpl implements FeedBackService
 		if(personalinfo.getOccupation().getOccupationName().equals("部门经理"))
 		{
 			int departmentId=personalinfo.getDepartment().getDepartmentId();
-			return feedBackMapper.countByDepartmentId(state, department_id, feedback_type, departmentId);
+			return feedBackMapper.countByDepartmentId(state, department_id, feedback_type,departmentId);
 		}
 		else if(personalinfo.getOccupation().getOccupationName().equals("总经理"))
 		{

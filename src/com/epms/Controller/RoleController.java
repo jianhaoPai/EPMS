@@ -125,4 +125,18 @@ public class RoleController {
 		}
 		return result;
 	}
+	
+	@RequestMapping(value="/deleteRightsGroups",produces="application/json;charset=utf-8")
+	@ResponseBody
+	public String deleteRightsGroups(String rName){
+		System.out.println(rName);
+		String result="false";
+		int i=roleService.deleteRightsGroups(rName);
+		if(i==1){
+			result="true";
+		}else{
+			result="false";
+		}
+		return result;
+	}
 }
