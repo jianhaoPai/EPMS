@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.epms.Mapper.PerformSumMapper">
+ 	
+ 	<!-- 查询本人绩效评价的记录 -->
+ 	<select id="showAllPerform" resultType="Map">
+ 		SELECT score,type,assess_date as assessDate,t_personalinfo.name,apprival_date as apprivalDate,state FROM t_performsum,t_personalinfo WHERE t_performsum.job_id=#{0} and state='审核完成' and t_performsum.approver_id=t_personalinfo.job_id ORDER BY assessDate desc  LIMIT #{1},#{2}
+ 	</select>
+ 	
+ 	<!-- 计算总条数 -->
+ 	<select id="count" resultType="int">
+ 	    select count(*) from t_performsum WHERE job_id=#{jobId}
+ 	</select>
+
+	<!-- 添加总绩效成绩 -->
+	<insert id="addPerformSum">
+		INSERT INTO t_performsum (job_id,score,type,assess_date) VALUES (#{evaluateId},#{score},#{type},#{assessDate})
+	</insert>
+	
+	<!-- 显示经理的部门中需要审核的绩效评价记录 -->
+	<select id="showVerifyPerform" resultType="map">
+		SELECT t_performsum.job_id as jobId,t_personalinfo.name,score,type,assess_date as assessDate,state
+		FROM t_performsum,t_personalinfo
+		WHERE t_performsum.job_id in(SELECT job_id FROM t_personalinfo WHERE department_id=(SELECT department_id FROM t_personalinfo WHERE t_personalinfo.job_id=#{jobId}))
+		and t_personalinfo.job_id&lt;&gt;#{jobId} and state='待审核' and t_personalinfo.job_id=t_performsum.job_Id LIMIT #{before},#{after}
+	</select>
+	
+	<!-- 获取经理的部门中需要审核的绩效评价记录条数 -->
+	<select id="countStaffVerifyPerform" resultType="int">
+		SELECT COUNT(*) FROM t_performsum,t_personalinfo
+		WHERE t_performsum.job_id in(SELECT job_id FROM t_personalinfo WHERE department_id=(SELECT department_id FROM t_personalinfo WHERE t_personalinfo.job_id=#{jobId}))
+		and t_personalinfo.job_id&lt;&gt;#{jobId} and state='待审核' and t_personalinfo.job_id=t_performsum.job_Id
+	</select>
+	
+	<!-- 审核绩效评价记录 -->
+	<update id="updateVerifyPerform">
+		update t_performsum
+		<set>
+			approver_id=#{approverId},apprival_date=#{nowTime},state='审核完成' 
+		</set>
+		WHERE job_id=#{jobId} and assess_date=#{assessDate} and state='待审核';
+	</update>
+	
+	<!-- 获取总经理需要审核的绩效评价记录 -->
+	<select id="showGeneralManagerVerifyPerform" resultType="map">
+		SELECT s.job_id AS jobId,name,score,type,assess_date AS assessDate,state FROM t_performsum as s
+		INNER JOIN t_personalinfo as i ON i.job_id=s.job_id
+		WHERE  s.job_id IN (SELECT manager_id FROM t_department WHERE manager_id&lt;&gt;#{jobId}) and state='待审核' LIMIT #{before},#{after}
+	</select>
+	
+	<!-- 获取总经理中需要审核的绩效评价记录条数 -->
+	<select id="countManagerVerifyPerform" resultType="int">
+		SELECT COUNT(*) FROM t_performsum
+		WHERE  job_id IN (SELECT manager_id FROM t_department WHERE manager_id&lt;&gt;#{jobId}) and state='待审核'
+	</select>
+	
+	<!-- 判断审核人的身份(总经理/部门经理/董事) -->
+	<select id="findIdentityByJobId" resultType="String">
+		SELECT t_occupation.occupation_name FROM t_personalinfo,t_occupation WHERE t_occupation.occupation_id=t_personalinfo.occupation_id and t_personalinfo.job_id=#{jobId}
+	</select>
+	
+	<!-- 获取总经理需要审核的绩效评价记录 -->
+	<select id="showDirectorVerifyPerform" resultType="map">
+		SELECT t_performsum.job_id as jobId,t_personalinfo.name,score,type,assess_date as assessDate,state
+		FROM t_performsum,t_personalinfo WHERE t_performsum.job_id=
+		(SELECT job_id FROM t_personalinfo WHERE occupation_id=
+		(SELECT occupation_id FROM t_occupation WHERE occupation_name='总经理'))
+		AND t_performsum.job_id=t_personalinfo.job_id and state='待审核' LIMIT #{before},#{after}
+	</select>
+	
+	<!-- 获取总经理中需要审核的绩效评价记录条数 -->
+	<select id="countDirectorVerifyPerform" resultType="int">
+		SELECT COUNT(*)
+		FROM t_performsum WHERE t_performsum.job_id=
+		(SELECT job_id FROM t_personalinfo WHERE occupation_id=
+		(SELECT occupation_id FROM t_occupation WHERE occupation_name='总经理'))
+		AND state='待审核'
+	</select>
+
+	
+	<!-- 获取董事查询员工绩效评价记录 -->
+	<select id="showDirectorStaffPerform" resultType="map">
+		SELECT p.job_id,i.name as Pname,department_name,occupation_name,score,type,assess_date,f.name as Aname,apprival_date,state
+		FROM t_performsum as p
+		INNER JOIN t_personalinfo as i ON p.job_id=i.job_id
+		INNER JOIN t_personalinfo as f ON p.approver_id=f.job_id
+		INNER JOIN t_department as d ON d.department_id=i.department_id
+		INNER JOIN t_occupation as o ON o.occupation_id=i.occupation_id
+		WHERE p.job_id=i.job_id and state='审核完成' ORDER BY department_name,occupation_name LIMIT #{before},#{after}
+	</select>
+	
+	<!-- 获取董事查询员工绩效评价记录条数 -->
+	<select id="countDirectorStaffPerform" resultType="int">
+		SELECT COUNT(*)
+		FROM t_performsum
+		WHERE state='审核完成'
+	</select>
+	
+	<!-- 获取总经理查询员工绩效评价记录 -->
+	<select id="showGeneralManagerStaffPerform" resultType="map">
+		SELECT p.job_id,i.name as Pname,department_name,occupation_name,score,type,assess_date,f.name as Aname,apprival_date,state
+		FROM t_performsum as p
+		INNER JOIN t_personalinfo as i ON p.job_id=i.job_id
+		INNER JOIN t_personalinfo as f ON p.approver_id=f.job_id
+		INNER JOIN t_department as d ON d.department_id=i.department_id
+		INNER JOIN t_occupation as o ON o.occupation_id=i.occupation_id
+		WHERE p.job_id=i.job_id and state='审核完成' and p.job_id&lt;&gt;(SELECT manager_id FROM t_department WHERE department_name='管理层') ORDER BY apprival_date LIMIT #{before},#{after}
+	</select>
+	
+	<!-- 获取总经理查询员工绩效评价记录条数 -->
+	<select id="countGeneralManagerStaffPerform" resultType="int">
+		SELECT COUNT(*)
+		FROM t_performsum
+		WHERE state='审核完成' and job_id&lt;&gt;(SELECT manager_id FROM t_department WHERE department_name='管理层')
+	</select>
+	
+	<!-- 获取部门经理查询员工绩效评价记录 -->
+	<select id="showManagerStaffPerform" resultType="map">
+		SELECT p.job_id,i.name as Pname,department_name,occupation_name,score,type,assess_date,f.name as Aname,apprival_date,state
+		FROM t_performsum as p
+		INNER JOIN t_personalinfo as i ON p.job_id=i.job_id
+		INNER JOIN t_personalinfo as f ON p.approver_id=f.job_id
+		INNER JOIN t_department as d ON d.department_id=i.department_id
+		INNER JOIN t_occupation as o ON o.occupation_id=i.occupation_id
+		WHERE p.job_id=i.job_id and p.job_id IN (SELECT job_id FROM t_personalinfo WHERE department_id=(SELECT department_id FROM t_department WHERE manager_id=#{jobId}) and job_id&lt;&gt;#{jobId}
+		) and state='审核完成' ORDER BY apprival_date LIMIT #{before},#{after}
+	</select>
+	
+	<!-- 获取部门经理查询员工绩效评价记录条数 -->
+	<select id="countManagerStaffPerform" resultType="int">
+		SELECT COUNT(*)
+		FROM t_performsum
+		WHERE job_id IN (SELECT job_id FROM t_personalinfo WHERE department_id=(SELECT department_id FROM t_department WHERE manager_id=#{jobId}) and job_id&lt;&gt;#{jobId}
+		) and state='审核完成'
+	</select>
+	
+	<!-- 删除总绩效评价的记录 -->
+	<delete id="deletePerformSum">
+		DELETE  FROM t_performsum WHERE job_id=#{jobId} and assess_date=#{assessDate}
+	</delete>
+	
+	<select id="selectPerform">
+		SELECT * FROM t_performsum WHERE job_id#{jobId} AND type='月度评价' AND assess_date=#{assessDate} AND state='待审核';
+	</select>
+</mapper>
+ 

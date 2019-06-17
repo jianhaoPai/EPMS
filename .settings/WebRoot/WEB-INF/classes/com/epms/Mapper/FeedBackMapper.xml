@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+    <mapper namespace="com.epms.Mapper.FeedBackMapper">
+     
+    <resultMap type="FeedBack" id="FeedBackResult">
+       <id property="id" column="id"/>
+       <result property="jobId" column="job_id"/>
+       <result property="reason" column="reason"/>
+       <result property="state" column="state"/>
+       <result property="submitDate" column="submit_date"/>
+       <result property="approvalDate" column="approval_date"/>
+       <result property="feedbackType" column="feedback_type"/>
+    </resultMap>
+    
+    
+    <insert id="insertFeedbackInfo" parameterType="FeedBack">
+     insert into t_feedback(job_id,reason,submit_date,feedback_type,state) 
+          values(#{jobId},#{reason},#{submitDate},#{feedbackType},#{state});
+    </insert> 
+    
+    <select id="selectFeedbackOnlyManager" resultType="Map">
+       select f.*,p.name,d.department_name,o.occupation_name 
+            from t_feedback as f,t_personalinfo as p,t_department as d,t_occupation as o
+               where f.job_id=p.job_id and p.department_id=d.department_id 
+                  and p.occupation_id=o.occupation_id and o.occupation_id=2
+                  <if test="department_id != null and department_id != ''">
+ 		              and p.department_id like '${department_id}%'
+ 		          </if>
+ 		          <if test="feedback_type != null and feedback_type != ''">
+ 		              and feedback_type like '${feedback_type}%'
+ 		          </if>
+ 		          <if test="state != null and state != ''">
+ 		              and state like '${state}%'
+ 		          </if>
+                      LIMIT #{before},#{after}
+    </select>
+    
+    <select id="countOnlyManager" resultType="int">
+ 	    select count(*) 
+ 	       from t_feedback as f,t_personalinfo as p,t_department as d,t_occupation as o
+               where f.job_id=p.job_id and p.department_id=d.department_id 
+                  and p.occupation_id=o.occupation_id and o.occupation_id=2
+                  <if test="department_id != null and department_id != ''">
+ 		              and p.department_id like '${department_id}%'
+ 		          </if>
+ 		          <if test="feedback_type != null and feedback_type != ''">
+ 		              and feedback_type like '${feedback_type}%'
+ 		          </if>
+ 		          <if test="state != null and state != ''">
+ 		              and state like '${state}%'
+ 		          </if>
+ 	</select>
+    
+    <select id="selectFeedbackByDepartmentId"  resultType="Map">
+      select f.*,p.name,d.department_name,o.occupation_name 
+        from t_feedback as f,t_personalinfo as p,t_department as d,t_occupation as o
+               where f.job_id=p.job_id and p.department_id=#{departmentId}
+                     and p.department_id=d.department_id and p.occupation_id=o.occupation_id
+                     and p.job_id !=#{jobId}
+                     <if test="department_id != null and department_id != ''">
+ 		                 and p.department_id like '${department_id}%'
+ 		             </if>
+ 		             <if test="feedback_type != null and feedback_type != ''">
+ 		                 and feedback_type like '${feedback_type}%'
+ 		             </if>
+ 		             <if test="state != null and state != ''">
+ 		                 and state like '${state}%'
+ 		             </if>
+                       LIMIT #{before},#{after}
+    </select>
+ 	
+ 	<select id="countByDepartmentId" resultType="int">
+ 	    select count(*) 
+ 	      from t_feedback as f,t_personalinfo as p,t_department as d,t_occupation as o
+               where f.job_id=p.job_id and p.department_id=#{departmentId}
+                     and p.department_id=d.department_id and p.occupation_id=o.occupation_id
+                     and o.occupation_id=1
+               <if test="department_id != null and department_id != ''">
+ 		           and p.department_id like '${department_id}%'
+ 		       </if>
+ 		       <if test="feedback_type != null and feedback_type != ''">
+ 		           and feedback_type like '${feedback_type}%'
+ 		       </if>
+ 		       <if test="state != null and state != ''">
+ 		           and state like '${state}%'
+ 		       </if>
+ 	</select>
+ 	
+ 	
+ 	<select id="selectFeedbackOnlyTotalManager"  resultType="Map">
+      select f.*,p.name,d.department_name,o.occupation_name 
+         from t_feedback as f,t_personalinfo as p,t_department as d,t_occupation as o
+               where f.job_id=p.job_id and p.department_id=d.department_id 
+                  and p.occupation_id=o.occupation_id and o.occupation_id=3
+                  <if test="department_id != null and department_id != ''">
+ 		              and p.department_id like '${department_id}%'
+ 		          </if>
+ 		          <if test="feedback_type != null and feedback_type != ''">
+ 		              and feedback_type like '${feedback_type}%'
+ 		          </if>
+ 		          <if test="state != null and state != ''">
+ 		              and state like '${state}%'
+ 		          </if>
+                       LIMIT #{before},#{after}
+    </select>
+ 	
+ 	<select id="countOnlyTotalManager" resultType="int">
+ 	    select count(*) 
+ 	       from t_feedback as f,t_personalinfo as p,t_department as d,t_occupation as o
+               where f.job_id=p.job_id and p.department_id=d.department_id 
+                  and p.occupation_id=o.occupation_id and o.occupation_id=3
+                  <if test="department_id != null and department_id != ''">
+ 		              and p.department_id like '${department_id}%'
+ 		          </if>
+ 		          <if test="feedback_type != null and feedback_type != ''">
+ 		              and feedback_type like '${feedback_type}%'
+ 		          </if>
+ 		          <if test="state != null and state != ''">
+ 		              and state like '${state}%'
+ 		          </if>
+ 	</select>
+ 	
+ 	<select id="selectFeedbackById" parameterType="int" resultMap="FeedBackResult">
+ 	    select * from t_feedback where id =#{id}
+ 	</select>
+ 	
+ 	<update id="updateFeedback" parameterType="FeedBack">
+ 	    update t_feedback set approval_date=#{approvalDate},state=#{state}
+ 	             where id =#{id}
+ 	</update>
+ 	
+ 	 <select id="selectAllFeedBackByJobId" resultMap="FeedBackResult">
+ 		select * from t_feedback where job_id =#{jobId} 
+ 		  <if test="feedbackType != null and feedbackType != ''">
+ 		     and feedback_type like '${feedbackType}%'
+ 		  </if>
+ 		  <if test="state != null and state != ''">
+ 		     and state like '${state}%'
+ 		  </if>
+ 		LIMIT #{before},#{after}
+ 	</select>
+ 	
+ 	<select id="countByJobId" resultType="int">
+ 	    select count(*) from t_feedback where job_id =#{jobId}
+ 	      <if test="feedbackType != null and feedbackType != ''">
+ 		     and feedback_type like '${feedbackType}%'
+ 		  </if>
+ 		  <if test="state != null and state != ''">
+ 		     and state like '${state}%'
+ 		  </if>
+ 	</select>
+ 	
+ 	<select id="checkIfRepeat" parameterType="FeedBack" resultType="int">
+ 	    select count(*) from t_feedback 
+ 	             where job_id =#{jobId} and reason=#{reason} 
+ 	                   and feedback_type=#{feedbackType} and submit_date=#{submitDate}
+ 	</select>
+ 	
+</mapper>

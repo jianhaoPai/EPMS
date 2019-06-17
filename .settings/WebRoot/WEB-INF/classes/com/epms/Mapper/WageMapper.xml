@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.epms.Mapper.WageMapper">
+ 	
+ 	<resultMap type="Wage" id="WageResult">
+       <id property="id" column="id"/>
+       <result property="wageTime" column="wage_time"/>
+       <result property="basicWage" column="basic_wage"/>
+       <result property="overtimePay" column="overtime_pay"/>
+       <result property="liveAllowance" column="live_allowance"/>
+       <result property="holidayAllowance" column="holiday_allowance"/>
+       <result property="performAllowance" column="perform_allowance"/>
+       <result property="absence" column="absence"/>
+       <result property="socialSecurity" column="social_security"/>
+       <result property="borrow" column="borrow"/>
+       <result property="other" column="other"/>
+       <result property="wageTax" column="wage_tax"/>
+       <result property="taxAmount" column="tax_amount"/>
+       <result property="sum" column="sum"/>
+       <result property="verifyId" column="verify_id"/>
+       <result property="verifyDate" column="verify_date"/>
+       <result property="state" column="state"/>
+    </resultMap>
+ 	
+ 	<select id="showWageByJobId" resultType="Map">
+		SELECT * FROM t_wage WHERE job_id=#{jobId}
+ 		LIMIT #{before},#{after}
+ 	</select>
+ 	
+ 	<select id="countByJobId" resultType="int">
+		SELECT COUNT(*) FROM t_wage WHERE job_id=#{jobId}
+ 	</select>
+ 
+ 	<!-- 添加工资 -->
+ 	<insert id="addWage">
+ 		INSERT INTO t_wage (job_id,wage_time,basic_wage,overtime_pay,live_allowance,perform_allowance,absence,social_security,housing_fund,borrow,other,wage_tax,tax_amount,sum,state) VALUES (#{jobId},#{wageTime},#{basicWage},
+			#{overTimePay},#{liveAllowance},#{holidayAllowance},#{performAllowance},#{absence},
+			#{socialSecurity},#{housingFund},#{borrow},#{other},
+			#{wageTax},#{taxAmount},#{sum},'待审核');
+ 	</insert>
+ 	
+ 	<!-- 查询基本工资 -->
+	<select id="selectWageByJobId" resultType="staffWage">
+		SELECT * FROM t_staffwage WHERE job_id=#{jobId} AND state='已完成';
+	</select>
+	
+	<!-- 查看工资 -->
+	<select id="selectWage" resultType="Wage">
+		SELECT * FROM t_wage WHERE wage_time=#{wageTime} AND  job_id=#{jobId};
+	</select>
+	
+	<!-- 查看需要工资审核的记录 -->
+	<select id="showVerifyWage" resultMap="WageResult">
+		SELECT * FROM t_wage WHERE state='待审核';
+	</select>
+	
+	<!-- 查看需要工资审核的记录条数 -->
+	<select id="countVerifyWage" resultType="int">
+		SELECT COUNT(*) FROM t_wage WHERE state='待审核'
+	</select>
+</mapper>
+ 

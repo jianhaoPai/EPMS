@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.epms.Mapper.CultivateApplyMapper">
+
+	<resultMap type="CultivateApply" id="cultivateApplyResult">
+		<id property="id" column="id"></id>
+		<result property="writeId" column="write_id"></result>
+		<result property="introduce" column="introduce" />
+		<result property="sum" column="sum" />
+		<result property="startDate" column="start_date" />
+		<result property="finishDate" column="finish_date" />
+		<result property="approvalDate" column="approval_date" />
+		<result property="typeId" column="type_id" />
+		<result property="facePeople" column="face_people" />
+		<result property="alreadyPerson" column="already_person" />
+		<association property="cultivateType" javaType="CultivateType">
+			<id property="cultivateId" column="cultivate_id" />
+			<result property="cultivateName" column="cultivate_name"></result>
+		</association>
+		<association property="teacher" javaType="Teacher">
+			<id property="id" column="id" />
+			<result property="teacherName" column="teacher_name"></result>
+			<result property="education" column="education"></result>
+			<result property="experience" column="experience"></result>
+		</association>
+	</resultMap>
+
+	<!-- 提交培训计划 -->
+	<select id="checkIfRepect" resultType="int" parameterType="CultivateApply">
+		select count(*)
+		from t_cultivateapply
+		where write_id=#{writeId}
+		and sum=#{sum}
+		and submit_date=#{submitDate}
+		and finish_date=#{finishDate}
+		and introduce=#{introduce}
+		and site=#{site}
+		and train_name=#{trainName}
+		and face_people=#{facePeople}
+		and teacher_id=#{teacher.id}
+	</select>
+	<insert id="insertCultivateApply">
+		insert into t_cultivateapply(train_name,write_id,type_id,teacher_id,
+		start_date,finish_date,site,cost,sum,submit_date,status,face_people,introduce)
+		values(#{trainName},#{writeId},#{cultivateType.cultivateId},#{teacher.id},
+		#{startDate},#{finishDate},#{site},#{cost},#{sum},#{submitDate},#{status},#{facePeople},#{introduce})
+	</insert>
+
+	<!-- 下级查看自己提交给上级的培训计划 -->
+	<select id="selectAllCultivateApplyByWriteId" resultType="Map">
+		select a.*,t.cultivate_name,h.teacher_name,d.department_name,p.name
+		from t_cultivateapply as a,t_cultivatetype as t,t_teacher as
+		h,t_personalinfo as p,t_department as d
+		where a.type_id=t.cultivate_id
+		and a.teacher_id=h.id
+		and p.department_id=d.department_id
+		and a.write_id=p.job_id
+		and a.write_id=#{writeId}
+		<if test="cultivateId != null and cultivateId != ''">
+			and a.type_id like '${cultivateId}%'
+		</if>
+		<if test="status != null and status != ''">
+			and a.status like '${status}%'
+		</if>
+		LIMIT #{before},#{after}
+	</select>
+	<select id="countSelectAllCultivateApplyByWriteId" resultType="int">
+		select count(*)
+		from t_cultivateapply as a,t_cultivatetype as t,t_teacher as
+		h,t_personalinfo as p,t_department as d
+		where a.type_id=t.cultivate_id
+		and a.teacher_id=h.id
+		and p.department_id=d.department_id
+		and a.write_id=p.job_id
+		and a.write_id=#{writeId}
+		<if test="cultivateId != null and cultivateId != ''">
+			and a.type_id like '${cultivateId}%'
+		</if>
+		<if test="status != null and status != ''">
+			and a.status like '${status}%'
+		</if>
+	</select>
+
+	<!-- 上级查询直接下级的培训计划 -->
+	<select id="selectCultivateApplyToTotalManager" resultType="Map">
+		select
+		a.*,t.cultivate_name,h.teacher_name,d.department_name,p.name,o.occupation_name
+		from t_cultivateapply as a,t_cultivatetype as t,t_teacher as
+		h,t_personalinfo as p,t_department as d,t_occupation as o
+		where a.type_id=t.cultivate_id
+		and a.teacher_id=h.id
+		and p.department_id=d.department_id
+		and a.write_id=p.job_id
+		and o.occupation_id=2
+		and o.occupation_id=p.occupation_id
+		LIMIT #{before},#{after}
+	</select>
+
+	<select id="countToTotalManager" resultType="int">
+		select count(*)
+		from t_cultivateapply as a,t_cultivatetype as t,t_teacher as
+		h,t_personalinfo as p,t_department as d,t_occupation as o
+		where a.type_id=t.cultivate_id
+		and a.teacher_id=h.id
+		and p.department_id=d.department_id
+		and a.write_id=p.job_id
+		and o.occupation_id=2
+		and o.occupation_id=p.occupation_id
+	</select>
+
+	<select id="selectCultivateApplyToBoard" resultType="Map">
+		select
+		a.*,t.cultivate_name,h.teacher_name,d.department_name,p.name,o.occupation_name
+		from t_cultivateapply as a,t_cultivatetype as t,t_teacher as
+		h,t_personalinfo as p,t_department as d,t_occupation as o
+		where a.type_id=t.cultivate_id
+		and a.teacher_id=h.id
+		and p.department_id=d.department_id
+		and a.write_id=p.job_id
+		and o.occupation_id=3
+		and o.occupation_id=p.occupation_id
+		LIMIT #{before},#{after}
+	</select>
+
+	<select id="countToBoard" resultType="int">
+		select count(*)
+		from t_cultivateapply as a,t_cultivatetype as t,t_teacher as
+		h,t_personalinfo as p,t_department as d,t_occupation as o
+		where a.type_id=t.cultivate_id
+		and a.teacher_id=h.id
+		and p.department_id=d.department_id
+		and a.write_id=p.job_id
+		and o.occupation_id=3
+		and o.occupation_id=p.occupation_id
+	</select>
+	<!-- 审核培训计划 -->
+	<update id="updateCultivateApplyStatus" parameterType="CultivateApply">
+		update t_cultivateapply
+		set status=#{status},approval_date=#{approvalDate} where id=#{id};
+	</update>
+
+	<select id="selectCultivateApplyById" parameterType="int"
+		resultMap="cultivateApplyResult">
+		select * from t_cultivateapply where id=#{id};
+	</select>
+
+	<!-- 查询培训计划并报名 -->
+	<select id="selectAllCultivateApplyToEmployee" resultType="Map">
+		select
+		a.*,t.cultivate_name,h.teacher_name,h.experience,h.education,d.*
+		from t_cultivateapply as a,t_cultivatetype as t,t_teacher as
+		h,t_department as d,t_personalinfo as p
+		where a.type_id=t.cultivate_id
+		and a.teacher_id=h.id
+		and a.status='通过'
+		and a.write_id=p.job_id
+		and p.department_id=d.department_id
+		LIMIT #{before},#{after}
+	</select>
+	<select id="countSelectAllCultivateApplyToEmployee" resultType="int">
+		select count(*)
+		from t_cultivateapply as a,t_cultivatetype as t,t_teacher as
+		h,t_department as d,t_personalinfo as p
+		where a.type_id=t.cultivate_id
+		and a.teacher_id=h.id
+		and a.status='通过'
+		and a.write_id=p.job_id
+		and p.department_id=d.department_id
+	</select>
+	<update id="updatealreadyPerson">
+		update t_cultivateapply
+		set already_person=#{alreadyPerson}
+		where id=#{id}
+	</update>
+
+	<!-- 通过培训id查询培训信息 -->
+	<select id="selectById" resultMap="cultivateApplyResult">
+		select * from t_cultivateapply where id = #{id}
+	</select>
+
+
+	<select id="selectTheSameDateInId" resultMap="cultivateApplyResult">
+	   select id,start_date,finish_date from t_cultivateapply 
+	    <where>
+         <if test="ids !=null and ids.length>0">
+         <foreach collection="ids" item="id" separator="," open="and id in("  close=")">
+               #{id}
+         </foreach>       
+         </if>
+       </where>
+       and start_date like'${year}-${month}%' and finish_date like '${year}-${month}%'
+       and status='通过'
+	</select>
+	
+	<select id="selectSameStartDateInId" resultMap="cultivateApplyResult">
+	   select id,start_date,finish_date from t_cultivateapply 
+	    <where>
+         <if test="ids !=null and ids.length>0">
+         <foreach collection="ids" item="id" separator="," open="and id in("  close=")">
+               #{id}
+         </foreach>       
+         </if>
+       </where>
+       and start_date like'${year}-${month}%' and finish_date not like '${year}-${month}%'
+       and status='通过'
+	</select>
+	
+	<select id="selectSameFinishDateInId" resultMap="cultivateApplyResult">
+	   select id,start_date,finish_date from t_cultivateapply 
+	    <where>
+         <if test="ids !=null and ids.length>0">
+         <foreach collection="ids" item="id" separator="," open="and id in("  close=")">
+               #{id}
+         </foreach>       
+         </if>
+       </where>
+       and start_date not like'${year}-${month}%' and finish_date like '${year}-${month}%'
+       and status='通过'
+	</select>
+</mapper>
+
+	
+	
+	

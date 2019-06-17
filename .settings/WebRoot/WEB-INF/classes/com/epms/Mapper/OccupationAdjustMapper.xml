@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+ <mapper namespace="com.epms.Mapper.OccupationAdjustMapper">
+  
+    <resultMap type="OccupationAdjust" id="occupationAdjustResult">
+       <id property="applyId" column="apply_id"/>
+       <result property="type" column="type"/>
+       <result property="toDepartmentId" column="to_departmentid"/>
+       <result property="toOccupationId" column="to_occupationid"/>
+       <result property="preDepartmentId" column="pre_departmentid"/>
+       <result property="preOccupationId" column="pre_occupationid"/>
+       <association property="apply" javaType="Apply">
+          <id property="id" column="id"/>
+          <result property="writeId" column="write_id"/>
+          <result property="passiveId" column="passive_id"/>
+          <result property="reason" column="reason"/>
+          <result property="submitDate" column="submit_date"/>
+          <result property="approvalDate" column="approval_date"/>
+          <result property="state" column="state"/>
+          <association property="applytype" javaType="Applytype" >
+            <id property="applytypeId" column="applytype_id"/> 
+            <result property="applytypeName" column="applytype_name"/>
+          </association>
+       </association>
+    </resultMap>
+    
+    <insert id="insertOccupationAdjust" parameterType="OccupationAdjust">       
+       insert into t_occupationadjust (apply_id,type,to_departmentid,to_occupationid,pre_departmentid,pre_occupationid) 
+             values(#{applyId},#{type},#{toDepartmentId},#{toOccupationId},#{preDepartmentId},#{preOccupationId});
+    </insert>
+    
+    <select id="selectIfRepeat" resultType="int" parameterType="OccupationAdjust">
+ 	    select count(*) from t_occupationadjust as o,t_apply as a 
+ 	        where o.apply_id=a.id 
+ 	              and o.to_departmentid=#{toDepartmentId}
+ 	              and o.to_occupationid=#{toOccupationId}
+ 	              and a.write_id=#{apply.writeId} and a.passive_id=#{apply.passiveId}
+ 	              and a.submit_date=#{apply.submitDate} and a.reason=#{apply.reason}
+ 	</select>
+    
+    <select id="selectAllOccupationAdjustByWriteId"  resultType="Map">
+      select a.*,j.*,t.applytype_name,p1.name as passiveName,tod.department_name as ToDepartmentName,too.occupation_name as ToOccupationName,
+         pred.department_name as PreDepartmentName,preo.occupation_name as PreOccupationName
+           from t_occupationadjust as j, t_apply as a, t_applytype as t, t_department as tod,t_department as pred,
+                t_occupation as too,t_occupation as preo,t_personalinfo as p1
+               where j.apply_id=a.id
+                     and a.apply_typeid=t.applytype_id 
+                     and a.passive_id=p1.job_id 
+                     and p1.department_id=pred.department_id
+                     and p1.occupation_id=preo.occupation_id
+                     and j.to_departmentid=tod.department_id
+                     and j.to_occupationid=too.occupation_id
+                     and a.write_id=#{jobId}
+                     <if test="type != null and type != ''">
+ 		                 and type like '${type}%'
+ 		             </if>
+ 		             <if test="state != null and state != ''">
+ 		                 and state like '${state}%'
+ 		             </if>
+ 		             <if test="pre_departmentid != null and pre_departmentid != ''">
+ 		                 and p1.department_id like '${pre_departmentid}%'
+ 		             </if>
+                     LIMIT #{before},#{after}
+    </select>
+ 	
+ 	<select id="countByWriteId" resultType="int">
+ 	    select count(*) 
+ 	        from t_occupationadjust as j, t_apply as a, t_applytype as t, t_department as tod,t_department as pred,
+                t_occupation as too,t_occupation as preo,t_personalinfo as p1
+               where j.apply_id=a.id
+                     and a.apply_typeid=t.applytype_id 
+                     and a.passive_id=p1.job_id 
+                     and p1.department_id=pred.department_id
+                     and p1.occupation_id=preo.occupation_id
+                     and j.to_departmentid=tod.department_id
+                     and j.to_occupationid=too.occupation_id
+                     and a.write_id=#{jobId}
+                     <if test="type != null and type != ''">
+ 		                 and type like '${type}%'
+ 		             </if>
+ 		             <if test="state != null and state != ''">
+ 		                 and state like '${state}%'
+ 		             </if>
+ 		             <if test="pre_departmentid != null and pre_departmentid != ''">
+ 		                 and p1.department_id like '${pre_departmentid}%'
+ 		             </if>
+ 	</select>
+ 	
+ 	<select id="selectOccupationAdjustToLeader"  resultType="Map">
+      select a.*,j.*,t.applytype_name,p1.name as passiveName,p2.name as writeName,tod.department_name as ToDepartmentName,
+             too.occupation_name as ToOccupationName,pred.department_name as PreDepartmentName,
+             preo.occupation_name as PreOccupationName
+               from  t_occupationadjust as j, t_apply as a, t_applytype as t,t_department as tod,t_department as pred,
+                     t_occupation as too,t_occupation as preo,t_personalinfo as p1,t_personalinfo as p2
+                       where j.apply_id=a.id
+                             and a.apply_typeid=t.applytype_id 
+                             and a.passive_id=p1.job_id 
+                             and a.write_id=p2.job_id 
+                             and p1.department_id=pred.department_id
+                             and p1.occupation_id=preo.occupation_id
+                             and j.to_departmentid=tod.department_id
+                             and j.to_occupationid=too.occupation_id
+                             and p2.occupation_id=#{writeOccupationId}
+                             <if test="type != null and type != ''">
+ 		                         and type like '${type}%'
+ 		                     </if>
+ 		                     <if test="state != null and state != ''">
+ 		                         and state like '${state}%'
+ 		                     </if>
+ 		                     <if test="pre_departmentid != null and pre_departmentid != ''">
+ 		                         and p1.department_id like '${pre_departmentid}%'
+ 		                     </if>
+                             LIMIT #{before},#{after}
+    </select>
+ 	
+ 	<select id="countToLeader" resultType="int">
+ 	    select count(*)
+           from  t_occupationadjust as j, t_apply as a, t_applytype as t,t_department as tod,t_department as pred,
+                     t_occupation as too,t_occupation as preo,t_personalinfo as p1,t_personalinfo as p2
+                       where j.apply_id=a.id
+                             and a.apply_typeid=t.applytype_id 
+                             and a.passive_id=p1.job_id 
+                             and a.write_id=p2.job_id 
+                             and p1.department_id=pred.department_id
+                             and p1.occupation_id=preo.occupation_id
+                             and j.to_departmentid=tod.department_id
+                             and j.to_occupationid=too.occupation_id
+                             and p2.occupation_id=#{writeOccupationId}
+                             <if test="type != null and type != ''">
+ 		                         and type like '${type}%'
+ 		                     </if>
+ 		                     <if test="state != null and state != ''">
+ 		                         and state like '${state}%'
+ 		                     </if>
+ 		                     <if test="pre_departmentid != null and pre_departmentid != ''">
+ 		                         and p1.department_id like '${pre_departmentid}%'
+ 		                     </if>
+ 	</select>
+ 	
+ 	<select id="selectOccupationAdjustByApplyId" parameterType="int" resultMap="occupationAdjustResult">
+ 	    select t.*,a.* from t_occupationadjust as t,t_apply as a 
+ 	             where t.apply_id = #{applyId} and t.apply_id=a.id
+ 	</select> 
+ 	
+ 	<select id="selectAllOccupationAdjustByJobId"  resultType="Map">
+      select a.*,j.*,p2.name as writeName,tod.department_name as ToDepartmentName,
+        too.occupation_name as ToOccupationName,pred.department_name as PreDepartmentName,preo.occupation_name as PreOccupationName
+           from t_occupationadjust as j, t_apply as a, t_applytype as t, t_department as tod,t_department as pred,
+                t_occupation as too,t_occupation as preo,t_personalinfo as p1,t_personalinfo as p2
+                where j.apply_id=a.id
+                     and a.apply_typeid=t.applytype_id 
+                     and a.write_id=p2.job_id 
+                     and p1.department_id=pred.department_id
+                     and p1.occupation_id=preo.occupation_id
+                     and j.to_departmentid=tod.department_id
+                     and j.to_occupationid=too.occupation_id
+                     and a.passive_id=p1.job_id
+                     and a.passive_id=#{jobId}
+                     <if test="type != null and type != ''">
+ 		                 and type like '${type}%'
+ 		             </if>
+ 		             <if test="state != null and state != ''">
+ 		                 and state like '${state}%'
+ 		             </if>
+                     LIMIT #{before},#{after}
+    </select>
+ 	
+ 	<select id="countByJobId" resultType="int">
+ 	    select count(*) 
+ 	        from t_occupationadjust as j, t_apply as a, t_applytype as t, t_department as tod,t_department as pred,
+                 t_occupation as too,t_occupation as preo,t_personalinfo as p1,t_personalinfo as p2
+                 where j.apply_id=a.id
+                     and a.apply_typeid=t.applytype_id 
+                     and a.write_id=p2.job_id 
+                     and p1.department_id=pred.department_id
+                     and p1.occupation_id=preo.occupation_id
+                     and j.to_departmentid=tod.department_id
+                     and j.to_occupationid=too.occupation_id
+                     and a.passive_id=p1.job_id
+                     and a.passive_id=#{jobId}
+                     <if test="type != null and type != ''">
+ 		                 and type like '${type}%'
+ 		             </if>
+ 		             <if test="state != null and state != ''">
+ 		                 and state like '${state}%'
+ 		             </if>
+ 	</select>
+    
+    
+</mapper>

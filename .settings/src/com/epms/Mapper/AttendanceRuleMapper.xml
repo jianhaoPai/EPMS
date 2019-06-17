@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+    <mapper namespace="com.epms.Mapper.AttendanceRuleMapper">
+  
+    <resultMap type="AttendanceRule" id="attendanceRuleResult">
+       <id property="id" column="id"/>
+       <result property="setStart" column="set_start"/>
+       <result property="setFinish" column="set_finish"/>
+    </resultMap>
+
+    <update id="updatetAttendanceRuleAll" parameterType="AttendanceRule">
+       update  t_attendancerule set set_start=#{setStart},set_finish=#{setFinish} where id =1
+    </update>
+    
+    <update id="updatetAttendanceRuleStart" parameterType="AttendanceRule">
+       update  t_attendancerule set set_start=#{setStart} where id =1
+    </update>
+    
+    <update id="updatetAttendanceRuleFinish" parameterType="AttendanceRule">
+       update  t_attendancerule set set_finish=#{setFinish} where id =1
+    </update>
+    
+    <select id="selectAttendanceRule" resultMap="attendanceRuleResult">
+       select * from t_attendancerule where id =1
+    </select>
+    
+
+</mapper>

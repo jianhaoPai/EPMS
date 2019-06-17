@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.epms.Mapper.MenuMapper">
+ 	
+ 	
+ 	<!-- 通过权限组查询菜单 -->
+ 	<select id="findMenuByRole" resultType="Menu">
+ 	    SELECT t_menu.id,t_menu.mid,t_menu.menu_name as menuName,t_menu.menu_path as menuPath,t_menu.pare_menu_id as pareMenuId FROM t_menu INNER JOIN t_rolemenu ON t_rolemenu.menu_id=t_menu.id INNER JOIN t_role ON t_role.id=t_rolemenu.role_id INNER JOIN t_userrole ON t_userrole.role_id=t_role.id INNER JOIN t_user ON t_user.job_id=t_userrole.job_id WHERE t_user.job_id=#{jobId} ORDER BY mid;
+ 	</select>
+ 	
+ 	<!-- 验证权限 -->
+ 	<select id="findMenuByJobId" resultType="int">
+ 		SELECT COUNT(*) FROM t_menu,t_rolemenu,t_userrole WHERE menu_path like '%${path}' AND t_rolemenu.menu_id=t_menu.id AND t_userrole.role_id=t_rolemenu.role_id AND t_userrole.job_id=#{jobId}
+ 		
+ 	</select>
+</mapper>
+ 

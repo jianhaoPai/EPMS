@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.epms.Mapper.ExternalResumeMapper">
+
+	<resultMap type="ExternalResume" id="externalResumeResult">
+		<id property="resumeId" column="resume_id"></id>
+		<result property="name" column="name"></result>
+		<result property="age" column="age"></result>
+		<result property="sex" column="sex"></result>
+		<result property="address" column="address"></result>
+		<result property="education" column="education"></result>
+		<result property="phone" column="phone"></result>
+		<result property="email" column="email"></result>
+		<association property="resume" javaType="Resume">
+			<id property="id" column="id" />
+			<result property="workExperience" column="work_experience"></result>
+			<result property="submitDate" column="submit-date"></result>
+			<result property="approvalDate" column="approval_date"></result>
+			<result property="interviewDate" column="interview_date"></result>
+			<result property="interviewId" column="interview_id"></result>
+			<result property="status" column="status"></result>
+			<association property="toDepartment" javaType="Department">
+				<id property="departmentId" column="department_id" />
+				<result property="departmentName" column="department_name"></result>
+				<result property="managerId" column="manager_id"></result>
+			</association>
+			<association property="toOccupation" javaType="Occupation">
+				<id property="occupationId" column="occupation_id" />
+				<result property="occupationName" column="occupation_name"></result>
+			</association>
+		</association>
+	</resultMap>
+
+	<!-- resultType是返回类型，parameterType是传参类型 -->
+	<insert id="insertExternalResume" parameterType="ExternalResume">
+		insert into
+		t_externalresume(resume_id,name,age,education,phone,email,address,sex)
+		values(#{resumeId},#{name},#{age},#{education},#{phone},#{email},#{address},#{sex})
+	</insert>
+
+	<select id="selectMyResume" resultMap="externalResumeResult"
+		parameterType="int">
+		select * from t_externalresume as e,t_resume as r,t_department as
+		d,t_occupation as o
+		where e.resume_id=r.id and e.resume_id=#{resumeId}
+		and d.department_id=r.to_departmentid and
+		o.occupation_id=r.to_occupationid
+	</select>
+
+	<select id="checkIfRepect" resultType="int" parameterType="externalResume">
+		select count(*) from t_externalresume as e,t_resume as r
+		where e.resume_id=r.id and e.name=#{name}
+		and r.to_occupationid=#{resume.toOccupation.occupationId}
+		and r.to_departmentid=#{resume.toDepartment.departmentId}
+		and r.work_experience=#{resume.workExperience}
+		and r.submit_date=#{resume.submitDate}
+	</select>
+
+	<select id="selectAllExternalResume" resultType="Map">
+		select e.*,r.*,d.department_name,o.occupation_name from
+		t_externalresume as e,t_resume as r,t_department as d,t_occupation as
+		o
+		where e.resume_id=r.id and d.department_id=r.to_departmentid
+		and o.occupation_id=r.to_occupationid
+		<if test="occupationId != null and occupationId != ''">
+			and r.to_occupationid like '${occupationId}%'
+		</if>
+		<if test="departmentId != null and departmentId != ''">
+			and r.to_departmentid like '${departmentId}%'
+		</if>
+		<if test="status != null and status != ''">
+			and r.status like '${status}%'
+		</if>
+		LIMIT #{before},#{after}
+	</select>
+
+	<select id="countSelectAllExternalResume" resultType="int">
+		select count(*) from t_externalresume as e,t_resume as r,t_department as
+		d,t_occupation as o
+		where e.resume_id=r.id and d.department_id=r.to_departmentid
+		and o.occupation_id=r.to_occupationid
+		<if test="occupationId != null and occupationId != ''">
+			and r.to_occupationid like '${occupationId}%'
+		</if>
+		<if test="departmentId != null and departmentId != ''">
+			and r.to_departmentid like '${departmentId}%'
+		</if>
+		<if test="status != null and status != ''">
+			and r.status like '${status}%'
+		</if>
+	</select>
+	<!-- 部门经理查询外部人员简历 -->
+	<select id="selectAllExternalResumeToManager" resultType="Map">
+		select e.*,r.*,d.department_name,o.occupation_name
+		from t_externalresume as e,t_resume as r,t_department as d,t_occupation as
+		o
+		where e.resume_id=r.id and d.department_id=r.to_departmentid
+		and o.occupation_id=r.to_occupationid
+		and d.department_id=#{managerDepartmentId}
+		<if test="occupationId != null and occupationId != ''">
+			and r.to_occupationid like '${occupationId}%'
+		</if>
+		<if test="departmentId != null and departmentId != ''">
+			and r.to_departmentid like '${departmentId}%'
+		</if>
+		<if test="status != null and status != ''">
+			and r.status like '${status}%'
+		</if>
+		LIMIT #{before},#{after}
+	</select>
+
+	<select id="countSelectAllExternalResumeToManager" resultType="int">
+		select count(*) from t_externalresume as e,t_resume as r,t_department
+		as d,t_occupation as o
+		where e.resume_id=r.id and d.department_id=r.to_departmentid
+		and o.occupation_id=r.to_occupationid
+		and d.department_id=#{managerDepartmentId}
+		<if test="occupationId != null and occupationId != ''">
+			and r.to_occupationid like '${occupationId}%'
+		</if>
+		<if test="departmentId != null and departmentId != ''">
+			and r.to_departmentid like '${departmentId}%'
+		</if>
+		<if test="status != null and status != ''">
+			and r.status like '${status}%'
+		</if>
+	</select>
+	<select id="getExternalResumeByEmail" resultType="ExternalResume">
+	select email from t_externalresume WHERE email=#{email}
+	</select>
+
+
+</mapper>

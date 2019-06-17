@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.epms.Mapper.ReimbursementMapper">
+ 	
+ 	
+ 	<select id="showReimbursementByJobId" resultType="Map">
+		SELECT * FROM t_reimbursement WHERE job_id=#{jobId} 
+ 		LIMIT #{before},#{after}
+ 	</select>
+ 	
+ 	<select id="countByJobId" resultType="int">
+		SELECT COUNT(*) FROM t_reimbursement WHERE job_id=#{jobId} AND state='已完成'
+ 	</select>
+ 	
+ 	<select id="findByJobIdTypeContent" resultType="map">
+ 		SELECT * FROM t_reimbursement WHERE job_id=#{jobId} AND type=#{type} AND content=#{content} 
+ 	</select>
+ 	
+ 	<insert id="addReimburse">
+ 		INSERT INTO t_reimbursement (job_id,type,content,time,amount,state) VALUES (#{jobId},#{type},#{content},#{time},#{amount},'待审核')
+ 	</insert>
+ 	
+ 	<!-- 查询待审核的报销费用 -->
+ 	<select id="showVerifyReimburse" resultType="map">
+ 		SELECT r.job_id as jobId,p.name,type,content,time,amount,state
+ 		FROM t_reimbursement as r,t_personalinfo as p 
+ 		WHERE state='待审核' and r.job_id=p.job_id
+ 		LIMIT #{before},#{after}
+ 	</select>
+ 	
+ 	<!-- 查询待审核的报销费用条数 -->
+ 	<select id="countVerifyReimburse" resultType="int">
+ 		SELECT count(*) FROM t_reimbursement WHERE state='待审核'
+ 	</select>
+ 	
+ 	<!-- 审核报销通过 -->
+ 	<update id="verifyPerformYes">
+ 		UPDATE t_reimbursement SET verify_id=#{verifyId},verify_date=#{verifyDate},state=' 已通过' WHERE job_id=#{jobId} and time=#{time} and state='待审核';
+ 	</update>
+ 	
+ 	<!-- 审核报销通过 -->
+ 	<update id="verifyPerformNo">
+ 		UPDATE t_reimbursement SET verify_id=#{verifyId},verify_date=#{verifyDate},state=' 未通过' WHERE job_id=#{jobId} and time=#{time} and state='待审核';
+ 	</update>
+ 	
+ 	<!-- 查询审核报销记录 -->
+ 	<select id="showVerifyReimburseRecord" resultType="map">
+ 		SELECT r.job_id as jobId,p.name,type,content,time,amount,state,verify_date as verifyDate
+ 		FROM t_reimbursement as r,t_personalinfo as p
+ 		WHERE state NOT IN ('待审核') and r.job_id=p.job_id and  r.verify_id=#{jobId}
+ 		LIMIT #{before},#{after}
+ 	</select>
+ 	
+ 	<!-- 计算审核报销记录条数 -->
+ 	<select id="countVerifyReimburseRecord" resultType="int">
+ 		SELECT count(*) FROM t_reimbursement WHERE state NOT IN ('待审核') and verify_id=#{jobId}
+ 	</select>
+</mapper>
+ 

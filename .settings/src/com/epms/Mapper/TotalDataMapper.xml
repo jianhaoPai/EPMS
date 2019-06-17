@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+    <mapper namespace="com.epms.Mapper.TotalDataMapper">
+  
+    <resultMap type="TotalData" id="totalDataMapperResult">
+       <id property="jobId" column="job_id"/>
+       <result property="totalVacate" column="total_vacate"/>
+	   <result property="totalLately" column="total_lately" />
+	   <result property="totalEarlyleave" column="total_earlyleave" />
+	   <result property="totalWorkOverTime" column="total_workovertime" />
+	   <result property="totalNotWorkOverTime" column="total_notworkovertime" />
+	   <result property="totalAbsence" column="total_absence" />
+	   <result property="totalCaltivateDay" column="total_caltivateday"/>
+    </resultMap>
+    
+    <select id="selectAllDataSum" resultMap="totalDataMapperResult">
+       select * from t_totaldata  
+    </select>
+    
+    <select id="selectByJobId" resultMap="totalDataMapperResult">
+       select * from t_totaldata  where job_id=#{jobId}  
+    </select>
+    
+     <insert id="insertTotalDataByTotalVacate">       
+       insert into t_totaldata (job_id,total_vacate) 
+             values(#{jobId},#{totalVacate})
+     </insert>
+     
+     <update id="updateTotalDataByTotalVacate">
+         update t_totaldata 
+ 	          set total_vacate=#{totalVacate}
+ 	              where job_id=#{jobId}  
+     </update>
+     
+    <insert id="insertTotalDataByLately">       
+       insert into t_totaldata (job_id,total_lately) 
+             values(#{jobId},#{totalLately})
+    </insert>
+     
+    <update id="updateTotalDataByLately">
+         update t_totaldata 
+ 	          set total_lately=#{totalLately}
+ 	              where job_id=#{jobId}  
+    </update>
+    
+    <insert id="insertTotalDataByEarlyLeave">       
+       insert into t_totaldata (job_id,total_earlyleave) 
+             values(#{jobId},#{totalEarlyleave})
+    </insert>
+     
+    <update id="updateTotalDataByEarlyLeave">
+         update t_totaldata 
+ 	          set total_earlyleave=#{totalEarlyleave}
+ 	              where job_id=#{jobId}  
+    </update>
+    
+    <insert id="insertTotalDataByNotWorkOverTime">       
+       insert into t_totaldata (job_id,total_notworkovertime) 
+             values(#{jobId},#{totalNotWorkOverTime})
+    </insert>
+     
+    <update id="updateTotalDataByNotWorkOverTime">
+         update t_totaldata 
+ 	          set total_notworkovertime=#{totalNotWorkOverTime}
+ 	              where job_id=#{jobId}  
+    </update>
+    
+    <insert id="insertTotalDataByWorkOverTime">       
+       insert into t_totaldata (job_id,total_workovertime) 
+             values(#{jobId},#{totalWorkOverTime})
+    </insert>
+     
+    <update id="updateTotalDataByWorkOverTime">
+         update t_totaldata 
+ 	          set total_workovertime=#{totalWorkOverTime}
+ 	              where job_id=#{jobId}  
+    </update>
+    
+    <insert id="insertTotalDataByAbsence">       
+       insert into t_totaldata (job_id,total_absence) 
+             values(#{jobId},#{totalAbsence})
+    </insert>
+     
+    <update id="updateTotalDataByAbsence">
+         update t_totaldata 
+ 	          set total_absence=#{totalAbsence}
+ 	              where job_id=#{jobId}  
+    </update>
+     
+    <update id="updateTotalDataByCaltivateday">
+         update t_totaldata 
+ 	          set total_caltivateday=#{totalCaltivateDay}
+ 	              where job_id=#{jobId}  
+    </update>
+    
+    <delete id="deleteAll">
+       delete  from t_totaldata
+    </delete>
+    
+    <select id="selectDataSum" resultMap="totalDataMapperResult" >
+ 		select * from t_totaldata
+ 		LIMIT #{before},#{limit}
+ 	</select>
+ 	
+ 	<select id="countDataSum" resultType="int" >
+ 		select count(*) from t_totaldata
+ 	</select>
+
+</mapper>

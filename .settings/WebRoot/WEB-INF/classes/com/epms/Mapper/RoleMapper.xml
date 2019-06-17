@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.epms.Mapper.RoleMapper">
+ 	
+ 	
+ 	<select id="showRightsGroups" resultType="Map">
+		SELECT t_role.id,t_role.name,content,p.name as createName,create_date as createDate
+		FROM t_role
+		LEFT JOIN t_personalinfo as p ON p.job_id=t_role.create_id
+		LIMIT #{before},#{after}
+ 	</select>
+ 	
+ 	<select id="count" resultType="int">
+		SELECT COUNT(*) FROM t_role
+ 	</select>
+ 
+ 	<!-- 通过权限组名找权限组 -->
+ 	<select id="findGroupsByName" resultType="int">
+ 		SELECT COUNT(*) FROM t_role WHERE name=#{name}
+ 	</select>
+ 	
+ 	<!-- 添加权限组 -->
+ 	<insert id="addRightsGroups">
+ 		INSERT INTO t_role (name,content,create_id,create_date) VALUES (#{name},#{content},#{createId},#{createDate})
+ 	</insert>
+ 	
+ 	<!-- 更新权限组 -->
+ 	<update id="editRightsGroups">
+ 		UPDATE t_role SET name=#{name},content=#{content} WHERE name=#{oldName}
+ 	</update>
+
+	<!-- 查询权限组内人员 -->
+	<select id="showRightsGroupsPeople" resultType="map">
+		SELECT t_role.name as rName,t_personalinfo.job_id as jobId,t_personalinfo.name as name,t_department.department_name as dename,t_occupation.occupation_name AS ocname
+		FROM t_role 
+		INNER JOIN t_userrole  ON t_userrole.role_id=t_role.id
+		INNER JOIN t_personalinfo  ON t_personalinfo.job_id=t_userrole.job_id
+		INNER JOIN t_department  ON t_department.department_id=t_personalinfo.department_id
+		INNER JOIN t_occupation  ON t_occupation.occupation_id=t_personalinfo.occupation_id
+		WHERE t_role.id=#{id} order by jobId
+		LIMIT #{before},#{after}
+	</select>
+	
+	<!-- 计算权限组内人员总数 -->
+	<select id="countPeople" resultType="int">
+		SELECT COUNT(*) FROM t_userrole WHERE role_id=(SELECT id FROM t_role WHERE name=#{name})
+	</select>
+	
+	<!-- 删除权限组中的人员 -->
+	<delete id="deleteRightsGroupsPeople">
+		DELETE  FROM t_userrole WHERE job_id=#{jobId} and role_id=(SELECT id FROM t_role WHERE name=#{rName})
+	</delete>
+	
+	<insert id="addUserToRole">
+		INSERT INTO t_userrole (job_id,role_id) VALUES (#{jobId},2);
+	</insert>
+	
+	<!-- 删除权限组表中权限组 -->
+	<delete id="deleteRole">
+		DELETE FROM t_role WHERE name=#{rName};
+	</delete>
+	
+	<!-- 删除权限组-权限中权限组 -->
+	<delete id="deleteRoleMenu">
+		DELETE FROM t_rolemenu WHERE role_id=(SELECT id FROM t_role WHERE name=#{rName});
+	</delete>
+	
+	<!-- 删除权限组-用户中权限组 -->
+	<delete id="deleteUserRole">
+		DELETE FROM t_userrole WHERE role_id=(SELECT id FROM t_role WHERE name=#{rName});
+	</delete>
+</mapper>
+ 
