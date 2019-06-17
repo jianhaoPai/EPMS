@@ -6,13 +6,34 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>员工参加的培训记录</title>
+<title>自己报名参加的培训记录</title>
 <link rel="stylesheet" type="text/css" href="layui/css/layui.css">
 </head>
 <body>
   <blockquote class="layui-elem-quote layui-text">
-    <h3>- 员工参加的培训记录 -</h3>
+    <h3>- 自己报名参加的培训记录 -</h3>
   </blockquote>
+  
+ <form class="layui-form layui-form-pane" action="">
+  <div class="demoTable">
+      <div class="layui-inline">
+        <select name="cultivateId" id="cultivateIdReload">
+            <option value="">请选择培训类型</option>
+            <option value="1">内部培训</option>
+            <option value="2">外出培训</option>
+        </select>
+      </div>
+      <div class="layui-inline">
+        <select name="status" id="statusReload">
+            <option value="">请选择状态</option>
+            <option value="通过">通过</option>
+            <option value="未通过">未通过</option>
+            <option value="待审核">待审核</option>
+        </select>
+      </div>
+	  <button type="button" class="layui-btn" data-type="reload">搜索</button>
+  </div>
+  </form>
   
 <table class="layui-table" id="table" border="5px" lay-filter="testForm"></table>
 <script type="text/html" id="barDemo">
@@ -20,13 +41,12 @@
 </script>
 <script src="layui/layui.all.js" charset="utf-8"></script>
 <script>
-//JavaScript代码区域
-
 layui.use(['jquery','table','layer','form'],function(){
 			var table=layui.table;
 			var layer=layui.layer;
 			var form=layui.form;
 			var $=layui.$;
+			
             table.render({
             elem: '#table'  //绑定table id
             ,url:'CultivateRecordController/selectCultivateRecordByJobId'  //数据请求路径
@@ -49,6 +69,27 @@ layui.use(['jquery','table','layer','form'],function(){
             ,limits:[10,20,30,50]  //数据分页条
             ,id: 'test'  
           });
+          
+          var $ = layui.$, active = {
+		    reload: function(){
+		      var cultivateIdReload = $('#cultivateIdReload').val();
+		      var statusReload = $('#statusReload').val();
+		      //执行重载
+		      table.reload('test', {
+		        page: {
+		          curr: 1 //重新从第 1 页开始
+		        }
+		        ,where: {
+		            cultivateId: cultivateIdReload,
+		            status: statusReload
+		        }
+		      });
+		    }
+		  }; 
+		  $('.demoTable .layui-btn').on('click', function(){
+		    var type = $(this).data('type');
+		    active[type] ? active[type].call(this) : '';
+		  });
 			
 			table.on('tool(testForm)',function(obj){
 				var data = obj.data; //获得当前行数据
@@ -63,7 +104,7 @@ layui.use(['jquery','table','layer','form'],function(){
 		            type:2,
 		            title:"查看培训详情",
 		            skin:"myclass",
-		            area:["45%","50%"],
+		            area:["35%","50%"],
 		            content:["requestPage?page=detailSelectCultivateRecordByJobId","no"],
 		            success:function(layero,index){
 		                var body = layer.getChildFrame('body', index);  
@@ -81,9 +122,9 @@ layui.use(['jquery','table','layer','form'],function(){
 		        /*渲染表单*/
 		        form.render(); 
 			    }
-			}); 
+		
+	 });  
 });
-
 </script>
 </body>
 </html>

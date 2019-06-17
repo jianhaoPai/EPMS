@@ -4,29 +4,30 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.epms.Bean.ExternalResume;
 import com.epms.Bean.Recruit;
 
-//æ‹›è˜è®¡åˆ’å‘å¸ƒ
+//ÕĞÆ¸¼Æ»®·¢²¼
 public interface RecruitService {
-	//æäº¤æ‹›è˜è®¡åˆ’
+	//Ìá½»ÕĞÆ¸¼Æ»®
 	public String insertRecruit(Recruit recruit);
 	
-	//ä¸Šçº§æŸ¥è¯¢ä¸‹çº§æäº¤çš„å…¨éƒ¨æ‹›è˜ä¿¡æ¯
+	//ÉÏ¼¶²éÑ¯ÏÂ¼¶Ìá½»µÄÈ«²¿ÕĞÆ¸ĞÅÏ¢
 	public List<Recruit> selectAllRecruit(String occupationId,String departmentId,String status,int before,int after,int jobId);
 	public int countAllRecruit(String occupationId,String departmentId,String status,int jobId);
 	
-	//å®¡æ ¸æ‹›è˜è®¡åˆ’
+	//ÉóºËÕĞÆ¸¼Æ»®
 	public String updateRecruitStatus(Recruit recruit);
 	
-	//æŸ¥è¯¢è‡ªå·±æäº¤çš„æ‹›è˜è®¡åˆ’
-	List<Recruit> selectAllRecruitByWriteId(int before,int after,int writeId);
-	int countSelectAllRecruitByWriteId(int writeId);
+	//²éÑ¯×Ô¼ºÌá½»µÄÕĞÆ¸¼Æ»®
+	List<Recruit> selectAllRecruitByWriteId(String departmentId,String occupationId,String status,int before,int after,int writeId);
+	int countSelectAllRecruitByWriteId(String departmentId,String occupationId,String status,int writeId);
 	
-	//å‘˜å·¥æŸ¥è¯¢æ‹›è˜è®¡åˆ’
+	//Ô±¹¤²éÑ¯ÕĞÆ¸¼Æ»®
 	List<Recruit> selectAllRecruitToEmployee(String occupationId,String departmentId,int before,int after);
 	int countSelectAllRecruitToEmployee(String occupationId,String departmentId);
 	
-
+	
 
 	
 }

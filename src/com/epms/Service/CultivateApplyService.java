@@ -2,28 +2,24 @@ package com.epms.Service;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Param;
-
 import com.epms.Bean.CultivateApply;
-import com.epms.Bean.CultivateRecord;
 
 
 public interface CultivateApplyService {
-	//æäº¤åŸ¹è®­ç”³è¯·
+	//Ìá½»ÅàÑµÉêÇë
 	public String insertCultivateApply(CultivateApply cultivateApply,int jobId);
 
-	//æŸ¥è¯¢è‡ªå·±æäº¤çš„åŸ¹è®­è®¡åˆ’
-	List<CultivateApply> selectAllCultivateApplyByWriteId(int before,
-			int after, int writeId);
-	int countSelectAllCultivateApplyByWriteId(int writeId);
+	//²éÑ¯×Ô¼ºÌá½»µÄÅàÑµ¼Æ»®
+	List<CultivateApply> selectAllCultivateApplyByWriteId(String cultivateId,String status,
+			int before,int after, int writeId);
+	int countSelectAllCultivateApplyByWriteId(String cultivateId,String status,int writeId);
 	
-	//ä¸Šçº§æŸ¥è¯¢ä¸‹çº§æäº¤çš„å…¨éƒ¨åŸ¹è®­ä¿¡æ¯
+	//ÉÏ¼¶²éÑ¯ÏÂ¼¶Ìá½»µÄÈ«²¿ÅàÑµĞÅÏ¢
 	public List<CultivateApply> selectAllCultivateApply(int before,int after,int jobId);
 	public int countAllCultivateApply(int jobId);
-	//å®¡æ ¸åŸ¹è®­è®¡åˆ’
-	public String updateCultivateApplyStatus(CultivateApply cultviateApply);
-	
-	//å‘˜å·¥æŸ¥è¯¢åŸ¹è®­è®¡åˆ’
+	//ÉóºËÅàÑµ¼Æ»®
+	public String updateCultivateApplyStatus(CultivateApply cultviateApply);	
+	//Ô±¹¤²éÑ¯ÅàÑµ¼Æ»®
 	List<CultivateApply> selectAllCultivateApplyToEmployee(int before,int after);
 	int countSelectAllCultivateApplyToEmployee();
 	

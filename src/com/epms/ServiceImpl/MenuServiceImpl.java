@@ -21,4 +21,9 @@ public class MenuServiceImpl implements MenuService{
 	public List<Menu> findMenuByRole(int jobId){
 		return menuMapper.findMenuByRole(jobId);
 	}
+
+	//验证权限
+	public int findMenuByJobId(int jobId,String path) {
+		return menuMapper.findMenuByJobId(jobId,path);
+	}
 }

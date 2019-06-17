@@ -9,4 +9,7 @@ import com.epms.Bean.Menu;
 public interface MenuService {
 
 	public List<Menu> findMenuByRole(int jobId);
+	
+	//验证权限
+	public int findMenuByJobId(int jobId,String path);
 }

@@ -5,106 +5,213 @@
 <mapper namespace="com.epms.Mapper.CultivateRecordMapper">
 
 	<resultMap type="CultivateRecord" id="cultivateRecordResult">
-		<id property="cultivateId" column="cultivate_id"></id>
-		<result property="participatorId" column="participator_id"></result>
-		<result property="harvest" column="harvest" />
+		<id property="id" column="id"></id>
+		<result property="harvest" column="harvest"></result>
 		<result property="grade" column="grade" />
 		<result property="courseEvaluation" column="course_evaluation" />
 		<result property="teacherEvaluation" column="teacher_evaluation" />
+		<result property="status" column="status" />
+		<association property="cultivateApply" javaType="CultivateApply">
+			<id property="id" column="id"></id>
+			<result property="writeId" column="write_id"></result>
+			<result property="introduce" column="introduce" />
+			<result property="sum" column="sum" />
+			<result property="startDate" column="start_date" />
+			<result property="finishDate" column="finish_date" />
+			<result property="approvalDate" column="approval_date" />
+			<result property="typeId" column="type_id" />
+			<result property="facePeople" column="face_people" />
+			<result property="alreadyPerson" column="already_person" />
+			<association property="cultivateType" javaType="CultivateType">
+				<id property="cultivateId" column="cultivate_id" />
+				<result property="cultivateName" column="cultivate_name"></result>
+			</association>
+			<association property="teacher" javaType="Teacher">
+				<id property="id" column="id" />
+				<result property="teacherName" column="teacher_name"></result>
+				<result property="education" column="education"></result>
+				<result property="experience" column="experience"></result>
+			</association>
+		</association>
+		<association property="participator" javaType="Personalinfo">
+			<id property="jobId" column="job_id" />
+			<result property="name" column="name" />
+			<result property="age" column="age" />
+			<result property="sex" column="sex" />
+			<result property="birthday" column="birthday" />
+			<result property="phone" column="phone" />
+			<result property="email" column="email" />
+			<result property="address" column="address" />
+			<result property="marital" column="marital" />
+			<result property="identityCard" column="identity_card" />
+			<result property="census" column="census" />
+			<result property="entryDate" column="entry_date" />
+			<association property="occupation" javaType="Occupation">
+				<id property="occupationId" column="occupation_id" />
+				<result property="occupationName" column="occupation_name" />
+			</association>
+			<association property="department" javaType="Department">
+				<id property="departmentId" column="department_id" />
+				<result property="departmentName" column="department_name" />
+				<result property="managerId" column="manager_id" />
+			</association>
+		</association>
 	</resultMap>
 
 	<insert id="insertCultivateRecord">
-		insert into t_cultivaterecord(cultivate_id,participator_id,status)
-		    values(#{cultivateId},#{participatorId},#{status})
+		insert into
+		t_cultivaterecord(cultivate_id,participator_id,status)
+		values(#{cultivateId},#{participatorId},#{status})
 	</insert>
 
 	<select id="checkIfRepeat" resultType="int">
-		select count(*) from t_cultivaterecord
-		where cultivate_id=#{cultivateId} and participator_id=#{participatorId}
+		select count(*) from
+		t_cultivaterecord
+		where cultivate_id=#{cultivateId} and
+		participator_id=#{participatorId}
 	</select>
 
 	<delete id="deleteMaxId">
 		delete from t_cultivaterecord
 		where id =
-		( select n.max_id from (select max(id) as max_id from
+		( select
+		n.max_id from (select max(id) as max_id from
 		t_cultivaterecord) as n);
 	</delete>
 
 	<!-- 员工查询自己报名的培训课程 -->
 	<select id="selectCultivateRecordByJobId" resultType="Map">
-		select a.*,t.*,r.*,type.*,r.status as recordStatus
-		from t_cultivateapply as a,t_cultivaterecord as r,t_teacher as t,t_cultivatetype as type
-		where r.cultivate_id=a.id
+		select a.*,t.*,r.*,type.*,r.status as recordStatus from
+		t_cultivateapply as a,t_cultivaterecord as r,t_teacher as
+		t,t_cultivatetype as type
+		where
+		r.cultivate_id=a.id
 		and a.teacher_id=t.id
 		and r.participator_id=#{jobId}
 		and a.type_id=type.cultivate_id
+		<if test="cultivateId != null and cultivateId != ''">
+			and r.cultivate_id like '${cultivateId}%'
+		</if>
+		<if test="status != null and status != ''">
+			and r.status like '${status}%'
+		</if>
 		LIMIT #{before},#{after}
 	</select>
 
 	<select id="countSelectCultivateRecordByJobId" resultType="int">
-		select count(*)
-		from t_cultivateapply as a,t_cultivaterecord as r,t_teacher as t,t_cultivatetype as type
+		select count(*) from t_cultivateapply as a,t_cultivaterecord as
+		r,t_teacher as t,t_cultivatetype as type
 		where r.cultivate_id=a.id
-		and a.teacher_id=t.id
+		and
+		a.teacher_id=t.id
 		and r.participator_id=#{jobId}
-		and a.type_id=type.cultivate_id
+		and
+		a.type_id=type.cultivate_id
+		<if test="cultivateId != null and cultivateId != ''">
+			and r.cultivate_id like '${cultivateId}%'
+		</if>
+		<if test="status != null and status != ''">
+			and r.status like '${status}%'
+		</if>
 	</select>
 
 	<select id="countSumByDate" resultType="int">
-		select count(*) from t_cultivateapply
-		where id in(select cultivate_id from t_cultivaterecord where
+		select count(*) from
+		t_cultivateapply
+		where id in(select cultivate_id from t_cultivaterecord
+		where
 		participator_id=#{jobId})
 		and start_date like '${year}-${month}%'
 	</select>
-	
-	<!-- 上级查询直接下级的培训计划 -->
-	<select id="selectCultivateApplyToManager"  resultType="Map">
-	select distinct a.*,t.cultivate_name,employee.name as employeeName,d.department_name
-               from t_cultivateapply as a,t_cultivatetype as t,t_personalinfo as employee,
-                    t_department as d,t_occupation as o,t_cultivaterecord as record
-                  where a.type_id=t.cultivate_id 
-                  and a.id=record.cultivate_id
-                  and employee.department_id=d.department_id
-                  and d.manager_id=#{jobId}
-                  and employee.occupation_id=1
-                  and record.participator_id=employee.job_id
-                 LIMIT #{before},#{after}
-    </select>
- 	
- 	<select id="countToManager" resultType="int">
- 	    select count(distinct a.*,t.cultivate_name,employee.name as employeeName,d.department_name)
-               from t_cultivateapply as a,t_cultivatetype as t,t_personalinfo as employee,
-                    t_department as d,t_occupation as o,t_cultivaterecord as record
-                  where a.type_id=t.cultivate_id 
-                  and a.id=record.cultivate_id
-                  and employee.department_id=d.department_id
-                  and d.manager_id=#{jobId}
-                  and employee.occupation_id=1
-                  and record.participator_id=employee.job_id
- 	</select>
- 	
- 	<select id="selectCultivateApplyToTotalManager"  resultType="Map">
-      select a.*,t.cultivate_name,h.teacher_name,employee.name as employeeName,d.department_name
-               from t_cultivateapply as a,t_cultivatetype as t,t_teacher as h,t_personalinfo as employee,
-                    t_department as d,t_occupation as o,t_cultivaterecord as record
-                  where a.type_id=t.cultivate_id 
-                  and a.teacher_id=h.id 
-                  and employee.department_id=d.department_id
-                  and employee.occupation_id=2
-                 LIMIT #{before},#{after}
-    </select>
- 	
- 	<select id="countToTotalManager" resultType="int">
- 	    select count(*)
-               from t_cultivateapply as a,t_cultivatetype as t,t_teacher as h,t_personalinfo as p,t_department as d,t_occupation as o
-                  where a.type_id=t.cultivate_id 
-                  and a.teacher_id=h.id 
-                  and p.department_id=d.department_id
-                  and a.write_id=p.job_id
-                  and o.occupation_id=2
-                  and o.occupation_id=p.occupation_id
- 	</select>
 
+	<!-- 上级查询直接下级的已报名培训记录 -->
+	<select id="selectCultivateRecordToManager" resultType="Map">
+		select
+		record.id as recordId,record.status as
+		recordStatus,type.cultivate_name,t.teacher_name,p.name,d.department_name,o.occupation_name,apply.*,record.cultivate_id as cultivateId
+		from t_cultivaterecord as record ,t_cultivateapply as
+		apply,t_cultivatetype as type, t_teacher as t,t_personalinfo as p,
+		t_department as d ,t_occupation as o
+		where record.cultivate_id=apply.id
+		and apply.type_id=type.cultivate_id
+		and apply.teacher_id=t.id
+		and record.participator_id=p.job_id
+		and d.department_id=p.department_id
+		and p.occupation_id=1
+		and p.occupation_id=o.occupation_id
+		and d.manager_id=#{managerId}
+		LIMIT #{before},#{after}
+	</select>
+
+	<select id="countToManager" resultType="int">
+		select count(*)
+		from
+		t_cultivaterecord as record ,t_cultivateapply as
+		apply,t_cultivatetype
+		as type, t_teacher as t,t_personalinfo as p,
+		t_department as d
+		,t_occupation as o
+		where record.cultivate_id=apply.id
+		and
+		apply.type_id=type.cultivate_id
+		and apply.teacher_id=t.id
+		and
+		record.participator_id=p.job_id
+		and d.department_id=p.department_id
+		and
+		p.occupation_id=1
+		and p.occupation_id=o.occupation_id
+		and
+		d.manager_id=#{managerId}
+	</select>
+
+	<select id="selectCultivateRecordToTotalManager" resultType="Map">
+		select record.id as recordId,record.status as
+		recordStatus,type.cultivate_name,t.teacher_name,p.name,d.department_name,o.occupation_name,apply.*,record.cultivate_id as cultivateId
+		from t_cultivaterecord as record ,t_cultivateapply as
+		apply,t_cultivatetype as type,t_teacher as t,
+		t_personalinfo as p,t_department as d ,t_occupation as o
+		where record.cultivate_id=apply.id
+		and apply.type_id=type.cultivate_id
+		and apply.teacher_id=t.id
+		and record.participator_id=p.job_id
+		and d.department_id=p.department_id
+		and p.occupation_id=2
+		and p.occupation_id=o.occupation_id
+		LIMIT #{before},#{after}
+	</select>
+
+	<select id="countToTotalManager" resultType="int">
+		select count(*)
+		from
+		t_cultivaterecord as record ,t_cultivateapply as
+		apply,t_cultivatetype
+		as type,
+		t_teacher as t,t_personalinfo as p,t_department as d
+		,t_occupation as o
+		where record.cultivate_id=apply.id
+		and
+		apply.type_id=type.cultivate_id
+		and apply.teacher_id=t.id
+		and
+		record.participator_id=p.job_id
+		and d.department_id=p.department_id
+		and
+		p.occupation_id=2
+		and p.occupation_id=o.occupation_id
+	</select>
+
+	<!-- 审核报名培训 -->
+	<update id="updateCultivateRecordStatus">
+		update t_cultivaterecord
+		set status=#{status}
+		where id=#{recordId}
+	</update>
+
+	<select id="selectIdByJobId" resultType="java.lang.Integer">
+ 	   select cultivate_id from t_cultivaterecord 
+ 	          where participator_id=#{jobId}      
+ 	</select>
 </mapper>
 
 	

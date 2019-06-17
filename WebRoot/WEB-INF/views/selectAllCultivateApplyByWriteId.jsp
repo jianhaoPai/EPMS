@@ -6,16 +6,35 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>测试的用户展示页</title>
+<title>查询自己提交给上级的培训计划</title>
 <link rel="stylesheet" type="text/css" href="layui/css/layui.css">
 </head>
 <body>
   <blockquote class="layui-elem-quote layui-text">
-    <h3>- 查询自己申请的招聘 -</h3>
+    <h3>- 查询自己提交给上级的培训计划 -</h3>
   </blockquote>
-
-
   
+  <form class="layui-form layui-form-pane" action="">
+  <div class="demoTable">
+      <div class="layui-inline">
+        <select name="cultivateId" id="cultivateIdReload">
+            <option value="">请选择培训类型</option>
+            <option value="1">内部培训</option>
+            <option value="2">外出培训</option>
+        </select>
+      </div>
+      <div class="layui-inline">
+        <select name="status" id="statusReload">
+            <option value="">请选择状态</option>
+            <option value="通过">通过</option>
+            <option value="未通过">未通过</option>
+            <option value="待审核">待审核</option>
+        </select>
+      </div>
+	  <button type="button" class="layui-btn" data-type="reload">搜索</button>
+  </div>
+  </form>
+
 <table class="layui-table" id="table" border="5px" lay-filter="testForm"></table>
 
 
@@ -38,13 +57,13 @@ layui.use(['jquery','table','layer','form'],function(){
             ,cellMinWidth: 80
             ,cols: [[
             	   {type:'numbers',title:'序号',fixed:'left',align: 'center'}
-                  ,{field:'name', title:'填写人姓名',align: 'center',sort:'true'}
                   ,{field:'train_name', title:'培训名称',align: 'center',sort:'true'}
-                  ,{field:'cultivate_name', title:'招聘类型',align: 'center',sort:'true'}
-                  ,{field:'department_name', title:'培训部门',align: 'center',sort:'true'}                 
-                  ,{field:'sum',title:'人数',align:'center'} 
+                  ,{field:'cultivate_name', title:'培训类型',align: 'center',sort:'true'}
+                  ,{field:'department_name', title:'发起部门',align: 'center',sort:'true'}  
+                  ,{field:'face_people', title:'面对人员类型',align: 'center',sort:'true'}               
                   ,{field:'start_date', title:'开始时间',align: 'center'}
                   ,{field:'finish_date', title:'结束时间',align: 'center'}
+                  ,{field:'status',title:'状态',align:'center'} 
                   ,{fixed:'right',title:'查看详情',toolbar:'#barDemo'}
                   //一个工具栏  具体请查看layui官网
             ]]
@@ -54,6 +73,27 @@ layui.use(['jquery','table','layer','form'],function(){
             ,limits:[10,20,30,50]  //数据分页条
             ,id: 'test'  
           });
+          
+           var $ = layui.$, active = {
+		    reload: function(){
+		      var cultivateIdReload = $('#cultivateIdReload').val();
+		      var statusReload = $('#statusReload').val();
+		      //执行重载
+		      table.reload('test', {
+		        page: {
+		          curr: 1 //重新从第 1 页开始
+		        }
+		        ,where: {
+		            cultivateId: cultivateIdReload,
+		            status: statusReload
+		        }
+		      });
+		    }
+		  }; 
+		  $('.demoTable .layui-btn').on('click', function(){
+		    var type = $(this).data('type');
+		    active[type] ? active[type].call(this) : '';
+		  });
           
          
 			table.on('tool(testForm)',function(obj){
@@ -67,9 +107,9 @@ layui.use(['jquery','table','layer','form'],function(){
 			    if(layEvent==='select'){
 			    	layer.open({
 		            type:2,
-		            title:"查看培训详情",
+		            title:"查看培训计划详情",
 		            skin:"myclass",
-		            area:["35%","45%"],
+		            area:["40%","50%"],
 		            content:["requestPage?page=detailSelectAllCultivateApplyByWriteId","no"],
 		            success:function(layero,index){
 		                var body = layer.getChildFrame('body', index);  
@@ -78,7 +118,7 @@ layui.use(['jquery','table','layer','form'],function(){
                         var textList = body.find("textarea");
                         $(inputList[0]).val(data.site);
                         $(inputList[1]).val(data.approval_date);
-                        $(inputList[2]).val(data.status);
+                        $(inputList[2]).val(data.sum);
                         $(textList[0]).val(data.introduce); //遍历子窗口的input标签，将之前数组中的值一次放入显示
 		            },
 		            end:function(result){

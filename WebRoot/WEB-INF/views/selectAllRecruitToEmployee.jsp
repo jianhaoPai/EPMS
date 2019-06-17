@@ -83,7 +83,7 @@ layui.use(['jquery','table','layer','form'],function(){
 			    if(layEvent==='select'){
 			    	layer.open({
 		            type:2,
-		            title:"查看详情",
+		            title:"查看招聘详情",
 		            skin:"myclass",
 		            area:["35%","45%"],
 		            content:["requestPage?page=detailSelectAllRecruitByWriteId","no"],

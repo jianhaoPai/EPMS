@@ -22,14 +22,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	-->
 <link rel="stylesheet" type="text/css" href="layui/css/layui.css">
   </head>
-<style>
-  
-  body{
-      height: 100%;width: 100%;
-      background: url('layui/images/jizhu.png');
-      background-size:cover;
-  }
-</style> 
+
   <body onload="showtime()">
   <blockquote class="layui-elem-quote layui-text">
     <h3>${username}&nbsp;&nbsp;<i id="time"/></h3>

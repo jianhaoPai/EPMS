@@ -37,7 +37,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     <div class="layui-logo">企业人事管理系统</div>
     <!-- 头部区域（可配合layui已有的水平导航） -->
     <ul class="layui-nav layui-layout-left">
-      <li class="layui-nav-item"><a href="">待办事项</a></li>
       <li class="layui-nav-item">
         <a href="javascript:;">考勤打卡</a>
         <dl class="layui-nav-child">
@@ -58,7 +57,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
           ${username}
         </a>
         <dl class="layui-nav-child">
-          <dd><a href="">基本资料</a></dd>
           <dd><a href="">修改密码</a></dd>
         </dl>
       </li>

@@ -6,7 +6,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>测试的用户展示页</title>
+<title>审核部门经理申请的培训 </title>
 <link rel="stylesheet" type="text/css" href="layui/css/layui.css">
 </head>
 <body>

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.epms.Bean.InteralResume;
 import com.epms.Service.InteralResumeService;
 
-//å†…éƒ¨äººå‘˜ç”³è¯·æ“ä½œ
+//ÄÚ²¿ÈËÔ±ÉêÇë²Ù×÷
 @Controller
 @RequestMapping(value = "InteralResumeController")
 public class InteralResumeController {
@@ -26,7 +26,7 @@ public class InteralResumeController {
 	@Autowired
 	private InteralResume interalResume;
 	
-	//æäº¤ç®€å†
+	//Ìá½»¼òÀú
 	@RequestMapping(value = "insertInteralResume",method = RequestMethod.POST, produces = "application/json;charset=utf-8")
 	public @ResponseBody String insertInteralResume(@Valid InteralResume interalResume,BindingResult error,HttpSession session) 
 	{		
@@ -47,38 +47,38 @@ public class InteralResumeController {
 		return "whiteA";
 	}
 
-	//å†…éƒ¨äººå‘˜æŸ¥è¯¢è‡ªå·±çš„ç®€å†
+	//ÄÚ²¿ÈËÔ±²éÑ¯×Ô¼ºµÄ¼òÀú
 	@RequestMapping(value="/selectInteralResumeByJobId",produces="application/json;charset=utf-8")
 	public @ResponseBody String selectInteralResumeByJobId(String departmentId,String occupationId,String status,int page,int limit,HttpSession session)
 	{
 		int before=limit*(page-1);
-		//å¸¦å‚æ•°ä»æ•°æ®åº“é‡ŒæŸ¥è¯¢å‡ºæ¥æ”¾åˆ°eilistçš„é›†åˆé‡Œ
+		//´ø²ÎÊı´ÓÊı¾İ¿âÀï²éÑ¯³öÀ´·Åµ½eilistµÄ¼¯ºÏÀï
 		int jobId = Integer.parseInt(session.getAttribute("jobId").toString());
 		List<InteralResume> interalResumeList=interalResumeService.selectInteralResumeByJobId(departmentId,occupationId,status,before, limit, jobId);
 		int count=interalResumeService.countByJobId(departmentId,occupationId,status,jobId);
-		//ç”¨jsonæ¥ä¼ å€¼
+		//ÓÃjsonÀ´´«Öµ
 		JSONArray json=JSONArray.fromObject(interalResumeList);
 		String js=json.toString();
-		//è½¬ä¸ºlayuiéœ€è¦çš„jsonæ ¼å¼ï¼Œå¿…é¡»è¦è¿™ä¸€æ­¥
+		//×ªÎªlayuiĞèÒªµÄjson¸ñÊ½£¬±ØĞëÒªÕâÒ»²½
 		String jso="{\"code\":0,\"msg\":\"\",\"count\":"+count+",\"data\":"+js+"}";
 		return jso;
 	}
 	
 	
-	//éƒ¨é—¨ç»ç†å’Œæ€»ç»ç†æŸ¥è¯¢ç®€å†ä¿¡æ¯
+	//²¿ÃÅ¾­ÀíºÍ×Ü¾­Àí²éÑ¯¼òÀúĞÅÏ¢
 	@RequestMapping(value = "/selectAllInteralResume", produces = "application/json;charset=utf-8", method = RequestMethod.GET)
-	public @ResponseBody String selectAllInteralResume(int page, int limit, HttpSession session) 
+	public @ResponseBody String selectAllInteralResume(String departmentId,String occupationId,String status,int page, int limit, HttpSession session) 
 	{
 		int before = limit * (page - 1);
-		// å¸¦å‚æ•°ä»æ•°æ®åº“é‡ŒæŸ¥è¯¢å‡ºæ¥æ”¾åˆ°eilistçš„é›†åˆé‡Œ
+		// ´ø²ÎÊı´ÓÊı¾İ¿âÀï²éÑ¯³öÀ´·Åµ½eilistµÄ¼¯ºÏÀï
 		int jobId = Integer.parseInt(session.getAttribute("jobId").toString());
 		List<InteralResume> recruitlist = interalResumeService
-				.selectAllInteralResume(before, limit, jobId);
-		int count = interalResumeService.countAllInteralResume(jobId);
-		// ç”¨jsonæ¥ä¼ å€¼
+				.selectAllInteralResume(departmentId,occupationId,status,before, limit, jobId);
+		int count = interalResumeService.countAllInteralResume(departmentId,occupationId,status,jobId);
+		// ÓÃjsonÀ´´«Öµ
 		JSONArray json = JSONArray.fromObject(recruitlist);
 		String js = json.toString();
-		// è½¬ä¸ºlayuiéœ€è¦çš„jsonæ ¼å¼ï¼Œå¿…é¡»è¦è¿™ä¸€æ­¥
+		// ×ªÎªlayuiĞèÒªµÄjson¸ñÊ½£¬±ØĞëÒªÕâÒ»²½
 		String jso = "{\"code\":0,\"msg\":\"\",\"count\":" + count
 				+ ",\"data\":" + js + "}";
 		return jso;

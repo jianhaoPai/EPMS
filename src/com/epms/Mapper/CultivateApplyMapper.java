@@ -15,8 +15,10 @@ public interface CultivateApplyMapper {
 	int checkIfRepect(CultivateApply cultivateApply);
 	
 	//下级查看自己提交给上级的培训计划
-	List<CultivateApply> selectAllCultivateApplyByWriteId(@Param("before") int before,@Param("after") int after,@Param("writeId") int writeId);
-	int countSelectAllCultivateApplyByWriteId(int writeId);
+	List<CultivateApply> selectAllCultivateApplyByWriteId(@Param("cultivateId") String cultivateId,@Param("status") String status,
+			@Param("before") int before,@Param("after") int after,@Param("writeId") int writeId);
+	int countSelectAllCultivateApplyByWriteId(@Param("cultivateId") String cultivateId,
+			@Param("status") String status,@Param("writeId") int writeId);
 	
 	//上级查看下级提交的培训计划
 	List<CultivateApply> selectCultivateApplyToTotalManager(@Param("before") int before,@Param("after") int after);

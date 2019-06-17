@@ -44,7 +44,7 @@
  	
  	<!-- 查询基本工资 -->
 	<select id="selectWageByJobId" resultType="staffWage">
-		SELECT * FROM t_staffwage WHERE job_id=#{jobId};
+		SELECT * FROM t_staffwage WHERE job_id=#{jobId} AND state='已完成';
 	</select>
 	
 	<!-- 查看工资 -->

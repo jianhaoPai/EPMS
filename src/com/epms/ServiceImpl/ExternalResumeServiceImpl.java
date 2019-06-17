@@ -90,34 +90,39 @@ public class ExternalResumeServiceImpl implements ExternalResumeService
 
 	//查询外部人员简历
 	@Override
-	public List<ExternalResume> selectAllExternalResume(int before, int after,int jobId) 
+	public List<ExternalResume> selectAllExternalResume(String departmentId,String occupationId,String status,int before, int after,int jobId) 
 	{
 		personalinfo=personalinfoMapper.selectPersonalByIdNotEducation(jobId);
 		if(personalinfo.getOccupation().getOccupationId()==2)
 		{
-			return externalResumeMapper.selectAllExternalResumeToManager(before,after,personalinfo.getDepartment().getDepartmentId());
+			return externalResumeMapper.selectAllExternalResumeToManager(departmentId,occupationId,status,before,after,personalinfo.getDepartment().getDepartmentId());
 		}
 		else if(personalinfo.getOccupation().getOccupationId()==3 || personalinfo.getOccupation().getOccupationId()==4)
 		{
-			return externalResumeMapper.selectAllExternalResume(before, after);
+			return externalResumeMapper.selectAllExternalResume(departmentId,occupationId,status,before, after);
 		}
 		return null;
 	}
 
 	@Override
-	public int countSelectAllExternalResume(int jobId) 
+	public int countSelectAllExternalResume(String departmentId,String occupationId,String status,int jobId) 
 	{
 		personalinfo=personalinfoMapper.selectPersonalByIdNotEducation(jobId);
 		if(personalinfo.getOccupation().getOccupationId()==2)
 		{
-			return externalResumeMapper.countSelectAllExternalResumeToManager(personalinfo.getDepartment().getDepartmentId());
+			return externalResumeMapper.countSelectAllExternalResumeToManager(departmentId,occupationId,status,personalinfo.getDepartment().getDepartmentId());
 		}
 		else if(personalinfo.getOccupation().getOccupationId()==3 || personalinfo.getOccupation().getOccupationId()==4)
 		{
-			return externalResumeMapper.countSelectAllExternalResume();
+			return externalResumeMapper.countSelectAllExternalResume(departmentId,occupationId,status);
 		}
 		return 0;
 
 	}
+	//通过邮箱获取
+	public ExternalResume getExternalResumeByEmail(String email) {
+		return externalResumeMapper.getExternalResumeByEmail(email);
+	}
+
 
 }

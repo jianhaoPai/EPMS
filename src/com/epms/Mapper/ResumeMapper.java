@@ -1,26 +1,22 @@
 package com.epms.Mapper;
-import java.util.List;
-
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import com.epms.Bean.ExternalResume;
-import com.epms.Bean.Recruit;
 import com.epms.Bean.Resume;
 
 @Repository
 public interface ResumeMapper
 {
-   //æ’å…¥ç®€å†
+   //²åÈë¼òÀú
    int insertResume(Resume resume);
    
-   //æŸ¥æ‰¾å‡ºæœ€å¤§çš„äº‹é¡¹idï¼Œå³ä¸ºæœ€æ–°æ’å…¥çš„ç®€å†id
+   //²éÕÒ³ö×î´óµÄÊÂÏîid£¬¼´Îª×îĞÂ²åÈëµÄ¼òÀúid
    int selectMaxId();
    
-   //å®¡æ ¸ç®€å†
-   public int updateAllExternalResume(Resume resume);
+   //ÉóºË¼òÀú
+   public int updateAllResume(Resume resume);
+   public int updateResumeNotAll(Resume resume);
    
- //é€šè¿‡äº‹é¡¹idï¼ŒæŸ¥è¯¢äº‹é¡¹ä¿¡æ¯
+   //Í¨¹ıÊÂÏîid£¬²éÑ¯ÊÂÏîĞÅÏ¢
  	public Resume selectResumeById(int id);
    
 

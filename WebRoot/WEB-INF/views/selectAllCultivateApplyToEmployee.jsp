@@ -6,12 +6,12 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>全部培训信息</title>
+<title>全部培训计划信息</title>
 <link rel="stylesheet" type="text/css" href="layui/css/layui.css">
 </head>
 <body>
   <blockquote class="layui-elem-quote layui-text">
-    <h3>- 培训信息 -</h3>
+    <h3>- 全部培训计划信息 -</h3>
   </blockquote>
 <table class="layui-table" id="table" border="5px" lay-filter="testForm"></table>
 
@@ -64,7 +64,7 @@ layui.use(['jquery','table','layer','form'],function(){
 		            type:2,
 		            title:"培训计划详情",
 		            skin:"myclass",
-		            area:["45%","65%"],
+		            area:["40%","70%"],
 		            content:["requestPage?page=detailSelectAllCultivateApplyToEmployee","no"],
 		            success:function(layero,index){
 		                var body = layer.getChildFrame('body', index);  

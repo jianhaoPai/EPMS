@@ -27,18 +27,29 @@
  	    select max(id) from t_resume;
  	</select> 
  	
- 	<insert id="insertResume" parameterType="Resume" >
+ 	<insert id="insertResume" parameterType="Resume">
       insert into t_resume(to_departmentid,to_occupationid,work_experience,submit_date,status)
          values(#{toDepartment.departmentId},#{toOccupation.occupationId},#{workExperience},#{submitDate},#{status})
     </insert>
+    
     <!-- 审核员工简历 -->
-    <update id="updateAllExternalResume" parameterType="Resume">
+    <update id="updateAllResume" parameterType="Resume">
     update t_resume 
- 	       set status=#{status},approval_date=#{approvalDate},interview_date=#{interviewDate} where id=#{id};
+ 	       set status=#{status},approval_date=#{approvalDate},interview_date=#{interviewDate},interview_id=#{interviewId}
+ 	        where id=#{id}
     </update>
+    
+    <update id="updateResumeNotAll" parameterType="Resume">
+    update t_resume 
+ 	       set status=#{status},approval_date=#{approvalDate}
+ 	        where id=#{id}
+    </update>
+    
     <!-- 通过事项id，查询事项信息 -->
     <select id="selectResumeById" parameterType="int" resultMap="resumeResult">
-      select * from t_resume where id=#{id};
+      select r.*,d.*,o.*
+         from t_resume as r,t_department as d ,t_occupation as o
+         where r.id=#{id} and r.to_occupationid=o.occupation_id and r.to_departmentid= d.department_id
     </select>
    
     

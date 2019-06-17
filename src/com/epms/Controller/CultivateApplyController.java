@@ -13,6 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.epms.Bean.CultivateApply;
 import com.epms.Service.CultivateApplyService;
 
@@ -46,14 +47,14 @@ public class CultivateApplyController {
 	// 下级查询自己提交给上级的全部培训计划
 	@RequestMapping(value = "/selectAllCultivateApplyByWriteId", produces = "application/json;charset=utf-8", method = RequestMethod.GET)
 	public @ResponseBody
-	String selectAllRecruitByWriteId(int page, int limit, HttpSession session) {
+	String selectAllRecruitByWriteId(String cultivateId,String status,int page, int limit, HttpSession session) {
 		int before = limit * (page - 1);
 		// 带参数从数据库里查询出来放到eilist的集合里
 		int jobId = Integer.parseInt(session.getAttribute("jobId").toString());
 		List<CultivateApply> cultivateApplylist = cultivateApplyService
-				.selectAllCultivateApplyByWriteId(before, limit, jobId);
+				.selectAllCultivateApplyByWriteId(cultivateId,status,before, limit, jobId);
 		int count = cultivateApplyService
-				.countSelectAllCultivateApplyByWriteId(jobId);
+				.countSelectAllCultivateApplyByWriteId(cultivateId,status,jobId);
 		// 用json来传值
 		JSONArray json = JSONArray.fromObject(cultivateApplylist);
 		String js = json.toString();

@@ -5,6 +5,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,10 +13,13 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.epms.Bean.ExternalResume;
 import com.epms.Bean.Recruit;
 import com.epms.Service.RecruitService;
+import com.epms.Tools.SendResumeMail;
 
-//æ‹›è˜è®¡åˆ’å‘å¸ƒ
+//ÕĞÆ¸¼Æ»®·¢²¼
 @Controller
 @RequestMapping(value = "RecruitController")
 public class RecruitController {
@@ -32,7 +36,7 @@ public class RecruitController {
 		return "whiteA";
 	}
 	
-	//æäº¤æ‹›è˜è®¡åˆ’
+	//Ìá½»ÕĞÆ¸¼Æ»®
 	@RequestMapping(value = "insertRecruit", method = RequestMethod.POST, produces = "application/json;charset=utf-8")
 	public @ResponseBody String insertRecruit(@Valid Recruit recruit,BindingResult error,HttpSession session)
 	{
@@ -46,64 +50,62 @@ public class RecruitController {
 		return result;
 	}
 	
-	//ä¸Šçº§æŸ¥è¯¢ä¸‹çº§æäº¤çš„æ‹›è˜è®¡åˆ’
+	//ÉÏ¼¶²éÑ¯ÏÂ¼¶Ìá½»µÄÕĞÆ¸¼Æ»®
 	@RequestMapping(value="/selectAllRecruit",produces="application/json;charset=utf-8",method= RequestMethod.GET)
 	public @ResponseBody String selectAllRecruit(String occupationId,String departmentId,String status,int page,int limit,HttpSession session)
 	{
-		System.out.println(occupationId+departmentId+status);
 		int before=limit*(page-1);
-		//å¸¦å‚æ•°ä»æ•°æ®åº“é‡ŒæŸ¥è¯¢å‡ºæ¥æ”¾åˆ°eilistçš„é›†åˆé‡Œ
+		//´ø²ÎÊı´ÓÊı¾İ¿âÀï²éÑ¯³öÀ´·Åµ½eilistµÄ¼¯ºÏÀï
 		int jobId = Integer.parseInt(session.getAttribute("jobId").toString());
 		List<Recruit> recruitlist=recruitService.selectAllRecruit(occupationId,departmentId,status,before, limit, jobId);
 		int count=recruitService.countAllRecruit(occupationId,departmentId,status,jobId);
-		//ç”¨jsonæ¥ä¼ å€¼
+		//ÓÃjsonÀ´´«Öµ
 		JSONArray json=JSONArray.fromObject(recruitlist);
 		String js=json.toString();
-		//è½¬ä¸ºlayuiéœ€è¦çš„jsonæ ¼å¼ï¼Œå¿…é¡»è¦è¿™ä¸€æ­¥
+		//×ªÎªlayuiĞèÒªµÄjson¸ñÊ½£¬±ØĞëÒªÕâÒ»²½
 		String jso="{\"code\":0,\"msg\":\"\",\"count\":"+count+",\"data\":"+js+"}";
 		return jso;
 	}
 	
-	//å®¡æ ¸æ‹›è˜è®¡åˆ’
+	//ÉóºËÕĞÆ¸¼Æ»®
 	@RequestMapping(value = "updateRecruitStatus", method = RequestMethod.POST)
 	public @ResponseBody String updateRecruitStatus(Recruit recruit) 
 	{		
 		return recruitService.updateRecruitStatus(recruit);
 	}
 	
-	//ä¸‹çº§æŸ¥è¯¢è‡ªå·±æäº¤ç»™ä¸Šçº§çš„å…¨éƒ¨æ‹›è˜è®¡åˆ’
+	//ÏÂ¼¶²éÑ¯×Ô¼ºÌá½»¸øÉÏ¼¶µÄÈ«²¿ÕĞÆ¸¼Æ»®
 	@RequestMapping(value="/selectAllRecruitByWriteId",produces="application/json;charset=utf-8",method= RequestMethod.GET)
-	public @ResponseBody String selectAllRecruitByWriteId(int page,int limit,HttpSession session){
+	public @ResponseBody String selectAllRecruitByWriteId(String departmentId,String occupationId,String status,int page,int limit,HttpSession session){
 		int before=limit*(page-1);
-		//å¸¦å‚æ•°ä»æ•°æ®åº“é‡ŒæŸ¥è¯¢å‡ºæ¥æ”¾åˆ°eilistçš„é›†åˆé‡Œ
+		//´ø²ÎÊı´ÓÊı¾İ¿âÀï²éÑ¯³öÀ´·Åµ½eilistµÄ¼¯ºÏÀï
 		int jobId = Integer.parseInt(session.getAttribute("jobId").toString());
-		List<Recruit> recruitlist=recruitService.selectAllRecruitByWriteId(before, limit, jobId);
-		int count=recruitService.countSelectAllRecruitByWriteId(jobId);
-		//ç”¨jsonæ¥ä¼ å€¼
+		List<Recruit> recruitlist=recruitService.selectAllRecruitByWriteId(departmentId,occupationId,status,before, limit, jobId);
+		int count=recruitService.countSelectAllRecruitByWriteId(departmentId,occupationId,status,jobId);
+		//ÓÃjsonÀ´´«Öµ
 		JSONArray json=JSONArray.fromObject(recruitlist);
 		String js=json.toString();
-		//è½¬ä¸ºlayuiéœ€è¦çš„jsonæ ¼å¼ï¼Œå¿…é¡»è¦è¿™ä¸€æ­¥
+		//×ªÎªlayuiĞèÒªµÄjson¸ñÊ½£¬±ØĞëÒªÕâÒ»²½
 		String jso="{\"code\":0,\"msg\":\"\",\"count\":"+count+",\"data\":"+js+"}";
 		return jso;
 	}
 	
-	//å‘˜å·¥æŸ¥è¯¢æ‹›è˜è®¡åˆ’
+	//Ô±¹¤²éÑ¯ÕĞÆ¸¼Æ»®
 	@RequestMapping(value="/selectAllRecruitToEmployee",produces="application/json;charset=utf-8",method= RequestMethod.GET)
 	public @ResponseBody String selectAllRecruitToEmployee(String occupationId,String departmentId,int page,int limit)
 	{
-		System.out.println(occupationId);
-		System.out.println(departmentId);
 		int before=limit*(page-1);
-		//å¸¦å‚æ•°ä»æ•°æ®åº“é‡ŒæŸ¥è¯¢å‡ºæ¥æ”¾åˆ°eilistçš„é›†åˆé‡Œ
+		//´ø²ÎÊı´ÓÊı¾İ¿âÀï²éÑ¯³öÀ´·Åµ½eilistµÄ¼¯ºÏÀï
 		List<Recruit> recruitlist=recruitService.selectAllRecruitToEmployee(occupationId,departmentId,before, limit);
 		int count=recruitService.countSelectAllRecruitToEmployee(occupationId,departmentId);
-		//ç”¨jsonæ¥ä¼ å€¼
+		//ÓÃjsonÀ´´«Öµ
 		JSONArray json=JSONArray.fromObject(recruitlist);
 		String js=json.toString();
-		//è½¬ä¸ºlayuiéœ€è¦çš„jsonæ ¼å¼ï¼Œå¿…é¡»è¦è¿™ä¸€æ­¥
+		//×ªÎªlayuiĞèÒªµÄjson¸ñÊ½£¬±ØĞëÒªÕâÒ»²½
 		String jso="{\"code\":0,\"msg\":\"\",\"count\":"+count+",\"data\":"+js+"}";
 		return jso;
 	}
+
 	
 
 }

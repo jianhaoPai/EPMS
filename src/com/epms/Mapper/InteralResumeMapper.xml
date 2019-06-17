@@ -29,17 +29,22 @@
 
 	<!-- 内部人员填写简历 -->
 	<insert id="insertInteralResume" parameterType="InteralResume">
-		insert into t_interalresume(resume_id,job_id) values(#{resumeId},#{jobId})
+		insert into
+		t_interalresume(resume_id,job_id) values(#{resumeId},#{jobId})
 	</insert>
 
 	<!-- 内部人员根据工号查询简历 -->
 	<select id="selectInteralResumeByJobId" resultType="Map">
 		select r.*,p.name,d.department_name,o.occupation_name
-		from t_interalresume as i,t_resume as r,
-		t_occupation as o,t_department as d,t_personalinfo as p
-		where i.resume_id=r.id and i.job_id=p.job_id and i.job_id=#{jobId}
+		from
+		t_interalresume as i,t_resume as r,
+		t_occupation as o,t_department as
+		d,t_personalinfo as p
+		where i.resume_id=r.id and i.job_id=p.job_id and
+		i.job_id=#{jobId}
 		and r.to_occupationid=o.occupation_id
-		and r.to_departmentid=d.department_id
+		and
+		r.to_departmentid=d.department_id
 		<if test="occupationId != null and occupationId != ''">
 			and r.to_occupationid like '${occupationId}%'
 		</if>
@@ -53,9 +58,12 @@
 	<select id="countByJobId" resultType="int">
 		select count(*)
 		from t_interalresume as i,t_resume as r,
-		t_occupation as o,t_department as d,t_personalinfo as p
-		where i.resume_id=r.id and i.job_id=p.job_id and i.job_id=#{jobId}
-		and r.to_occupationid=o.occupation_id
+		t_occupation as
+		o,t_department as d,t_personalinfo as p
+		where i.resume_id=r.id and
+		i.job_id=p.job_id and i.job_id=#{jobId}
+		and
+		r.to_occupationid=o.occupation_id
 		and r.to_departmentid=d.department_id
 		<if test="occupationId != null and occupationId != ''">
 			and r.to_occupationid like '${occupationId}%'
@@ -72,55 +80,136 @@
 	<select id="checkIfRepect" resultType="int" parameterType="InteralResume">
 		select count(*)
 		from t_interalresume as i,t_resume as r
-		where i.resume_id=r.id and i.job_id=#{jobId}
-		and r.to_occupationid=#{resume.toOccupation.occupationId}
-		and r.to_departmentid=#{resume.toDepartment.departmentId}
-		and r.work_experience=#{resume.workExperience}
-		and r.submit_date=#{resume.submitDate}
+		where
+		i.resume_id=r.id and i.job_id=#{jobId}
+		and
+		r.to_occupationid=#{resume.toOccupation.occupationId}
+		and
+		r.to_departmentid=#{resume.toDepartment.departmentId}
+		and
+		r.work_experience=#{resume.workExperience}
+		and
+		r.submit_date=#{resume.submitDate}
 	</select>
 
 	<!-- 部门经理查询内部人员简历 -->
 	<select id="selectAllInteralResumeToManager" resultType="Map">
-		select i.*,r.*,p.name,d.department_name,o.occupation_name
-		from t_interalresume as i,t_resume as r,t_department as d,t_occupation as
-		o,t_personalinfo as p
-		where i.resume_id=r.id and d.department_id=r.to_departmentid
-		and o.occupation_id=r.to_occupationid and i.job_id=p.job_id
+		select
+		i.*,r.*,p.name,d.department_name,o.occupation_name,o2.occupation_name
+		as nowOccupation ,d2.department_name as nowDepartment,r.to_occupationid
+		from t_interalresume as i,t_resume as r,t_department as d,t_department as
+		d2,t_occupation as o,t_occupation as o2,t_personalinfo as p
+		where i.resume_id=r.id 
+		and d.department_id=r.to_departmentid
+		and o.occupation_id=r.to_occupationid
+		and i.job_id=p.job_id
+		and p.occupation_id=o2.occupation_id
+		and p.department_id=d2.department_id
+		and r.to_occupationid=1
 		and i.resume_id in
 		(select max(resume_id)from t_interalresume group by job_id)
 		and d.department_id=#{managerDepartmentId}
+		<if test="occupationId != null and occupationId != ''">
+			and r.to_occupationid like '${occupationId}%'
+		</if>
+		<if test="departmentId != null and departmentId != ''">
+			and r.to_departmentid like '${departmentId}%'
+		</if>
+		<if test="status != null and status != ''">
+			and r.status like '${status}%'
+		</if>
 		LIMIT #{before},#{after}
 	</select>
 	<select id="countAllInteralResumeToManager" resultType="int">
 		select count(*)
-		from t_interalresume as i,t_resume as r,t_department as d,t_occupation as
-		o,t_personalinfo as p
-		where i.resume_id=r.id and d.department_id=r.to_departmentid
-		and o.occupation_id=r.to_occupationid and i.job_id=p.job_id
+		from
+		t_interalresume as i,t_resume as r,t_department as
+		d,t_department as
+		d2,t_occupation as o,t_occupation as
+		o2,t_personalinfo as p
+		where
+		i.resume_id=r.id and
+		d.department_id=r.to_departmentid
+		and
+		o.occupation_id=r.to_occupationid
+		and i.job_id=p.job_id
+		and p.occupation_id=o2.occupation_id
+		and
+		p.department_id=d2.department_id
 		and i.resume_id in
-		(select max(resume_id)from t_interalresume group by job_id)
-		and d.department_id=#{managerDepartmentId}
+		(select
+		max(resume_id)from t_interalresume group by job_id)
+		and
+		d.department_id=#{managerDepartmentId}
+		<if test="occupationId != null and occupationId != ''">
+			and r.to_occupationid like '${occupationId}%'
+		</if>
+		<if test="departmentId != null and departmentId != ''">
+			and r.to_departmentid like '${departmentId}%'
+		</if>
+		<if test="status != null and status != ''">
+			and r.status like '${status}%'
+		</if>
 	</select>
 
 	<!-- 总经理及董事查询内部人员简历 -->
 	<select id="selectAllInteralResume" resultType="Map">
-		select i.*,r.*,p.name,d.department_name,o.occupation_name
-		from t_interalresume as i,t_resume as r,t_department as d,t_occupation as
-		o,t_personalinfo as p
-		where i.resume_id=r.id and d.department_id=r.to_departmentid
-		and o.occupation_id=r.to_occupationid and i.job_id=p.job_id
+		select
+		i.*,r.*,p.name,d.department_name,o.occupation_name,o2.occupation_name
+		as nowOccupation ,d2.department_name as nowDepartment
+		from
+		t_interalresume as i,t_resume as r,t_department as d,t_department as
+		d2,t_occupation as o,t_occupation as o2,t_personalinfo as p
+		where
+		i.resume_id=r.id and
+		d.department_id=r.to_departmentid
+		and
+		o.occupation_id=r.to_occupationid
+		and i.job_id=p.job_id
+		and
+		p.occupation_id=o2.occupation_id
+		and p.department_id=d2.department_id
 		and i.resume_id in
-		(select max(resume_id)from t_interalresume group by job_id)
+		(select max(resume_id)from
+		t_interalresume group by
+		job_id)
+		<if test="occupationId != null and occupationId != ''">
+			and r.to_occupationid like '${occupationId}%'
+		</if>
+		<if test="departmentId != null and departmentId != ''">
+			and r.to_departmentid like '${departmentId}%'
+		</if>
+		<if test="status != null and status != ''">
+			and r.status like '${status}%'
+		</if>
 		LIMIT #{before},#{after}
 	</select>
 	<select id="countAllInteralResume" resultType="int">
 		select count(*)
-		from t_interalresume as i,t_resume as r,t_department as d,t_occupation as
-		o,t_personalinfo as p
-		where i.resume_id=r.id and d.department_id=r.to_departmentid
-		and o.occupation_id=r.to_occupationid and i.job_id=p.job_id
+		from
+		t_interalresume as i,t_resume as r,t_department as d,t_department as
+		d2,t_occupation as o,t_occupation as o2,t_personalinfo as p
+		where
+		i.resume_id=r.id and
+		d.department_id=r.to_departmentid
+		and
+		o.occupation_id=r.to_occupationid
+		and i.job_id=p.job_id
+		and p.occupation_id=o2.occupation_id
+		and p.department_id=d2.department_id
 		and i.resume_id in
-		(select max(resume_id)from t_interalresume group by job_id)
+		(select max(resume_id)from
+		t_interalresume group by
+		job_id)
+		<if test="occupationId != null and occupationId != ''">
+			and r.to_occupationid like '${occupationId}%'
+		</if>
+		<if test="departmentId != null and departmentId != ''">
+			and r.to_departmentid like '${departmentId}%'
+		</if>
+		<if test="status != null and status != ''">
+			and r.status like '${status}%'
+		</if>
 	</select>
 
 </mapper>

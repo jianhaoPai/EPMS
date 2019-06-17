@@ -8,27 +8,37 @@ import org.springframework.stereotype.Repository;
 
 import com.epms.Bean.CultivateRecord;
 
-//æ‹›è˜è®¡åˆ’å‘å¸ƒ
+//ÕĞÆ¸¼Æ»®·¢²¼
 @Repository
 public interface CultivateRecordMapper 
 {
-	//æŠ¥ååŸ¹è®­
-	int insertCultivateRecord(@Param("cultivateId") int cultivateId,@Param("participatorId") int participatorId,
-			@Param("status") String status);
-	
-	//æŸ¥è¯¢æ˜¯å¦é‡å¤æŠ¥å
-	int checkIfRepeat(@Param("cultivateId") int cultivateId,@Param("participatorId") int participatorId);
-	
-	//åˆ é™¤æœ€æ–°è¯­å¥
-	int deleteMaxId();
-	
-	//å‘˜å·¥æŸ¥è¯¢è‡ªå·±æŠ¥åçš„åŸ¹è®­è¯¾ç¨‹
-	List<CultivateRecord> selectCultivateRecordByJobId(@Param("before") int before,@Param("after") int after,@Param("jobId") int jobId);
-	int countSelectCultivateRecordByJobId(@Param("jobId") int jobId);
-	
-	//æ ¹æ®å¹´æœˆå’Œå·¥å·æŸ¥è¯¢æ˜¯å¦å·²æœ‰æŠ¥ååŸ¹è®­
-	int countSumByDate(@Param("jobId") int jobId,@Param("year") String year,@Param("month") String month);
-	
-	//æ ¹æ®å·¥å·æŸ¥è¯¢æŠ¥åçš„æ‰€æœ‰åŸ¹è®­id
-	Integer[] selectIdByJobId(@Param("jobId") int jobId);
+	//±¨ÃûÅàÑµ
+		int insertCultivateRecord(@Param("cultivateId") int cultivateId,@Param("participatorId") int participatorId,
+				@Param("status") String status);
+		
+		//²éÑ¯ÊÇ·ñÖØ¸´±¨Ãû
+		int checkIfRepeat(@Param("cultivateId") int cultivateId,@Param("participatorId") int participatorId);
+		
+		//É¾³ı×îĞÂÓï¾ä
+		int deleteMaxId();
+		
+		//Ô±¹¤²éÑ¯×Ô¼º±¨ÃûµÄÅàÑµ¿Î³Ì
+		List<CultivateRecord> selectCultivateRecordByJobId(@Param("cultivateId") String cultivateId,@Param("status") String status,@Param("before") int before,@Param("after") int after,@Param("jobId") int jobId);
+		int countSelectCultivateRecordByJobId(@Param("cultivateId") String cultivateId,@Param("status") String status,@Param("jobId") int jobId);
+		
+		//¸ù¾İÄêÔÂºÍ¹¤ºÅ²éÑ¯ÊÇ·ñÒÑÓĞ±¨ÃûÅàÑµ
+		int countSumByDate(@Param("jobId") int jobId,@Param("year") String year,@Param("month") String month);
+		
+		//ÉÏ¼¶²éÑ¯Ö±½ÓÏÂ¼¶µÄÒÑ±¨ÃûÅàÑµ¼ÇÂ¼
+		List<CultivateRecord> selectCultivateRecordToManager(@Param("before") int before,@Param("after") int after,@Param("managerId") int managerId);
+		int countToManager(@Param("managerId") int managerId);
+		
+		List<CultivateRecord> selectCultivateRecordToTotalManager(@Param("before") int before,@Param("after") int after);
+		int countToTotalManager();
+	 	
+		//ÉóºË±¨ÃûÅàÑµ
+		int updateCultivateRecordStatus(@Param("recordId") int recordId,@Param("status") String status);
+		
+		//¸ù¾İ¹¤ºÅ²éÑ¯±¨ÃûµÄËùÓĞÅàÑµid
+		Integer[] selectIdByJobId(@Param("jobId") int jobId);
 }

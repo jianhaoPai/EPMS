@@ -4,14 +4,14 @@ import java.util.List;
 
 import com.epms.Bean.Resume;
 
-//ç®€å†è¡¨
+//¼òÀú±í
 public interface ResumeService 
 {
-	//é€šè¿‡å·¥å·æŸ¥è¯¢æäº¤çš„ç®€å†ä¿¡æ¯
-    public List<Object> selectAllResumeByJobId(int before,int after,int jobId);
-	public int countByJobId(int jobId);
-	//å®¡æ ¸ç®€å†
-	public String updateAllExternalResume(Resume resume);
+	//Í¨¹ı¹¤ºÅ²éÑ¯Ìá½»µÄ¼òÀúĞÅÏ¢
+    public List<Object> selectAllResumeByJobId(String departmentId,String occupationId,String status,int before,int after,int jobId);
+	public int countByJobId(String departmentId,String occupationId,String status,int jobId);
+	//ÉóºË¼òÀú
+	public String updateAllResume(Resume resume,String interviewName);
 	
 	
 }

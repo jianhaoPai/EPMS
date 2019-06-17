@@ -17,13 +17,14 @@ import com.epms.Mapper.PersonalinfoMapper;
 import com.epms.Mapper.TotalDataMapper;
 import com.epms.Mapper.WorkingCalendarMapper;
 import com.epms.Service.CultivateRecordService;
-import com.epms.Utils.CalculateDaySum;
-
-
+import com.epms.Tools.CalculateDaySum;
 
 @Service(value = "cultivateRecordService")
 public class CultivateRecordServiceImpl implements CultivateRecordService 
 {
+	@Autowired
+	private PersonalinfoMapper peronalinfoMapper;
+	
 	@Autowired
 	private CultivateApply cultivateApply;
 	
@@ -31,141 +32,16 @@ public class CultivateRecordServiceImpl implements CultivateRecordService
 	private CultivateApplyMapper cultivateApplyMapper;
 	
 	@Autowired
-	private CultivateRecordMapper cultivateRecordMapper;
+	private WorkingCalendarMapper workingCalendarMapper;
 	
 	@Autowired
-	private PersonalinfoMapper peronalinfoMapper;
+	private CultivateRecordMapper cultivateRecordMapper;
 	
 	@Autowired
 	private TotalDataMapper totalDataMapper;
 	
-	@Autowired
-	private WorkingCalendarMapper workingCalendarMapper;
-	
-	//报名培训
-	public String insertCultivateRecord(int cultivateId,int participatorId) 
-	{
-		JSONObject result = new JSONObject();
-		cultivateApply=cultivateApplyMapper.selectCultivateApplyById(cultivateId);
-		if(cultivateApply.getAlreadyPerson()==cultivateApply.getSum())
-		{
-			result.put("status", false);
-			result.put("message", "报名失败，人数已满！");
-		}
-		else if (cultivateRecordMapper.checkIfRepeat(cultivateId, participatorId)>0)
-		{
-			result.put("status", false);
-			result.put("message", "报名失败，请勿重复报名！");
-		}
-		else if(checkJoinSum(participatorId,cultivateId)>0)
-		{
-			result.put("status", false);
-			result.put("message", "报名失败，此月份已报名过培训项目！");
-		}
-		else if(cultivateApply.getTypeId()==1)//内部培训
-		{
-			return detailInsertCultivateRecord1(cultivateId,participatorId,"通过");
-		}
-		else //外出培训
-		{
-			return detailInsertCultivateRecord1(cultivateId,participatorId,"待审核");
-		}
-		return result.toString();
-	}
-	
-	public String detailInsertCultivateRecord1(int cultivateId,int participatorId,String status)
-	{
-		JSONObject result = new JSONObject();
-		if(cultivateApply.getFacePeople().equals("全公司人员"))
-		{
-			return detailInsertCultivateRecord(cultivateId,participatorId,status);
-		}
-		else if(cultivateApply.getFacePeople().equals("针对本部门实习员工"))
-		{
-			Personalinfo writer=peronalinfoMapper.selectPersonalByIdNotEducation(cultivateApply.getWriteId());
-			Personalinfo participator=peronalinfoMapper.selectPersonalByIdNotEducation(participatorId);
-			if(writer.getDepartment().getDepartmentId()==participator.getDepartment().getDepartmentId() 
-					&& participator.getOccupation().getOccupationName().equals("实习生"))
-			{
-				return detailInsertCultivateRecord(cultivateId,participatorId,status);
-			}
-			else
-			{
-				result.put("status", false);
-				result.put("message", "报名失败，此培训仅针对实习生！");
-			}
-		}
-		else if(cultivateApply.getFacePeople().equals("针对全公司实习员工"))
-		{
-			Personalinfo participator=peronalinfoMapper.selectPersonalByIdNotEducation(participatorId);
-			if(participator.getOccupation().getOccupationName().equals("实习生"))
-			{
-				return detailInsertCultivateRecord(cultivateId,participatorId,status);
-			}
-			else
-			{
-				result.put("status", false);
-				result.put("message", "报名失败，此培训仅针对实习生！");
-			}
-		}
-		else if(cultivateApply.getFacePeople().equals("本部门人员"))
-		{
-			Personalinfo writer=peronalinfoMapper.selectPersonalByIdNotEducation(cultivateApply.getWriteId());
-			Personalinfo participator=peronalinfoMapper.selectPersonalByIdNotEducation(participatorId);
-			if(writer.getDepartment().getDepartmentId()==participator.getDepartment().getDepartmentId())
-			{
-				return detailInsertCultivateRecord(cultivateId,participatorId,status);
-			}
-			else
-			{
-				result.put("status", false);
-				result.put("message", "报名失败，你不属于此培训针对的部门！");
-			}
-		}
-		return result.toString();
-	}
-	
-	public String detailInsertCultivateRecord(int cultivateId,int participatorId,String status)
-	{
-		JSONObject result = new JSONObject();
-		cultivateRecordMapper.insertCultivateRecord(cultivateId,participatorId,status);
-		if(cultivateApplyMapper.updatealreadyPerson(cultivateApply.getAlreadyPerson()+1,cultivateId)<=0)
-		{
-			cultivateRecordMapper.deleteMaxId();
-			result.put("status", false);
-			result.put("message", "报名失败！");
-		}
-		else
-		{
-			result.put("status", true);
-			result.put("message", "报名成功！");
-		}
-		return result.toString();
-	}
-	
-	public int checkJoinSum(int participatorId,int cultivateId)
-	{
-		//先查询出此员工将要报名的培训开始时间
-		cultivateApply=cultivateApplyMapper.selectById(cultivateId);
-		System.out.println(cultivateApply);
-		
-		//根据查出的开始时间和工号查询是否开始时间月份已有报名
-	    String[] arr = cultivateApply.getStartDate().split("-"); 
-	    int count=cultivateRecordMapper.countSumByDate(participatorId, arr[0], arr[1]);
-	    return count;
-	}
-	
-	//员工查询自己报名的培训课程
-	public List<CultivateRecord> selectCultivateRecordByJobId(int before,int after,int jobId) 
-	{
-		return cultivateRecordMapper.selectCultivateRecordByJobId(before, after,jobId);
-	}
-	public int countSelectCultivateRecordByJobId(int jobId) 
-	{
-		return cultivateRecordMapper.countSelectCultivateRecordByJobId(jobId);
-	}
-
-
+	//查询某个月每个员工的培训天数
+	@Override
 	public List<TotalData> CountCultivate(String year, String month)
 	{
 		CalculateDaySum ads=new CalculateDaySum();
@@ -248,5 +124,194 @@ public class CultivateRecordServiceImpl implements CultivateRecordService
 		}
 		return totalDataMapper.selectAllDataSum();
 	}
+	
 
+	//报名培训
+		@Override
+		public String insertCultivateRecord(int cultivateId,int participatorId) 
+		{
+			JSONObject result = new JSONObject();
+			cultivateApply=cultivateApplyMapper.selectCultivateApplyById(cultivateId);
+			if(cultivateApply.getAlreadyPerson()==cultivateApply.getSum())
+			{
+				result.put("status", false);
+				result.put("message", "报名失败，人数已满！");
+			}
+			else if (cultivateRecordMapper.checkIfRepeat(cultivateId, participatorId)>0)
+			{
+				result.put("status", false);
+				result.put("message", "报名失败，请勿重复报名！");
+			}
+			else if(checkJoinSum(participatorId,cultivateId)>0)
+			{
+				result.put("status", false);
+				result.put("message", "报名失败，此月份已报名过培训项目！");
+			}
+			else if(cultivateApply.getTypeId()==1)//内部培训
+			{
+				return detailInsertCultivateRecord1(cultivateId,participatorId,"通过");
+			}
+			else //外出培训
+			{
+				return detailInsertCultivateRecord1(cultivateId,participatorId,"待审核");
+			}
+			return result.toString();
+		}
+		
+		public String detailInsertCultivateRecord1(int cultivateId,int participatorId,String status)
+		{
+			JSONObject result = new JSONObject();
+			if(cultivateApply.getFacePeople().equals("全公司人员"))
+			{
+				return detailInsertCultivateRecord(cultivateId,participatorId,status);
+			}
+			else if(cultivateApply.getFacePeople().equals("针对本部门实习员工"))
+			{
+				Personalinfo writer=peronalinfoMapper.selectPersonalByIdNotEducation(cultivateApply.getWriteId());
+				Personalinfo participator=peronalinfoMapper.selectPersonalByIdNotEducation(participatorId);
+				if(writer.getDepartment().getDepartmentId()==participator.getDepartment().getDepartmentId() 
+						&& participator.getOccupation().getOccupationName().equals("实习生"))
+				{
+					return detailInsertCultivateRecord(cultivateId,participatorId,status);
+				}
+				else
+				{
+					result.put("status", false);
+					result.put("message", "报名失败，此培训仅针对实习生！");
+				}
+			}
+			else if(cultivateApply.getFacePeople().equals("针对全公司实习员工"))
+			{
+				Personalinfo participator=peronalinfoMapper.selectPersonalByIdNotEducation(participatorId);
+				if(participator.getOccupation().getOccupationName().equals("实习生"))
+				{
+					return detailInsertCultivateRecord(cultivateId,participatorId,status);
+				}
+				else
+				{
+					result.put("status", false);
+					result.put("message", "报名失败，此培训仅针对实习生！");
+				}
+			}
+			else if(cultivateApply.getFacePeople().equals("本部门人员"))
+			{
+				Personalinfo writer=peronalinfoMapper.selectPersonalByIdNotEducation(cultivateApply.getWriteId());
+				Personalinfo participator=peronalinfoMapper.selectPersonalByIdNotEducation(participatorId);
+				if(writer.getDepartment().getDepartmentId()==participator.getDepartment().getDepartmentId())
+				{
+					return detailInsertCultivateRecord(cultivateId,participatorId,status);
+				}
+				else
+				{
+					result.put("status", false);
+					result.put("message", "报名失败，你不属于此培训针对的部门！");
+				}
+			}
+			return result.toString();
+		}
+		
+		public String detailInsertCultivateRecord(int cultivateId,int participatorId,String status)
+		{
+			JSONObject result = new JSONObject();
+			cultivateRecordMapper.insertCultivateRecord(cultivateId,participatorId,status);
+			if(cultivateApplyMapper.updatealreadyPerson(cultivateApply.getAlreadyPerson()+1,cultivateId)<=0)
+			{
+				cultivateRecordMapper.deleteMaxId();
+				result.put("status", false);
+				result.put("message", "报名失败！");
+			}
+			else
+			{
+				result.put("status", true);
+				result.put("message", "报名成功！");
+			}
+			return result.toString();
+		}
+		
+		public int checkJoinSum(int participatorId,int cultivateId)
+		{
+			//先查询出此员工将要报名的培训开始时间
+			cultivateApply=cultivateApplyMapper.selectById(cultivateId);
+			
+			//根据查出的开始时间和工号查询是否开始时间月份已有报名
+		    String[] arr = cultivateApply.getStartDate().split("-"); 
+		    int count=cultivateRecordMapper.countSumByDate(participatorId, arr[0], arr[1]);
+		    return count;
+		}
+		
+		//员工查询自己报名的培训课程
+		@Override
+		public List<CultivateRecord> selectCultivateRecordByJobId(String cultivateId,String status,int before,int after,int jobId) 
+		{
+			return cultivateRecordMapper.selectCultivateRecordByJobId(cultivateId,status,before, after,jobId);
+		}
+		@Override
+		public int countSelectCultivateRecordByJobId(String cultivateId,String status,int jobId) 
+		{
+			return cultivateRecordMapper.countSelectCultivateRecordByJobId(cultivateId,status,jobId);
+		}
+		
+		//上级查询下属所报名的全部培训记录
+		@Override
+		public List<CultivateRecord> selectAllCultivateRecord(int before, int after,int leaderId) 
+		{
+			Personalinfo leader=peronalinfoMapper.selectPersonalByIdNotEducation(leaderId);
+			if(leader.getOccupation().getOccupationName().equals("部门经理"))
+			{
+				return cultivateRecordMapper.selectCultivateRecordToManager(before, after, leaderId);
+			}
+			else if(leader.getOccupation().getOccupationName().equals("总经理")||leader.getOccupation().getOccupationName().equals("董事"))
+			{
+				return cultivateRecordMapper.selectCultivateRecordToTotalManager(before, after);
+			}
+			return null;
+		}
+
+		@Override
+		public int countselectAllCultivateRecord(int leaderId) 
+		{
+			Personalinfo leader=peronalinfoMapper.selectPersonalByIdNotEducation(leaderId);
+			if(leader.getOccupation().getOccupationName().equals("部门经理"))
+			{
+				return cultivateRecordMapper.countToManager(leaderId);
+			}
+			else if(leader.getOccupation().getOccupationName().equals("总经理")||leader.getOccupation().getOccupationName().equals("董事"))
+			{
+				return cultivateRecordMapper.countToTotalManager();
+			}
+			return 0;
+		}
+		
+		//审核报名培训
+		@Override
+		public String updateCultivateRecordStatus(int recordId,String recordStatus, String status,int cultivateId) 
+		{
+			JSONObject result = new JSONObject();
+			if(!recordStatus.equals("待审核"))
+			{
+				result.put("status", false);
+				result.put("message", "审核失败，请勿重复审核！");
+			}
+			else
+			{
+				int i=cultivateRecordMapper.updateCultivateRecordStatus(recordId, status);
+				if(i>0)
+				{
+					if(status.equals("不通过"))
+					{
+						cultivateApply=cultivateApplyMapper.selectById(cultivateId);
+						System.out.println(cultivateApply);
+						cultivateApplyMapper.updatealreadyPerson(cultivateApply.getAlreadyPerson()-1, cultivateId);
+					}
+					result.put("status", true);
+					result.put("message", "审核成功！");
+				}
+				else
+				{
+					result.put("status", false);
+					result.put("message", "审核失败！");
+				}
+			}
+			return result.toString();
+		}
 }

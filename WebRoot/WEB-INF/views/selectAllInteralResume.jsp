@@ -6,13 +6,44 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>员工提交的简历信息</title>
+<title>内部员工提交的全部简历信息</title>
 <link rel="stylesheet" type="text/css" href="layui/css/layui.css">
 </head>
 <body>
   <blockquote class="layui-elem-quote layui-text">
-    <h3>- 员工提交的简历信息 -</h3>
+    <h3>- 内部员工提交的全部简历信息 -</h3>
   </blockquote>
+  
+   <form class="layui-form layui-form-pane" action="">
+  <div class="demoTable">
+      <div class="layui-inline">
+        <select name="departmentId" id="departmentIdReload">
+            <option value="">请选择部门</option>
+            <option value="11">人事部</option>
+            <option value="22">财务部</option>
+            <option value="33">行政部</option>
+            <option value="66">管理层</option>
+        </select>
+      </div>
+      <div class="layui-inline">
+        <select name="occupationId" id="occupationIdReload">
+            <option value="">请选择职务</option>
+            <option value="1">职员</option>
+            <option value="2">部门经理</option>
+        </select>
+      </div>
+      <div class="layui-inline">
+        <select name="status" id="statusReload">
+            <option value="">请选择状态</option>
+            <option value="通过">通过</option>
+            <option value="未通过">未通过</option>
+            <option value="待审核">待审核</option>
+        </select>
+      </div>
+	  <button type="button" class="layui-btn" data-type="reload">搜索</button>
+  </div>
+  </form>
+  
 <table class="layui-table" id="table" border="5px" lay-filter="testForm"></table>
 <script type="text/html" id="barDemo">
   <button class="layui-btn layui-btn-sm" lay-event="update">查看详情</button>
@@ -35,6 +66,8 @@ layui.use(['jquery','table','layer','form'],function(){
             	  ,{field:'name',title:'姓名',align:'center'}
                   ,{field:'department_name',title:'申请部门',align:'center'}
                   ,{field:'occupation_name',title:'申请职位',align:'center',sort:'true'}
+                  ,{field:'nowDepartment',title:'所在部门',align:'center'}
+                  ,{field:'nowOccupation',title:'所在职位',align:'center',sort:'true'}
                   ,{field:'submit_date',title:'提交时间',align:'center'}
                   ,{field:'status',title:'状态',align:'center',sort:'true'}
                   ,{field:'approval_date',title:'审批时间',align:'center'}
@@ -78,7 +111,30 @@ layui.use(['jquery','table','layer','form'],function(){
 		        /*渲染表单*/
 		        form.render(); 
 			    }
-			});          
+			});
+			var $ = layui.$, active = {
+		    reload: function(){
+		      var departmentIdReload = $('#departmentIdReload').val();
+		      var occupationIdReload = $('#occupationIdReload').val();
+		      var statusReload = $('#statusReload').val();
+		      //执行重载
+		      table.reload('test', {
+		        page: {
+		          curr: 1 //重新从第 1 页开始
+		        }
+		        ,where: {
+		            occupationId: occupationIdReload,
+		            departmentId: departmentIdReload,
+		            status: statusReload
+		        }
+		      });
+		    }
+		  };
+          
+          $('.demoTable .layui-btn').on('click', function(){
+		    var type = $(this).data('type');
+		    active[type] ? active[type].call(this) : '';
+		  });      
 });
 </script>
 </body>

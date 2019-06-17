@@ -3,17 +3,17 @@ package com.epms.Service;
 import java.util.List;
 
 import com.epms.Bean.InteralResume;
-//å†…éƒ¨äººå‘˜ç®€å†è¡¨
+//ÄÚ²¿ÈËÔ±¼òÀú±í
 public interface InteralResumeService 
 {
-	//å†…éƒ¨äººå‘˜å¡«å†™ç®€å†
+	//ÄÚ²¿ÈËÔ±ÌîĞ´¼òÀú
 	public String insertInteralResume(InteralResume interalResume);
 	
-	//é€šè¿‡å·¥å·æŸ¥è¯¢æäº¤çš„ç®€å†ä¿¡æ¯
+	//Í¨¹ı¹¤ºÅ²éÑ¯Ìá½»µÄ¼òÀúĞÅÏ¢
     public List<InteralResume> selectInteralResumeByJobId(String departmentId,String occupationId,String status,int before,int after,int jobId);
 	public int countByJobId(String departmentId,String occupationId,String status,int jobId);
 	
-	//æ€»ç»ç†æˆ–éƒ¨é—¨ç»ç†æŸ¥è¯¢ç®€å†ä¿¡æ¯
-	public List<InteralResume> selectAllInteralResume(int before,int after,int jobId);
-	public int countAllInteralResume(int jobId);
+	//×Ü¾­Àí»ò²¿ÃÅ¾­Àí²éÑ¯¼òÀúĞÅÏ¢
+	public List<InteralResume> selectAllInteralResume(String departmentId,String occupationId,String status,int before,int after,int jobId);
+	public int countAllInteralResume(String departmentId,String occupationId,String status,int jobId);
 }

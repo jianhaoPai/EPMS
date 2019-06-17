@@ -6,21 +6,49 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>测试的用户展示页</title>
+<title>查询全部外部人员提交的简历</title>
 <link rel="stylesheet" type="text/css" href="layui/css/layui.css">
 </head>
 <body>
   <blockquote class="layui-elem-quote layui-text">
-    <h3>- 查询外部人员简历 -</h3>
+    <h3>- 查询全部外部人员提交的简历 -</h3>
   </blockquote>
-
-
   
+  <form class="layui-form layui-form-pane" action="">
+  <div class="demoTable">
+      <div class="layui-inline">
+        <select name="departmentId" id="departmentIdReload">
+            <option value="">请选择部门</option>
+            <option value="11">人事部</option>
+            <option value="22">财务部</option>
+            <option value="33">行政部</option>
+            <option value="66">管理层</option>
+        </select>
+      </div>
+      <div class="layui-inline">
+        <select name="occupationId" id="occupationIdReload">
+            <option value="">请选择职务</option>
+            <option value="1">职员</option>
+            <option value="2">部门经理</option>
+        </select>
+      </div>
+      <div class="layui-inline">
+        <select name="status" id="statusReload">
+            <option value="">请选择状态</option>
+            <option value="通过">通过</option>
+            <option value="未通过">未通过</option>
+            <option value="待审核">待审核</option>
+        </select>
+      </div>
+	  <button type="button" class="layui-btn" data-type="reload">搜索</button>
+  </div>
+  </form>
+
 <table class="layui-table" id="table" border="5px" lay-filter="testForm"></table>
 
 
 <script type="text/html" id="barDemo">
-  <button class="layui-btn layui-btn-sm" lay-event="select">查看</button>
+  <button class="layui-btn layui-btn-sm" lay-event="select">查看详情</button>
 </script>
 
 <script src="layui/layui.all.js" charset="utf-8"></script>
@@ -44,9 +72,8 @@ layui.use(['jquery','table','layer','form'],function(){
                   ,{field:'department_name',title:'申请部门',align:'center'}
                   ,{field:'occupation_name',title:'申请职位',align:'center',sort:'true'}
                   ,{field:'phone',title:'电话',align:'center'}
-                  ,{field:'email',title:'邮箱',align:'center'}
-                  ,{field:'address',title:'地址',align:'center'}
                   ,{field:'submit_date',title:'提交时间',align:'center'}
+                  ,{field:'status',title:'状态',align:'center',sort:'true'}
                   ,{fixed:'right',title:'查看',toolbar:'#barDemo'}
                   //一个工具栏  具体请查看layui官网
             ]]
@@ -68,7 +95,7 @@ layui.use(['jquery','table','layer','form'],function(){
 			    if(layEvent==='select'){
 			    	layer.open({
 		            type:2,
-		            title:"修改账号",
+		            title:"查看简历详情",
 		            skin:"myclass",
 		            area:["45%","65%"],
 		            content:["requestPage?page=detailAllExternalResume","no"],
@@ -77,10 +104,12 @@ layui.use(['jquery','table','layer','form'],function(){
                         var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();  
                         var inputList = body.find("input");//获取到子窗口的所有的input标签
                         var textList = body.find("textarea");
-
-                        $(inputList[0]).val(data.interview_id);
-                        $(inputList[1]).val(data.interview_date);
-                        $(inputList[2]).val(data.approvl_date); //遍历子窗口的input标签，将之前数组中的值一次放入显示
+                        
+                        $(inputList[0]).val(data.email);
+                        $(inputList[1]).val(data.address);
+                        $(inputList[2]).val(data.interview_id); //遍历子窗口的input标签，将之前数组中的值一次放入显示
+                        $(inputList[3]).val(data.interview_date);
+                        $(inputList[4]).val(data.approvl_date);
                         $(textList[0]).val(data.work_experience);
 		            },
 		            end:function(result){
@@ -90,8 +119,32 @@ layui.use(['jquery','table','layer','form'],function(){
 		        /*渲染表单*/
 		        form.render(); 
 			    }
-			});
-});		
+			    });
+			var $ = layui.$, active = {
+		    reload: function(){
+		      var departmentIdReload = $('#departmentIdReload').val();
+		      var occupationIdReload = $('#occupationIdReload').val();
+		      var statusReload = $('#statusReload').val();
+		      //执行重载
+		      table.reload('test', {
+		        page: {
+		          curr: 1 //重新从第 1 页开始
+		        }
+		        ,where: {
+		            occupationId: occupationIdReload,
+		            departmentId: departmentIdReload,
+		            status: statusReload
+		        }
+		      });
+		    }
+		  };
+          
+          $('.demoTable .layui-btn').on('click', function(){
+		    var type = $(this).data('type');
+		    active[type] ? active[type].call(this) : '';
+		      
+		});  
+});
 </script>
 </body>
 </html>

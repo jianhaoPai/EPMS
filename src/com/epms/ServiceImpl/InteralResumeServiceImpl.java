@@ -39,7 +39,7 @@ public class InteralResumeServiceImpl implements InteralResumeService
 	@Autowired
 	private InteralResumeMapper interalResumeMapper;
 	
-	//�ύ����
+	//提交简历
 	@Override
 	public String insertInteralResume(InteralResume interalResume)
 	{
@@ -52,34 +52,42 @@ public class InteralResumeServiceImpl implements InteralResumeService
 		{
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			interalResume.getResume().setSubmitDate(dateFormat.format(new Date()));
-			interalResume.getResume().setStatus("�����");
+			interalResume.getResume().setStatus("待审核");
 			
-			//��ݲ������ѯ����id
+			//根据部门名查询部门id
 			int departmentId=departmentMapper.selectIdByName(interalResume.getResume().getToDepartment().getDepartmentName());
 			interalResume.getResume().getToDepartment().setDepartmentId(departmentId);
 			
-			//���ְλ���ѯְλid
+			//根据职位名查询职位id
 			int occupationId=occupaionMapper.selectIdByName(interalResume.getResume().getToOccupation().getOccupationName());
 			interalResume.getResume().getToOccupation().setOccupationId(occupationId);
 			
-			if(interalResumeMapper.checkIfRepect(interalResume)>0)
+			personalinfo=personalinfoMapper.selectPersonalByIdNotEducation(interalResume.getJobId());
+			if(personalinfo.getDepartment().getDepartmentId()==departmentId&&personalinfo.getOccupation().getOccupationId()==occupationId)
 			{
 				result.put("status", false);
-				result.put("message", "�ύʧ�ܣ������ظ��ύ��");
+				result.put("message", "提交失败，请勿申请自己的工作岗位！");
 			}
-			else
-			{
-				resumeMapper.insertResume(interalResume.getResume());
-				interalResume.setResumeId(resumeMapper.selectMaxId());
-				interalResumeMapper.insertInteralResume(interalResume);
-				result.put("status", true);
-				result.put("message", "�ύ�ɹ���");
+			else{
+				if(interalResumeMapper.checkIfRepect(interalResume)>0)
+				{
+					result.put("status", false);
+					result.put("message", "提交失败，请勿重复提交！");
+				}
+				else
+				{
+					resumeMapper.insertResume(interalResume.getResume());
+					interalResume.setResumeId(resumeMapper.selectMaxId());
+					interalResumeMapper.insertInteralResume(interalResume);
+					result.put("status", true);
+					result.put("message", "提交成功！");
+				}
 			}
 		}
 		return result.toString();
 	}
 	
-	//ͨ��Ų�ѯ�ύ�ļ�����Ϣ
+	//通过工号查询提交的简历信息
 	@Override
 	public List<InteralResume> selectInteralResumeByJobId(String departmentId,String occupationId,String status,int before,int after, int jobId) {
 		return interalResumeMapper.selectInteralResumeByJobId(departmentId,occupationId,status,before, after, jobId);
@@ -91,34 +99,33 @@ public class InteralResumeServiceImpl implements InteralResumeService
 		return interalResumeMapper.countByJobId(departmentId,occupationId,status,jobId);
 	}
 	
-	//���ž�����ܾ����ѯ������Ϣ
+	//部门经理和总经理查询简历信息
 	@Override
-	public List<InteralResume> selectAllInteralResume(int before, int after,int jobId) 
+	public List<InteralResume> selectAllInteralResume(String departmentId,String occupationId,String status,int before, int after,int jobId) 
 	{
 		personalinfo=personalinfoMapper.selectPersonalByIdNotEducation(jobId);		
 		int managerDepartmentId=personalinfo.getDepartment().getDepartmentId();
 		if(personalinfo.getOccupation().getOccupationId()==2)
 		{
-			return interalResumeMapper.selectAllInteralResumeToManager(before, after, jobId, managerDepartmentId);
+			return interalResumeMapper.selectAllInteralResumeToManager(departmentId,occupationId,status,before, after, jobId, managerDepartmentId);
 		}
 		else if(personalinfo.getOccupation().getOccupationId()==3 || personalinfo.getOccupation().getOccupationId()==4)
 		{
-			return interalResumeMapper.selectAllInteralResume(before, after);
+			return interalResumeMapper.selectAllInteralResume(departmentId,occupationId,status,before, after);
 		}
 		return null;
 	}
-	
 	@Override
-	public int countAllInteralResume(int jobId) {
+	public int countAllInteralResume(String departmentId,String occupationId,String status,int jobId) {
 		personalinfo=personalinfoMapper.selectPersonalByIdNotEducation(jobId);
 		int managerDepartmentId=personalinfo.getDepartment().getDepartmentId();
 		if(personalinfo.getOccupation().getOccupationId()==2)
 		{
-			return interalResumeMapper.countAllInteralResumeToManager(jobId, managerDepartmentId);
+			return interalResumeMapper.countAllInteralResumeToManager(departmentId,occupationId,status,jobId, managerDepartmentId);
 		}
 		else if(personalinfo.getOccupation().getOccupationId()==3 || personalinfo.getOccupation().getOccupationId()==4)
 		{
-			return interalResumeMapper.countAllInteralResume();
+			return interalResumeMapper.countAllInteralResume(departmentId,occupationId,status);
 		}
 		return 0;
 	}

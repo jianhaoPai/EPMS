@@ -38,12 +38,12 @@
  	
  	<!-- 审核报销通过 -->
  	<update id="verifyPerformYes">
- 		UPDATE t_reimbursement SET verify_id=#{verifyId},verify_date=#{verifyDate},state=' 已通过' WHERE job_id=#{jobId} and state='待审核';
+ 		UPDATE t_reimbursement SET verify_id=#{verifyId},verify_date=#{verifyDate},state=' 已通过' WHERE job_id=#{jobId} and time=#{time} and state='待审核';
  	</update>
  	
  	<!-- 审核报销通过 -->
  	<update id="verifyPerformNo">
- 		UPDATE t_reimbursement SET verify_id=#{verifyId},verify_date=#{verifyDate},state=' 未通过' WHERE job_id=#{jobId} and state='待审核';
+ 		UPDATE t_reimbursement SET verify_id=#{verifyId},verify_date=#{verifyDate},state=' 未通过' WHERE job_id=#{jobId} and time=#{time} and state='待审核';
  	</update>
  	
  	<!-- 查询审核报销记录 -->

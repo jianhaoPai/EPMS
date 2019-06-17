@@ -5,24 +5,18 @@ import java.util.List;
 import org.springframework.data.repository.query.Param;
 
 import com.epms.Bean.ExternalResume;
-//å¤–éƒ¨äººå‘˜ç®€å†è¡¨
+//Íâ²¿ÈËÔ±¼òÀú±í
 public interface ExternalResumeService 
 {
-	//æäº¤ç®€å†
+	//Ìá½»¼òÀú
 	public String insertExternalResume(ExternalResume externalResume);
 	
-	//æŸ¥è¯¢å…¨éƒ¨å¤–éƒ¨äººå‘˜ç®€å†
-	public List<ExternalResume> selectAllExternalResume(@Param("before") int before,@Param("after") int after,@Param("jobId") int jobId);
-	public int countSelectAllExternalResume(int jobId);	
-	
-	/*//é€šè¿‡åå­—æŸ¥è¯¢å‡ºæ‰€æœ‰çš„ç®€å†
-	public List<ExternalResume> selectExternalResumeByName(String name);
+	//²éÑ¯È«²¿Íâ²¿ÈËÔ±¼òÀú
+	public List<ExternalResume> selectAllExternalResume(String departmentId,String occupationId,String status,int before,int after,int jobId);
+	public int countSelectAllExternalResume(String departmentId,String occupationId,String status,int jobId);	
 
-	public 	List<ExternalResume> selectExternalResumeAll(int before, int after);
-	//è®¡ç®—æ€»æ¡æ•°
-	public int count();*/
-
-
+	//ÓÊÏä»ñÈ¡
+	public ExternalResume getExternalResumeByEmail(String email);
 
 
 

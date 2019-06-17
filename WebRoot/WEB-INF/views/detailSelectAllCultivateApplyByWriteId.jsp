@@ -24,7 +24,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	<div class="layui-col-md10">
 		<form  class="layui-form" method="post" id="submitFeedBackForm">
 	<div class="layui-form-item">
-				<label class="layui-form-label">地点：</label>
+				<label class="layui-form-label">培训地点：</label>
 				<div class="layui-inline">
 					<input type="text" id="site"  name="site" class="layui-input" readonly/>
 				</div>
@@ -36,13 +36,13 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				</div>
 			</div>
 				<div class="layui-form-item">
-				<label class="layui-form-label">职能介绍：</label>
+				<label class="layui-form-label">培训介绍：</label>
 				<div class="layui-inline">
 				    <textarea type="text" id="introduce"  name="introduce" class="layui-input" readonly></textarea>
 				</div>
 			</div>
 			<div class="layui-form-item">
-				<label class="layui-form-label">审核状态：</label>
+				<label class="layui-form-label">培训人数：</label>
 				<div class="layui-inline">
 					<input type="text" id="status"  name="status" class="layui-input" readonly/>
 				</div>

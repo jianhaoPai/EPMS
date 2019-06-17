@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,44 +14,75 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.epms.Bean.ExternalResume;
 import com.epms.Bean.Resume;
+import com.epms.Mapper.ResumeMapper;
+import com.epms.Service.ExternalResumeService;
 import com.epms.Service.ResumeService;
-
+import com.epms.Tools.SendResumeMail;
 
 @Controller
 @RequestMapping(value="ResumeController")
-public class ResumeController {
+public class ResumeController 
+{
 	@Autowired
 	private ResumeService resumeService;	
-	@Autowired
+	@Autowired 
 	private Resume resume;
+	@Autowired 
+	private ExternalResumeService externalResumeService;
 	
+	@Autowired 
+	private ResumeMapper resumeMapper;
 	
-	//æŸ¥è¯¢å…¨éƒ¨äººå‘˜çš„ç®€å†
+	//²éÑ¯È«²¿ÈËÔ±µÄ¼òÀú
 	@RequestMapping(value = "/selectAllResume", produces = "application/json;charset=utf-8", method = RequestMethod.GET)
 	public @ResponseBody
-	String selectAllExternalResume(int page, int limit, HttpSession session) 
+	String selectAllExternalResume(String departmentId,String occupationId,String status,int page, int limit, HttpSession session) 
 	{
 		int jobId = Integer.parseInt(session.getAttribute("jobId").toString());
 		int before = limit * (page - 1);
-		// å¸¦å‚æ•°ä»æ•°æ®åº“é‡ŒæŸ¥è¯¢å‡ºæ¥æ”¾åˆ°eilistçš„é›†åˆé‡Œ
-		List list = resumeService.selectAllResumeByJobId(before, limit, jobId);
-		int count = resumeService.countByJobId(jobId);
-		// ç”¨jsonæ¥ä¼ å€¼
+		// ´ø²ÎÊı´ÓÊı¾İ¿âÀï²éÑ¯³öÀ´·Åµ½eilistµÄ¼¯ºÏÀï
+		List list = resumeService.selectAllResumeByJobId(departmentId,occupationId,status,before, limit, jobId);
+		int count = resumeService.countByJobId(departmentId,occupationId,status,jobId);
+		// ÓÃjsonÀ´´«Öµ
 		JSONArray json = JSONArray.fromObject(list);
 		String js = json.toString();
-		// è½¬ä¸ºlayuiéœ€è¦çš„jsonæ ¼å¼ï¼Œå¿…é¡»è¦è¿™ä¸€æ­¥
+		// ×ªÎªlayuiĞèÒªµÄjson¸ñÊ½£¬±ØĞëÒªÕâÒ»²½
 		String jso = "{\"code\":0,\"msg\":\"\",\"count\":" + count
 				+ ",\"data\":" + js + "}";
 		return jso;
 	}
 	
-	// å®¡æ ¸ç®€å†
-	@RequestMapping(value = "updateAllExternalResume", method = RequestMethod.POST)
+	// ÉóºË¼òÀú
+	@RequestMapping(value = "updateAllResume", method = RequestMethod.POST,produces = "application/json;charset=utf-8")
 	public @ResponseBody
-	String updateAllExternalResume(Resume resume) 
+	String updateAllResume(int id,String interviewDate,String status,String interviewName,String email) 
 	{
-		return resumeService.updateAllExternalResume(resume);
+		resume=new Resume();
+		resume.setInterviewDate(interviewDate);
+		resume.setInterviewId(id);
+		resume.setId(id);
+		resume.setStatus(status);
+		String result =resumeService.updateAllResume(resume,interviewName);
+		JSONObject result1 = new JSONObject();
+		//ÊµÀı»¯Ò»¸ö·¢ËÍÓÊ¼şµÄ¶ÔÏó
+		SendResumeMail mySendMail=new SendResumeMail();
+		//¸ù¾İÓÊÏäÕÒµ½¸ÃÓÃ»§ĞÅÏ¢
+		ExternalResume user= externalResumeService.getExternalResumeByEmail(email);
+		Resume resume2=resumeMapper.selectResumeById(id);
+		if(resume2.getApprovalDate()==null&&resume2.getStatus()=="Í¨¹ı")
+		{
+				mySendMail.sendResume(email, "ÆóÒµÈËÊÂ¹ÜÀíÏµÍ³ÌáĞÑ£¬ÄúµÄ¼òÀúÒÑÍ¨¹ı"+"ÇëÓÚ"+interviewDate+"ÏÂÎçÁ½µã²Î¼ÓÃæÊÔ");
+				result1.put("status",true);
+				result1.put("msg","·¢ËÍ³É¹¦");
+			}else{
+				mySendMail.sendResume(email, "ÆóÒµÈËÊÂ¹ÜÀíÏµÍ³ÌáĞÑ£ººÜ±§Ç¸ÄúµÄ¼òÀúÃ»ÓĞÍ¨¹ı£¬¸ĞĞ»Äú¶ÔÎÒÃÇ¹«Ë¾µÄÈÏ¿É£¡");
+				result1.put("status",false);
+				result1.put("msg","¸ÃÓÊÏä²»´æÔÚ");
+			}
+		return result;
+		
 	}
 
 }

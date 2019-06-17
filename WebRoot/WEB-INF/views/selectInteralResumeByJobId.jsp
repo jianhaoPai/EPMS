@@ -6,12 +6,12 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>员工提交的简历信息</title>
+<title>自己提交的简历信息</title>
 <link rel="stylesheet" type="text/css" href="layui/css/layui.css">
 </head>
 <body>
   <blockquote class="layui-elem-quote layui-text">
-    <h3>- 员工提交的简历信息 -</h3>
+    <h3>- 自己提交的简历信息 -</h3>
   </blockquote>
   
    <form class="layui-form layui-form-pane" action="">

@@ -1,31 +1,30 @@
-<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
-<%
-String path = request.getContextPath();
-String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
-%>
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<%@ page language="java" contentType="text/html; charset=utf-8"
+    pageEncoding="utf-8"%>
+    
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta charset="utf-8">
-<meta name="viewport"
-	content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>企业人事管理</title>
-<link rel="stylesheet" href="layui/css/layui.css" media="all">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>提交招聘计划</title>
+<link rel="stylesheet" type="text/css" href="layui/css/layui.css">
 </head>
 <body>
-     
+  <blockquote class="layui-elem-quote layui-text">
+    <h3>- 提交招聘计划 -</h3>
+  </blockquote>
+  <br>
 	<form class="layui-form" method="post" id="submitFeedBackForm">
 
 		<div class="layui-form-item">
-			<label class="layui-form-label">所需人数</label>
-			<div class="layui-input-inline">
+			<label class="layui-form-label">招聘人数:</label>
+			<div class="layui-input-block">
 				<input name="sum" class="layui-input" type="text" placeholder="请输入"
 					autocomplete="off" lay-verify="required|number|sum">
 			</div>
 		</div>
 		<div class="layui-form-item">
-			<label class="layui-form-label">所需部门</label>
+			<label class="layui-form-label">招聘部门:</label>
 			<div class="layui-input-block">
 				<select name="department.departmentId" lay-filter="aihao">
 					<option value=""></option>
@@ -36,7 +35,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			</div>
 		</div>
 		<div class="layui-form-item">
-			<label class="layui-form-label">所需职位</label>
+			<label class="layui-form-label">招聘职位:</label>
 			<div class="layui-input-block">
 				<select name="occupation.occupationId" lay-filter="aihao">
 					<option value=""></option>
@@ -45,15 +44,15 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				</select>
 			</div>
 		</div> 
-		<div class="layui-form-item layui-form-text">
-			<label class="layui-form-label">职能介绍</label>
+		<div class="layui-form-item">
+			<label class="layui-form-label">职位介绍:</label>
 			<div class="layui-input-block">
 				<textarea name="functionIntrduce" class="layui-textarea"
 					placeholder="请输入内容" lay-verify="required"></textarea>
 			</div>
 		</div>
 		<div class="layui-form-item layui-form-text">
-			<label class="layui-form-label">要求</label>
+			<label class="layui-form-label">职位要求:</label>
 			<div class="layui-input-block">
 				<textarea name="demand" class="layui-textarea"
 					placeholder="请输入内容" lay-verify="required"></textarea>

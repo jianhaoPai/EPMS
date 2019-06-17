@@ -7,31 +7,34 @@ import org.springframework.stereotype.Repository;
 
 import com.epms.Bean.InteralResume;
 
-//å†…éƒ¨äººå‘˜ç®€å†è¡¨
+//ÄÚ²¿ÈËÔ±¼òÀú±í
 @Repository
 public interface InteralResumeMapper
 {
    int insertInteralResume(InteralResume interalResume);
     
-    //é€šè¿‡å·¥å·æŸ¥è¯¢æäº¤çš„ç®€å†ä¿¡æ¯
+    //Í¨¹ı¹¤ºÅ²éÑ¯Ìá½»µÄ¼òÀúĞÅÏ¢
     public List<InteralResume> selectInteralResumeByJobId(@Param("departmentId")String departmentId,
     		@Param("occupationId")String occupationId,@Param("status")String status,@Param("before") int before,@Param("after") int after,
     		@Param("jobId")int jobId);
 	public int countByJobId(@Param("departmentId")String departmentId,@Param("occupationId")String occupationId,
 			@Param("status")String status,@Param("jobId")int jobId);
 	
-	//æ£€æŸ¥æ˜¯å¦é‡å¤æäº¤
+	//¼ì²éÊÇ·ñÖØ¸´Ìá½»
 	int checkIfRepect(InteralResume interalResume);
 	
-	//éƒ¨é—¨ç»ç†æŸ¥è¯¢å†…éƒ¨äººå‘˜ç®€å†
-	public List<InteralResume> selectAllInteralResumeToManager(@Param("before") int before,@Param("after") int after,
-			                                            @Param("jobId") int jobId,
-			                                            @Param("managerDepartmentId") int managerDepartmentId);
-	public int countAllInteralResumeToManager(@Param("jobId")int jobId,@Param("managerDepartmentId") int managerDepartmentId);
+	//²¿ÃÅ¾­Àí²éÑ¯ÄÚ²¿ÈËÔ±¼òÀú
+	public List<InteralResume> selectAllInteralResumeToManager(@Param("departmentId")String departmentId,
+			@Param("occupationId")String occupationId,@Param("status")String status,@Param("before") int before,
+			@Param("after") int after,@Param("jobId") int jobId,@Param("managerDepartmentId") int managerDepartmentId);
+	public int countAllInteralResumeToManager(@Param("departmentId")String departmentId,@Param("occupationId")String occupationId,
+			@Param("status")String status,@Param("jobId")int jobId,@Param("managerDepartmentId") int managerDepartmentId);
 
-	//æ€»ç»ç†æŸ¥è¯¢å…¨éƒ¨å†…éƒ¨äººå‘˜ç®€å†
-	public List<InteralResume> selectAllInteralResume(@Param("before") int before,@Param("after") int after);
-	public int countAllInteralResume();
+	//×Ü¾­Àí²éÑ¯È«²¿ÄÚ²¿ÈËÔ±¼òÀú
+	public List<InteralResume> selectAllInteralResume(@Param("departmentId")String departmentId,@Param("occupationId")String occupationId,
+			@Param("status")String status,@Param("before") int before,@Param("after") int after);
+	public int countAllInteralResume(@Param("departmentId")String departmentId,@Param("occupationId")String occupationId,
+			@Param("status")String status);
 	
 
 

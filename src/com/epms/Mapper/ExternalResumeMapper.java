@@ -5,30 +5,32 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import com.epms.Bean.ExternalResume;
-//å¤–éƒ¨äººå‘˜ç®€å†è¡¨
+//Íâ²¿ÈËÔ±¼òÀú±í
 @Repository
 public interface ExternalResumeMapper
 {
-  //æäº¤ç®€å† 
+  //Ìá½»¼òÀú 
   int insertExternalResume(ExternalResume externalResume);
   
-  //æ ¹æ®äº‹é¡¹idæŸ¥è¯¢ç®€å†
+  //¸ù¾İÊÂÏîid²éÑ¯¼òÀú
   ExternalResume selectMyResume(int resumeId);
   
-  //æ£€æŸ¥æ˜¯å¦é‡å¤æäº¤
+  //¼ì²éÊÇ·ñÖØ¸´Ìá½»
   int checkIfRepect(ExternalResume externalResume);
   
-  //æŸ¥è¯¢å…¨éƒ¨å¤–éƒ¨äººå‘˜ç®€å†
-  public List<ExternalResume> selectAllExternalResume(@Param("before") int before,@Param("after") int after);
-  public int countSelectAllExternalResume();
+  //²éÑ¯È«²¿Íâ²¿ÈËÔ±¼òÀú
+  public List<ExternalResume> selectAllExternalResume(@Param("departmentId")String departmentId,
+			@Param("occupationId")String occupationId,@Param("status")String status,@Param("before") int before,@Param("after") int after);
+  public int countSelectAllExternalResume(@Param("departmentId")String departmentId,
+			@Param("occupationId")String occupationId,@Param("status")String status);
  
-  //éƒ¨é—¨ç»ç†æŸ¥è¯¢å¤–éƒ¨äººå‘˜ç®€å†
-  public List<ExternalResume> selectAllExternalResumeToManager(@Param("before") int before,@Param("after") int after,
+  //²¿ÃÅ¾­Àí²éÑ¯Íâ²¿ÈËÔ±¼òÀú
+  public List<ExternalResume> selectAllExternalResumeToManager(@Param("departmentId")String departmentId,
+			@Param("occupationId")String occupationId,@Param("status")String status,@Param("before") int before,@Param("after") int after,
 		                                                       @Param("managerDepartmentId") int managerDepartmentId);
-  public int countSelectAllExternalResumeToManager(@Param("managerDepartmentId") int managerDepartmentId);
+  public int countSelectAllExternalResumeToManager(@Param("departmentId")String departmentId,
+			@Param("occupationId")String occupationId,@Param("status")String status,@Param("managerDepartmentId") int managerDepartmentId);
   
- /* //é€šè¿‡åå­—æŸ¥è¯¢å‡ºæ‰€æœ‰çš„ç®€å†
-  List<ExternalResume> selectExternalResumeByName(String name);
-  public List<ExternalResume> selectExternalResumeAll(@Param("before") int before,@Param("after") int after);
-  public int count(String name);*/
+    //Í¨¹ıÃû×Öµç»°»ñÈ¡ÓÊÏä
+	public ExternalResume getExternalResumeByEmail(@Param("email")String email);
 }

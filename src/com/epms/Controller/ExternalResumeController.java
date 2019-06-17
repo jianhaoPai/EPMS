@@ -5,6 +5,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,13 +14,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.epms.Bean.CultivateApply;
 import com.epms.Bean.ExternalResume;
 import com.epms.Service.ExternalResumeService;
 import com.epms.Service.InteralResumeService;
+import com.epms.Tools.SendResumeMail;
 
 
-//å¤–éƒ¨äººå‘˜ç”³è¯·æ“ä½œ
+//Íâ²¿ÈËÔ±ÉêÇë²Ù×÷
 @Controller
 @RequestMapping(value="ExternalResumeController")
 public class ExternalResumeController 
@@ -34,7 +35,7 @@ public class ExternalResumeController
 	@Autowired
 	private ExternalResume externalResume;
 	
-	//ç®€å†æäº¤
+	//¼òÀúÌá½»
 	@RequestMapping(value = "insertExternalResume", method = RequestMethod.POST, produces = "application/json;charset=utf-8")
 	public @ResponseBody String insertExternalResume(@Valid ExternalResume externalResume,BindingResult error,HttpSession session)
 	{
@@ -46,24 +47,22 @@ public class ExternalResumeController
 		return result;
 	}
 	
-	//æŸ¥è¯¢å¤–éƒ¨äººå‘˜çš„ç®€å†
+	//²éÑ¯Íâ²¿ÈËÔ±µÄ¼òÀú
 	@RequestMapping(value="/selectAllExternalResume",produces="application/json;charset=utf-8",method= RequestMethod.GET)
-	public @ResponseBody String selectAllExternalResume(int page,int limit,HttpSession session)
+	public @ResponseBody String selectAllExternalResume(String departmentId,String occupationId,String status,int page,int limit,HttpSession session)
 	{
 		int jobId = Integer.parseInt(session.getAttribute("jobId").toString());
 		int before=limit*(page-1);
-		//å¸¦å‚æ•°ä»æ•°æ®åº“é‡ŒæŸ¥è¯¢å‡ºæ¥æ”¾åˆ°eilistçš„é›†åˆé‡Œ
-		List<ExternalResume> externalResumelist=externalResumeService.selectAllExternalResume(before,limit,jobId);			
-		int count=externalResumeService.countSelectAllExternalResume(jobId);
-		//ç”¨jsonæ¥ä¼ å€¼
+		//´ø²ÎÊı´ÓÊı¾İ¿âÀï²éÑ¯³öÀ´·Åµ½eilistµÄ¼¯ºÏÀï
+		List<ExternalResume> externalResumelist=externalResumeService.selectAllExternalResume(departmentId,occupationId,status,before,limit,jobId);			
+		int count=externalResumeService.countSelectAllExternalResume(departmentId,occupationId,status,jobId);
+		//ÓÃjsonÀ´´«Öµ
 		JSONArray json=JSONArray.fromObject(externalResumelist);
 		String js=json.toString();
-		//è½¬ä¸ºlayuiéœ€è¦çš„jsonæ ¼å¼ï¼Œå¿…é¡»è¦è¿™ä¸€æ­¥
+		//×ªÎªlayuiĞèÒªµÄjson¸ñÊ½£¬±ØĞëÒªÕâÒ»²½
 		String jso="{\"code\":0,\"msg\":\"\",\"count\":"+count+",\"data\":"+js+"}";
 		return jso;
 	}
-
-	
 
 	
 }

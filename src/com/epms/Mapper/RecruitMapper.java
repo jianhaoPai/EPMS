@@ -7,15 +7,15 @@ import org.springframework.stereotype.Repository;
 
 import com.epms.Bean.Recruit;
 import com.epms.Bean.User;
-//æ‹›è˜è®¡åˆ’å‘å¸ƒ
+//ÕĞÆ¸¼Æ»®·¢²¼
 @Repository
 public interface RecruitMapper {
 	
-	//æäº¤æ‹›è˜è®¡åˆ’
+	//Ìá½»ÕĞÆ¸¼Æ»®
 	int insertRecruit(Recruit recruit);
 	int checkIfRepect(Recruit recruit);
 	
-	//ä¸Šçº§æŸ¥çœ‹ä¸‹çº§æäº¤çš„æ‹›è˜è®¡åˆ’
+	//ÉÏ¼¶²é¿´ÏÂ¼¶Ìá½»µÄÕĞÆ¸¼Æ»®
 	List<Recruit> selectRecruitToTotalManager(@Param("occupationId") String occupationId,@Param("departmentId") String departmentId,
 			@Param("status") String status,@Param("before") int before,@Param("after") int after);
 	int countToTotalManager(@Param("occupationId") String occupationId,@Param("departmentId") String departmentId,
@@ -26,17 +26,20 @@ public interface RecruitMapper {
 	int countToBoard(@Param("occupationId") String occupationId,@Param("departmentId") String departmentId,
 			@Param("status") String status);
 	
-	//ä¸‹çº§æŸ¥çœ‹è‡ªå·±æäº¤ç»™ä¸Šçº§çš„æ‹›è˜è®¡åˆ’
-	List<Recruit> selectAllRecruitByWriteId(@Param("before") int before,@Param("after") int after,@Param("writeId") int writeId);
-	int countSelectAllRecruitByWriteId(int writeId);
+	//ÏÂ¼¶²é¿´×Ô¼ºÌá½»¸øÉÏ¼¶µÄÕĞÆ¸¼Æ»®
+	List<Recruit> selectAllRecruitByWriteId(@Param("departmentId")String departmentId,
+    		@Param("occupationId")String occupationId,@Param("status")String status,@Param("before") int before,@Param("after") int after,@Param("writeId") int writeId);
+	int countSelectAllRecruitByWriteId(@Param("departmentId")String departmentId,
+    		@Param("occupationId")String occupationId,@Param("status")String status,
+    		@Param("writeId")int writeId);
 	
-	//å®¡æ‰¹æ‹›è˜è®¡åˆ’
+	//ÉóÅúÕĞÆ¸¼Æ»®
 	public int updateRecruitStatus(Recruit recruit);
 	
-	//é€šè¿‡äº‹é¡¹idï¼ŒæŸ¥è¯¢äº‹é¡¹ä¿¡æ¯
+	//Í¨¹ıÊÂÏîid£¬²éÑ¯ÊÂÏîĞÅÏ¢
 	public Recruit selectRecruitById(int id);
 	
-	//å‘˜å·¥æŸ¥è¯¢æ‹›è˜è®¡åˆ’
+	//Ô±¹¤²éÑ¯ÕĞÆ¸¼Æ»®
 	List<Recruit> selectAllRecruitToEmployee(@Param("occupationId") String occupationId,@Param("departmentId") String departmentId,
 			@Param("before") int before,@Param("after") int after);
 	int countSelectAllRecruitToEmployee(@Param("occupationId") String occupationId,@Param("departmentId") String departmentId);

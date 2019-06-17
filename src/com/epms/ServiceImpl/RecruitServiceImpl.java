@@ -30,6 +30,7 @@ public class RecruitServiceImpl implements RecruitService{
 	@Override
 	public String insertRecruit(Recruit recruit) 
 	{
+		
 		JSONObject result = new JSONObject();
 		if(recruit.getDepartment().getDepartmentId()==0)
 		{
@@ -139,15 +140,15 @@ public class RecruitServiceImpl implements RecruitService{
 	
 	//下级查询自己提交给上级的全部招聘信息
 	@Override
-	public List<Recruit> selectAllRecruitByWriteId(int before, int after,int writeId) 
+	public List<Recruit> selectAllRecruitByWriteId(String departmentId,String occupationId,String status,int before, int after,int writeId) 
 	{
-		return recruitMapper.selectAllRecruitByWriteId(before, after, writeId);
+		return recruitMapper.selectAllRecruitByWriteId(departmentId,occupationId,status,before, after, writeId);
 	}
 
 	@Override
-	public int countSelectAllRecruitByWriteId(int writeId) 
+	public int countSelectAllRecruitByWriteId(String departmentId,String occupationId,String status,int writeId) 
 	{
-		return recruitMapper.countSelectAllRecruitByWriteId(writeId);
+		return recruitMapper.countSelectAllRecruitByWriteId(departmentId,occupationId,status,writeId);
 	}
 	
 	//员工查询招聘计划
@@ -162,7 +163,6 @@ public class RecruitServiceImpl implements RecruitService{
 	{
 		return recruitMapper.countSelectAllRecruitToEmployee(occupationId,departmentId);
 	}
-
 	
 
 }

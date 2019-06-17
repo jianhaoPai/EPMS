@@ -16,8 +16,7 @@ import com.epms.Mapper.CultivateApplyMapper;
 import com.epms.Mapper.PersonalinfoMapper;
 import com.epms.Mapper.WorkingCalendarMapper;
 import com.epms.Service.CultivateApplyService;
-import com.epms.Utils.CalculateDaySum;
-
+import com.epms.Tools.CalculateDaySum;
 
 @Service(value="cultivateApplyService")
 public class CultivateApplyServiceImpl implements CultivateApplyService{
@@ -63,7 +62,7 @@ public class CultivateApplyServiceImpl implements CultivateApplyService{
 		else if(calculateCultivateDay(cultivateApply)<=0) //计算请假天数并判断输入的开始时间和结束时间是否合理
 		{
 			result.put("status", false);
-			result.put("message", "提交失败，假期结束日期必须在假期开始日期之后！");
+			result.put("message", "提交失败，培训结束日期必须在培训开始日期之后！");
 		}
 		else
 		{
@@ -120,16 +119,16 @@ public class CultivateApplyServiceImpl implements CultivateApplyService{
 
 	// 下级查询自己提交给上级的培训计划
 	@Override
-	public List<CultivateApply> selectAllCultivateApplyByWriteId(int before,
+	public List<CultivateApply> selectAllCultivateApplyByWriteId(String cultivateId,String status,int before,
 			int after, int writeId) {
-		return cultivateApplyMapper.selectAllCultivateApplyByWriteId(before,
+		return cultivateApplyMapper.selectAllCultivateApplyByWriteId(cultivateId,status,before,
 				after, writeId);
 	}
 
 	@Override
-	public int countSelectAllCultivateApplyByWriteId(int writeId) {
+	public int countSelectAllCultivateApplyByWriteId(String cultivateId,String status,int writeId) {
 		return cultivateApplyMapper
-				.countSelectAllCultivateApplyByWriteId(writeId);
+				.countSelectAllCultivateApplyByWriteId(cultivateId,status,writeId);
 	}
 
 	// 上级查询直接下级提交的招聘计划

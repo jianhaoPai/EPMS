@@ -2,21 +2,27 @@ package com.epms.Service;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Param;
-
-import com.epms.Bean.CultivateApply;
 import com.epms.Bean.CultivateRecord;
 import com.epms.Bean.TotalData;
 
 
 public interface CultivateRecordService 
 {
-	//æŠ¥ååŸ¹è®­
+	//±¨ÃûÅàÑµ
 	String insertCultivateRecord(int cultivateId,int participatorId);
 	
-	//å‘˜å·¥æŸ¥è¯¢è‡ªå·±æŠ¥åçš„åŸ¹è®­è¯¾ç¨‹
-	List<CultivateRecord> selectCultivateRecordByJobId(int before,int after,int jobId);
-	int countSelectCultivateRecordByJobId(int jobId);
-	//æŸ¥è¯¢æŸä¸ªæœˆæ¯ä¸ªå‘˜å·¥çš„åŸ¹è®­å¤©æ•°
-		public List<TotalData> CountCultivate(String year,String month);
+	//Ô±¹¤²éÑ¯×Ô¼º±¨ÃûµÄÅàÑµ¿Î³Ì
+	List<CultivateRecord> selectCultivateRecordByJobId(String cultivateId,String status,int before,int after,int jobId);
+	int countSelectCultivateRecordByJobId(String cultivateId,String status,int jobId);
+	
+	//ÉÏ¼¶²éÑ¯ÏÂÊôËù±¨ÃûµÄÈ«²¿ÅàÑµ¼ÇÂ¼
+	List<CultivateRecord> selectAllCultivateRecord(int before,int after,int leaderId);
+	int countselectAllCultivateRecord(int leaderId);
+	
+	//ÉóºËÅàÑµ±¨Ãû
+	String updateCultivateRecordStatus(int recordId,String recordStatus,String status,int cultivateId);
+
+	//²éÑ¯Ä³¸öÔÂÃ¿¸öÔ±¹¤µÄÅàÑµÌìÊı
+	public List<TotalData> CountCultivate(String year,String month);
+	
 }

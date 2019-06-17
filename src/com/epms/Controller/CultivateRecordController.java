@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,7 +24,7 @@ public class CultivateRecordController {
 	@Autowired
 	private CultivateRecordService cultivateRecordService;
 	
-	//å‘˜å·¥æŠ¥ååŸ¹è®­è®¡åˆ’
+	//Ô±¹¤±¨ÃûÅàÑµ¼Æ»®
 	@RequestMapping(value = "insertCultivateRecord", method = RequestMethod.POST,produces="application/json;charset=utf-8")
 	public @ResponseBody String insertCultivateRecord(int id,HttpSession session) 
 	{		
@@ -32,42 +33,58 @@ public class CultivateRecordController {
 		return result;
 	}
 	
-	//å‘˜å·¥æŸ¥è¯¢è‡ªå·±æŠ¥åçš„åŸ¹è®­è¯¾ç¨‹
+	//Ô±¹¤²éÑ¯×Ô¼º±¨ÃûµÄÅàÑµ¿Î³Ì
 	@RequestMapping(value = "/selectCultivateRecordByJobId", produces = "application/json;charset=utf-8", method = RequestMethod.GET)
-	public @ResponseBody String selectCultivateRecordByJobId(int page, int limit, HttpSession session) 
+	public @ResponseBody String selectCultivateRecordByJobId(String cultivateId,String status,int page, int limit, HttpSession session) 
 	{
 		int before = limit * (page - 1);
-		// å¸¦å‚æ•°ä»æ•°æ®åº“é‡ŒæŸ¥è¯¢å‡ºæ¥æ”¾åˆ°eilistçš„é›†åˆé‡Œ
+		// ´ø²ÎÊı´ÓÊı¾İ¿âÀï²éÑ¯³öÀ´·Åµ½eilistµÄ¼¯ºÏÀï
 		int jobId = Integer.parseInt(session.getAttribute("jobId").toString());
 		List<CultivateRecord> cultivateRecordlist = 
-				cultivateRecordService.selectCultivateRecordByJobId(before, limit, jobId);
-		int count = cultivateRecordService.countSelectCultivateRecordByJobId(jobId);
-		// ç”¨jsonæ¥ä¼ å€¼
+				cultivateRecordService.selectCultivateRecordByJobId(cultivateId,status,before, limit, jobId);
+		int count = cultivateRecordService.countSelectCultivateRecordByJobId(cultivateId,status,jobId);
+		// ÓÃjsonÀ´´«Öµ
 		JSONArray json = JSONArray.fromObject(cultivateRecordlist);
 		String js = json.toString();
-		// è½¬ä¸ºlayuiéœ€è¦çš„jsonæ ¼å¼ï¼Œå¿…é¡»è¦è¿™ä¸€æ­¥
+		// ×ªÎªlayuiĞèÒªµÄjson¸ñÊ½£¬±ØĞëÒªÕâÒ»²½
 		String jso = "{\"code\":0,\"msg\":\"\",\"count\":" + count
 				+ ",\"data\":" + js + "}";
 		return jso;
 	}
 	
-	//ä¸Šçº§æŸ¥è¯¢ä¸‹å±æŠ¥åçš„åŸ¹è®­è¯¾ç¨‹
+	//ÉÏ¼¶²éÑ¯ÏÂÊô±¨ÃûµÄÅàÑµ¿Î³Ì
 	@RequestMapping(value = "/selectAllCultivateRecord", produces = "application/json;charset=utf-8", method = RequestMethod.GET)
 	public @ResponseBody String selectAllCultivateRecord(int page,int limit,HttpSession session) 
 	{
 		int before = limit * (page - 1);
-		// å¸¦å‚æ•°ä»æ•°æ®åº“é‡ŒæŸ¥è¯¢å‡ºæ¥æ”¾åˆ°eilistçš„é›†åˆé‡Œ
-		int jobId = Integer.parseInt(session.getAttribute("jobId").toString());
+		// ´ø²ÎÊı´ÓÊı¾İ¿âÀï²éÑ¯³öÀ´·Åµ½eilistµÄ¼¯ºÏÀï
+		int leaderId = Integer.parseInt(session.getAttribute("jobId").toString());
 		List<CultivateRecord> cultivateRecordlist = 
-				cultivateRecordService.selectCultivateRecordByJobId(before, limit, jobId);
-		int count = cultivateRecordService.countSelectCultivateRecordByJobId(jobId);
-		// ç”¨jsonæ¥ä¼ å€¼
+				cultivateRecordService.selectAllCultivateRecord(before, limit,leaderId);
+		int count = cultivateRecordService.countselectAllCultivateRecord(leaderId);
+		// ÓÃjsonÀ´´«Öµ
 		JSONArray json = JSONArray.fromObject(cultivateRecordlist);
 		String js = json.toString();
-		// è½¬ä¸ºlayuiéœ€è¦çš„jsonæ ¼å¼ï¼Œå¿…é¡»è¦è¿™ä¸€æ­¥
+		// ×ªÎªlayuiĞèÒªµÄjson¸ñÊ½£¬±ØĞëÒªÕâÒ»²½
 		String jso = "{\"code\":0,\"msg\":\"\",\"count\":" + count
 				+ ",\"data\":" + js + "}";
 		return jso;
+	}
+	
+	//ÉóºËÍ¨¹ı±¨Ãû
+	@RequestMapping(value = "updateCultivateRecordStatusYes",produces="application/json;charset=utf-8")
+	public @ResponseBody String updateCultivateRecordStatusYes(int recordId,String recordStatus,int cultivateId) 
+	{
+		String result =cultivateRecordService.updateCultivateRecordStatus(recordId,recordStatus,"Í¨¹ı",cultivateId);
+		return result;
+	}
+	
+	//ÉóºË²»Í¨¹ı±¨Ãû
+	@RequestMapping(value = "updateCultivateRecordStatusNo",produces="application/json;charset=utf-8")
+	public @ResponseBody String updateCultivateRecordStatusNo(int recordId,String recordStatus,int cultivateId) 
+	{
+		String result =cultivateRecordService.updateCultivateRecordStatus(recordId,recordStatus,"²»Í¨¹ı",cultivateId);
+		return result;
 	}
 
 }
