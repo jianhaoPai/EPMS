@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import com.epms.Bean.SocialSecurity;
 import com.epms.Bean.TotalData;
 
 @Repository
@@ -40,5 +41,10 @@ public interface TotalDataMapper
 	int updateTotalDataByNotWorkOverTime(@Param("jobId") int jobId,@Param("totalNotWorkOverTime") int totalNotWorkOverTime);
 	int updateTotalDataByAbsence(@Param("jobId") int jobId,@Param("totalAbsence") int totalAbsence);
 	int updateTotalDataByCaltivateday(@Param("jobId") int jobId,@Param("totalCaltivateDay") int totalCaltivateDay);
+	
+	//分页查询表中数据
+	public List<TotalData> selectDataSum (@Param("before") int before,@Param("limit") int limit);
+	public int countDataSum ();
+	
 	
 }

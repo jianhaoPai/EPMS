@@ -65,20 +65,11 @@ public class VacateServiceImpl implements VacateService
 			vacateMapper.insertVacate(vacate);
 
 			// 根据提交的申请表，修改相应类型的假期剩余信息
-			/*if (vacate.getType().equals("年假") || vacate.getType().equals("产假")) 
-			{
-				Vacation vacation = vacationMapper.selectRemainByVacate(vacate);
-				int virtualUse = vacation.getVirtualUse();// 获得此时对应类型的假期虚拟使用天数
-				vacation.setJobId(vacate.getJobId());
-				vacation.setType(vacate.getType());
-				vacation.setVirtualUse(vacate.getDaySum() + virtualUse);
-				vacationMapper.updateVirtualUse(vacation);
-			}*/
 			Vacation vacation = vacationMapper.selectRemainByVacate(vacate);
 			int virtualUse = vacation.getVirtualUse();// 获得此时对应类型的假期虚拟使用天数
 			vacation.setJobId(vacate.getJobId());
 			vacation.setType(vacate.getType());
-			vacation.setVirtualUse(vacate.getDaySum() + virtualUse);
+			vacation.setVirtualUse(vacate.getDiscountDay() + virtualUse);
 			vacationMapper.updateVirtualUse(vacation);
 			result.put("status", true);
 			result.put("message", "提交成功！");
@@ -146,7 +137,7 @@ public class VacateServiceImpl implements VacateService
 	public Boolean checkRemain(Vacate vacate)
 	{
 		//获得此时对应的假期剩余天数信息(仅年假和产假需查询)
-		if(vacate.getType().equals("年假")||vacate.getType().equals("年假"))
+		if(vacate.getType().equals("年假")||vacate.getType().equals("产假"))
 		{
 			Vacation vacation=vacationMapper.selectRemainByVacate(vacate);
 			int virtualUse=vacation.getVirtualUse();
@@ -281,55 +272,40 @@ public class VacateServiceImpl implements VacateService
 	@Override
 	public String updateVacate(Vacate vacate) 
 	{
+		String state=vacate.getState();
 		// 先检查是否已经审批过，若已审批过,则无法重新审批
-		if (vacateMapper.selectVacateById(vacate.getId()).getApprovalDate() == null) 
+		if (vacateMapper.selectVacateById(vacate.getId()).getState().equals("待审核")) 
 		{
-			if (vacateMapper.selectVacateById(vacate.getId()).getType().equals("年假") 
-					|| vacateMapper.selectVacateById(vacate.getId()).getType().equals("年假")) 
-			{
-				//根据审批状态，修改相应类型的假期剩余信息
-				vacate=vacateMapper.selectVacateById(vacate.getId());
-				Vacation vacation=vacationMapper.selectRemainByVacate(vacate);
-				int virtualUse=vacation.getVirtualUse();//获得此时对应类型的假期虚拟使用天数
-				vacation.setJobId(vacate.getJobId());
-				vacation.setType(vacate.getType());
-				
-				if(vacate.getState().equals("不同意"))
-				{	
-					vacation.setVirtualUse(virtualUse-vacate.getDaySum());
-					vacationMapper.updateVirtualUse(vacation);
-				}
-				else
-				{
-					vacation.setVirtualUse(virtualUse-vacate.getDaySum());
-					vacation.setRemain(vacation.getRemain()-vacate.getDaySum());
-					vacation.setAlreadyUse(vacation.getAlreadyUse()+vacate.getDaySum());
-					vacationMapper.updateVirtualAll(vacation);
-				}
+			//根据审批状态，修改相应类型的假期剩余信息
+			vacate=vacateMapper.selectVacateById(vacate.getId());
+			Vacation vacation=vacationMapper.selectRemainByVacate(vacate);
+			int virtualUse=vacation.getVirtualUse();//获得此时对应类型的假期虚拟使用天数
+			vacation.setJobId(vacate.getJobId());
+			vacation.setType(vacate.getType());
+			if(state.equals("不同意"))
+			{	
+				vacation.setVirtualUse(virtualUse-vacate.getDiscountDay());
+				vacationMapper.updateVirtualUse(vacation);
 			}
 			else
 			{
-				//根据审批状态，修改相应类型的假期剩余信息
-				vacate=vacateMapper.selectVacateById(vacate.getId());
-				Vacation vacation=vacationMapper.selectRemainByVacate(vacate);
-				int virtualUse=vacation.getVirtualUse();//获得此时对应类型的假期虚拟使用天数
-				vacation.setJobId(vacate.getJobId());
-				vacation.setType(vacate.getType());
+				vacation.setVirtualUse(virtualUse-vacate.getDiscountDay());
+				vacation.setAlreadyUse(vacation.getAlreadyUse()+vacate.getDiscountDay());
 				
-				if(vacate.getState().equals("不同意"))
-				{	
-					vacation.setVirtualUse(virtualUse-vacate.getDaySum());
-					vacationMapper.updateVirtualUse(vacation);
+				if (vacateMapper.selectVacateById(vacate.getId()).getType().equals("年假") 
+						|| vacateMapper.selectVacateById(vacate.getId()).getType().equals("产假")) 
+				{
+					vacation.setRemain(vacation.getRemain()-vacate.getDiscountDay());
+					vacationMapper.updateVirtualAll(vacation);
 				}
 				else
 				{
-					vacation.setVirtualUse(virtualUse-vacate.getDaySum());
-					vacation.setAlreadyUse(vacation.getAlreadyUse()+vacate.getDaySum());
 					vacationMapper.updateVirtualExceptRemain(vacation);
 				}
 			}
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			vacate.setApprovalDate(dateFormat.format(new Date()));
+			vacate.setState(state);
 			vacateMapper.updateVacate(vacate);//修改审批状态
 			return "true";
 		} else {

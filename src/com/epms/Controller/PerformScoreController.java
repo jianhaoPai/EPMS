@@ -70,7 +70,7 @@ public class PerformScoreController {
 	}
 	
 	//添加绩效评价初始数据
-	//@Scheduled(cron="*/20 * * * * ?")
+	//@Scheduled(cron="0 0 1 1 * ?")
 	public  void addInitPerform(){
 		long s=System.currentTimeMillis();//获取当前时间
 		System.out.println("绩效评价初始化数");

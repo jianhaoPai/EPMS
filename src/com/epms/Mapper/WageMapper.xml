@@ -58,7 +58,7 @@
 	</select>
 	
 	<!-- 查看需要工资审核的记录条数 -->
-	<select id="countVerifyWage">
+	<select id="countVerifyWage" resultType="int">
 		SELECT COUNT(*) FROM t_wage WHERE state='待审核'
 	</select>
 </mapper>

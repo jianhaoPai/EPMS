@@ -36,13 +36,9 @@ public class SecurityInterceptor implements HandlerInterceptor{
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object arg2) throws Exception{
 		HttpSession session = request.getSession();
 		int jobId=Integer.parseInt(session.getAttribute("jobId").toString());
-		String servletPath = request.getServletPath();
-        String Path=servletPath.substring(1,servletPath.length());
-        
         String page=request.getParameter("page");
+        //查询该用户的所属的权限组中是否有该权限
         int pathNum=menuService.findMenuByJobId(jobId,page);
-
-        //System.out.println("pp:"+pathNum+"11"+page);
         if(page.equals("main")||page.equals("homePage")){
         	return true;
         }else{

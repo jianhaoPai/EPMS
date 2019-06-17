@@ -48,8 +48,6 @@ public class WageServiceImpl implements WageService{
         }else{
         	asseaaDate=year+String.valueOf(lastMonth);
         }
-        	
-        
 		for(int i = 0;i<totalData.size();i++){
 			int jobId = totalData.get(i).getJobId();//获取工号
 			
@@ -109,7 +107,6 @@ public class WageServiceImpl implements WageService{
 				}else{
 					System.out.println(jobId+"没有基本工资");
 				}
-				
 			}else{
 				System.out.println(jobId+"工资记录已存在");
 			}

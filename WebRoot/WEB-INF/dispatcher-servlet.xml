@@ -44,8 +44,6 @@
 		</mvc:interceptor>
 		<mvc:interceptor>
           <mvc:mapping path="/requestMainPage"/>
-          
-          
           <mvc:exclude-mapping path="/index.jsp"/>
 		  <mvc:exclude-mapping path="/login"/>
 		  <mvc:exclude-mapping path="/main"/>

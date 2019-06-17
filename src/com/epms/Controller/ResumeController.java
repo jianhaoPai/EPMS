@@ -71,7 +71,7 @@ public class ResumeController
 		//根据邮箱找到该用户信息
 		ExternalResume user= externalResumeService.getExternalResumeByEmail(email);
 		Resume resume2=resumeMapper.selectResumeById(id);
-		if(resume2.getApprovalDate()==null&&resume2.getStatus()=="通过")
+		if(resume2.getApprovalDate()!=null&&resume2.getStatus()=="通过")
 		{
 				mySendMail.sendResume(email, "企业人事管理系统提醒，您的简历已通过"+"请于"+interviewDate+"下午两点参加面试");
 				result1.put("status",true);

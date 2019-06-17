@@ -43,8 +43,8 @@ public class WageController {
 		return jso;
 	}
 	
-	//添加绩效评价初始数据
-	@Scheduled(cron="0 0 1 5 * ?")
+	//计算工资
+	//@Scheduled(cron="0 0 1 5 * ?")
 	public  void addInitPerform(){
 		long s=System.currentTimeMillis();//获取当前时间
 		
@@ -59,7 +59,6 @@ public class WageController {
 
 		//计算工资
 		wageService.countStaffWage(totalData);
-		
 		
 		long e=System.currentTimeMillis();//获取结束时间
 		System.out.println("运行时间："+(e-s)+"ms");//输出程序运行时间

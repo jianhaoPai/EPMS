@@ -42,4 +42,17 @@ public class TotalDataImpl implements TotalDataService
 		return cultivateRecordService.CountCultivate(year, month);
 	}
 
+	@Override
+	public List<TotalData> selectTotalData(String year, String month, int before,int limit) 
+	{
+		selectMonthTotalData(year,month);
+		return totalDataMapper.selectDataSum(before, limit);
+	}
+
+	@Override
+	public int countTotalData() 
+	{
+		return totalDataMapper.countDataSum();
+	}
+
 }

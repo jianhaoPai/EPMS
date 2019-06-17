@@ -99,5 +99,14 @@
     <delete id="deleteAll">
        delete  from t_totaldata
     </delete>
+    
+    <select id="selectDataSum" resultMap="totalDataMapperResult" >
+ 		select * from t_totaldata
+ 		LIMIT #{before},#{limit}
+ 	</select>
+ 	
+ 	<select id="countDataSum" resultType="int" >
+ 		select count(*) from t_totaldata
+ 	</select>
 
 </mapper>

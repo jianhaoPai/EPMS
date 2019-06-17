@@ -148,7 +148,7 @@ public class UserController {
 			//根据邮箱找到该用户信息
 			User user= userService.getUserByEmail(jobId,email);
 			if(user!=null) {
-				mySendMail.sendMail(email, "企业人事管理系统提醒，您的密码为："+user.getPassword());
+				mySendMail.sendMail(email, "企业人事管理系统提醒，您的密码为："+user.getPassword()+"   请保管好密码，如若不是本人操作，请尽快修改密码！");
 				result.put("status",true);
 				result.put("msg","恭喜，找回密码成功");
 				return result.toString();

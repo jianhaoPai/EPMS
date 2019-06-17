@@ -60,7 +60,7 @@ layui.use(['jquery','table','layer','form'],function(){
 		            title:"查看详情",
 		            skin:"myclass",
 		            area:["35%","45%"],
-		            content:["requestPage?page=detailSelectAllRecruitByWriteId","no"],
+		            content:["requestPageNoLogin?page=detailSelectAllRecruitByWriteId","no"],
 		            success:function(layero,index){
 		                var body = layer.getChildFrame('body', index);  
                         var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();  
@@ -83,7 +83,7 @@ layui.use(['jquery','table','layer','form'],function(){
 		            title:"提交简历",
 		            skin:"myclass",
 		            area:["60%","100%"],
-		            content:["requestPage?page=ExternalResume","no"],
+		            content:["requestPageNoLogin?page=ExternalResume","no"],
 		            success:function(layero,index){
 		                var body = layer.getChildFrame('body', index);  
                         var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();  

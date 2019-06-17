@@ -25,7 +25,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 #wrap {
 	height: 100%;
 	width: 100%;
-	background-image:url(images/bg.png);
+	background-image:url(images/bg1.png);
 	background-repeat: no-repeat;
 	background-position:center;
 	position: relative;
@@ -180,9 +180,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
   </head>
   
   <body >
-    <div class="header" id="head">
-  	  <div class="title">企业人事管理系统</div>
-	</div>
+    
     <div class="wrap" id="wrap">
     <form>
 	<div class="logGet">

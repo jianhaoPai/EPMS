@@ -23,11 +23,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
   .layui-layout-admin .layui-body{
      bottom:0;
   }
-  body {
-            height: 100%;width: 100%;
-            background: url('layui/images/jizhu.jpg');
-            background-size:cover;
-        }
+  
 </style> 
 
 <body class="layui-layout-body">
@@ -57,7 +53,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
           ${username}
         </a>
         <dl class="layui-nav-child">
-          <dd><a href="">修改密码</a></dd>
+          <!-- <dd><a href="">修改密码</a></dd> -->
         </dl>
       </li>
       <li class="layui-nav-item"><a href="outLogin">退出系统</a></li>
